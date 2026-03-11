@@ -234,7 +234,12 @@
   .info-section-label {
     font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.8px;
     color: #7b2d8b; font-weight: bold; margin-bottom: 6px;
+    cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none; transition: color 0.15s;
   }
+  .info-section-label:hover { color: #e8c97a; }
+  .info-section-chevron { font-size: 0.55rem; transition: transform 0.2s; margin-left: auto; opacity: 0.6; }
+  .info-section.collapsed .info-section-chevron { transform: rotate(-90deg); }
+  .info-section.collapsed .info-section-content { display: none; }
   .info-nav-item {
     padding: 6px 10px; margin-bottom: 3px; border-radius: 5px;
     cursor: pointer; background: rgba(15,52,96,0.4);
@@ -254,6 +259,18 @@
   .info-grape-tag.rose { background: rgba(200,120,130,0.35); color: #f0b0b8; border-color: rgba(220,140,150,0.4); }
   .info-grape-tag.both { background: rgba(160,100,160,0.3); color: #d0b0d8; border-color: rgba(180,120,180,0.4); }
   .info-text { font-size: 0.78rem; color: #bbb; line-height: 1.55; }
+
+  .info-wine-card { background: rgba(15,52,96,0.4); border: 1px solid rgba(123,45,139,0.3); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.75rem; line-height: 1.5; }
+  .info-wine-name { color: #e8c97a; font-weight: 600; font-size: 0.78rem; margin-bottom: 4px; }
+  .info-wine-badge { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 0.6rem; font-weight: 600; margin-left: 4px; vertical-align: middle; }
+  .info-wine-badge.docg { background: rgba(200,60,60,0.4); color: #e88; border: 1px solid rgba(200,60,60,0.3); }
+  .info-wine-badge.doc { background: rgba(180,170,80,0.3); color: #e8d880; border: 1px solid rgba(180,170,80,0.3); }
+  .info-wine-badge.doca, .info-wine-badge.doca { background: rgba(200,60,60,0.5); color: #f99; border: 1px solid rgba(200,60,60,0.4); }
+  .info-wine-badge.igt { background: rgba(100,100,180,0.3); color: #aac; border: 1px solid rgba(100,100,180,0.3); }
+  .info-wine-badge.do { background: rgba(180,170,80,0.3); color: #e8d880; border: 1px solid rgba(180,170,80,0.3); }
+  .info-wine-badge.vdlt, .info-wine-badge.ava, .info-wine-badge.gi { background: rgba(100,160,100,0.3); color: #8c8; border: 1px solid rgba(100,160,100,0.3); }
+  .info-wine-detail { color: #aaa; font-size: 0.7rem; }
+  .info-wine-detail strong { color: #ccc; }
 
   /* Wine-colored grape tags for cards/popups */
   .grape-tag.red, .grape-tag-btn.red { background: rgba(139,30,30,0.4); border-color: rgba(200,60,60,0.35); color: #e88; }
@@ -2187,13 +2204,16 @@ function createSubIcon(color, size = 14) {
   return L.divIcon({ html: svg, className: '', iconSize: [size, size], iconAnchor: [size/2, size/2], popupAnchor: [0, -(size/2 + 6)] });
 }
 
-function formatGrapesClickable(grapes) {
+function formatGrapesClickable(grapes, contextRegion) {
   return grapes.map(g => {
     const wc = getGrapeWineClass(g);
     const hasNote = !!grapeTastingNotes[g];
     if (!hasNote) return `<span class="grape-tag ${wc}">${g}</span>`;
+    const wineHints = contextRegion ? getGrapeWineHints(g, contextRegion) : '';
     return `<span class="grape-tag-btn ${wc}" onclick="showGrapeNote(this)">▸ ${g}</span>` +
-           `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}</div>`;
+           `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}` +
+           (wineHints ? `<div class="grape-note-region">♦ Wines: ${wineHints}</div>` : '') +
+           `</div>`;
   }).join('');
 }
 
@@ -2206,7 +2226,7 @@ function createSubPopup(sr) {
     </div>
     <div class="popup-section">
       <div class="popup-label">Key Grape Varieties <span style="font-size:0.6rem;color:#888;font-weight:normal;text-transform:none;letter-spacing:0">(click for tasting notes)</span></div>
-      <div>${formatGrapesClickable(sr.grapes)}</div>
+      <div>${formatGrapesClickable(sr.grapes, sr.parentRegion)}</div>
     </div>
     <div class="popup-section">
       <div class="popup-label">Tasting Notes</div>
@@ -2526,9 +2546,11 @@ function formatSidebarGrapes(grapes, subName, parentRegion) {
     const note = grapeTastingNotes[g];
     if (!note) return `<span class="grape-tag ${wc}">${g}</span>`;
     const regionHint = getRegionalContext(g, subName, parentRegion);
+    const wineHints = getGrapeWineHints(g, parentRegion);
     return `<span class="grape-tag-btn ${wc}" data-grape="${g}" data-sub="${subName}" data-parent="${parentRegion}">▸ ${g}</span>` +
       `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${note}` +
       (regionHint ? `<div class="grape-note-region">⬦ In ${subName}: ${regionHint}</div>` : '') +
+      (wineHints ? `<div class="grape-note-region">♦ Wines: ${wineHints}</div>` : '') +
       `</div>`;
   }).join('');
 }
@@ -2610,6 +2632,179 @@ function getRegionalContext(grape, subName, parentRegion) {
   const parentKey = grape + '|' + parentRegion;
   if (ctx[parentKey]) return ctx[parentKey];
   return null;
+}
+
+// ============================================================
+// WINE DATA — DOC/DOCG/DO requirements, aging, grape rules
+// ============================================================
+var WINE_DATA = {
+  // ===== ITALY — VENETO =====
+  'Veneto': [
+    { name:'Amarone della Valpolicella DOCG', classification:'DOCG', grapes:['Corvina (45-95%)','Rondinella (5-30%)','Molinara (optional)'], method:'Appassimento — grapes dried 3-4 months on racks, losing 30-40% weight before fermentation', aging:'Min 2 years (Riserva: 4 years)', abv:'14-17%', style:'Full body, dried cherry, chocolate, fig, prune, bitter almond finish, velvety tannins', notes:'Fermented to dryness from partially raisined grapes. One of Italy\'s most distinctive and expensive wines. Recioto is the sweet version.' },
+    { name:'Valpolicella DOC', classification:'DOC', grapes:['Corvina (45-95%)','Rondinella (5-30%)'], method:'Standard vinification, some carbonic maceration', aging:'No minimum', style:'Light-medium body, fresh cherry, almond, herbal, low tannin', notes:'Classico zone produces best examples. Basic Valpolicella is a light everyday red.' },
+    { name:'Valpolicella Ripasso DOC', classification:'DOC', grapes:['Corvina','Rondinella'], method:'Refermented on Amarone grape skins (pomace), adding body and complexity', aging:'Min 1 year', abv:'12-14%', style:'Medium-full body, dried cherry, spice, chocolate, richer than basic Valpolicella', notes:'"Baby Amarone" — bridge between Valpolicella and Amarone at mid-range price.' },
+    { name:'Recioto della Valpolicella DOCG', classification:'DOCG', grapes:['Corvina (45-95%)','Rondinella'], method:'Appassimento, but fermentation stopped early to retain sugar', aging:'Min 1 year', style:'Sweet, full body, dried fruit, cherry jam, chocolate, velvety', notes:'The original Valpolicella wine style — sweet. Amarone was historically a "failed" Recioto where fermentation went too far.' },
+    { name:'Soave DOC / Soave Classico DOC', classification:'DOC', grapes:['Garganega (min 70%)','Trebbiano di Soave (up to 30%)'], method:'Protective winemaking, stainless steel', aging:'No minimum (Superiore DOCG: stricter yield)', style:'Light-medium body, pear, white peach, almond, white flowers, mineral', notes:'Classico zone on volcanic soils produces finest examples with more depth.' },
+    { name:'Prosecco DOC / Conegliano Valdobbiadene DOCG', classification:'DOC/DOCG', grapes:['Glera (min 85%)'], method:'Charmat (tank) method — secondary fermentation in pressurized tanks', aging:'No minimum', abv:'11-12%', style:'Light body, green apple, pear, white flowers, gentle mousse, fresh and fruity', notes:'DOCG Conegliano Valdobbiadene is premium. Cartizze is the top single vineyard. Brut, Extra Dry, and Dry styles.' },
+  ],
+  // ===== ITALY — PIEMONTE =====
+  'Piemonte': [
+    { name:'Barolo DOCG', classification:'DOCG', grapes:['Nebbiolo (100%)'], method:'Traditional: large Slovenian oak botti (3000L+). Modernist: French barriques (225L)', aging:'Min 38 months total (18 in oak). Riserva: 62 months', style:'Full body, very high tannin, high acid, tar, roses, cherry, truffle, violet, tobacco', notes:'"King of Italian wine." Serralunga: powerful, tannic. La Morra: elegant, perfumed. Among world\'s longest-lived reds (20-50+ years).' },
+    { name:'Barbaresco DOCG', classification:'DOCG', grapes:['Nebbiolo (100%)'], method:'Similar to Barolo, often slightly shorter oak aging', aging:'Min 26 months total (9 in oak). Riserva: 50 months', style:'Full body, high tannin/acid but more approachable than Barolo, red cherry, roses, tar, silk', notes:'"Queen to Barolo\'s King." Softer Tortonian soils yield slightly more elegant wine. Top producers: Gaja, Produttori del Barbaresco.' },
+    { name:'Barbera d\'Asti DOCG', classification:'DOCG', grapes:['Barbera (min 90%)'], method:'Stainless steel or oak-aged', aging:'Superiore: 14 months (6 in oak)', style:'Medium-full body, high acid, low tannin, deep color, sour cherry, plum, sometimes oaky', notes:'Barbera\'s best expression. High acid makes it food-friendly. Nizza DOCG is the premium sub-zone.' },
+    { name:'Gavi DOCG', classification:'DOCG', grapes:['Cortese (100%)'], method:'Protective winemaking', aging:'No minimum', style:'Light body, high acid, citrus, green apple, almond, mineral, lean', notes:'Piedmont\'s premier dry white. Best from Gavi di Gavi (commune of Gavi itself).' },
+    { name:'Moscato d\'Asti DOCG', classification:'DOCG', grapes:['Moscato Bianco (100%)'], method:'Charmat method, stopped early to retain sugar and low alcohol', aging:'No minimum', abv:'5-5.5%', style:'Sweet, frizzante (lightly sparkling), peach, grape, orange blossom, musky, delicate mousse', notes:'Lower pressure than Asti Spumante. One of Italy\'s most exported sweet wines. Very low alcohol.' },
+    { name:'Asti Spumante DOCG', classification:'DOCG', grapes:['Moscato Bianco (100%)'], method:'Charmat method, fully sparkling', aging:'No minimum', abv:'7-9%', style:'Sweet, sparkling, grapey, peach, floral, exuberant mousse', notes:'More fizz and slightly higher alcohol than Moscato d\'Asti. Both from same grape, different sparkle level.' },
+    { name:'Roero DOCG', classification:'DOCG', grapes:['Nebbiolo (min 95%) for red; Arneis (min 95%) for white'], method:'Oak aging for reds', aging:'Red: 20 months. Riserva: 32 months', style:'Red: lighter Nebbiolo, sandy soils, red fruit, floral. White (Arneis): pear, almond, herbal', notes:'Left bank of Tanaro river. Sandier soils = lighter, earlier-drinking Nebbiolo than Barolo/Barbaresco.' },
+  ],
+  // ===== ITALY — TUSCANY =====
+  'Tuscany': [
+    { name:'Chianti Classico DOCG', classification:'DOCG', grapes:['Sangiovese (min 80%)','Canaiolo, Colorino, Cab Sauv, Merlot (up to 20%)'], method:'Oak aging in various sizes', aging:'Annata: 12 months. Riserva: 24 months. Gran Selezione: 30 months', style:'Medium-full body, high acid, firm tannin, sour cherry, plum, dried herbs, leather, earthy', notes:'Gallo Nero (Black Rooster) logo. Gran Selezione is top tier — estate grapes only. Galestro and Alberese soils.' },
+    { name:'Brunello di Montalcino DOCG', classification:'DOCG', grapes:['Sangiovese Grosso (Brunello) 100%'], method:'Traditional: large Slavonian oak botti. Modern: mix of botti and barriques', aging:'Min 5 years total (2 in oak). Riserva: 6 years (2 in oak)', style:'Full body, very high acid, firm tannin, dark cherry, leather, tobacco, dried herbs, truffle, cedar', notes:'Italy\'s most prestigious red alongside Barolo. Rosso di Montalcino is the younger, more accessible version (1 year aging).' },
+    { name:'Vino Nobile di Montepulciano DOCG', classification:'DOCG', grapes:['Sangiovese (Prugnolo Gentile clone, min 70%)'], method:'Oak aging', aging:'Min 2 years (Riserva: 3 years)', style:'Medium-full body, plum, cherry, spice, moderate tannin, between Chianti Classico and Brunello in weight', notes:'Distinct from Montepulciano d\'Abruzzo grape. Uses Sangiovese clone called Prugnolo Gentile.' },
+    { name:'Bolgheri DOC (Super Tuscans)', classification:'DOC', grapes:['Cabernet Sauvignon','Merlot','Cabernet Franc','Sangiovese'], method:'French barrique aging', aging:'Varies by producer', style:'Full body, cassis, dark fruit, cedar, chocolate, polished tannins, Bordeaux-style', notes:'Sassicaia, Ornellaia, Masseto — world-class wines. Originally sold as IGT to avoid DOC rules. Now has its own DOC.' },
+    { name:'Vernaccia di San Gimignano DOCG', classification:'DOCG', grapes:['Vernaccia (min 85%)'], method:'Stainless steel or light oak', aging:'No minimum (Riserva: 14 months)', style:'Light-medium body, crisp, mineral, almond, citrus, bitter finish', notes:'Italy\'s first DOCG white (1993). From medieval hilltop town of San Gimignano.' },
+    { name:'Vin Santo DOC', classification:'DOC', grapes:['Trebbiano, Malvasia (white); Sangiovese (Occhio di Pernice)'], method:'Grapes dried on straw mats (appassimento), aged in small caratelli barrels', aging:'Min 3 years (Riserva: 4 years)', abv:'15.5-18%', style:'Amber, sweet, hazelnut, dried apricot, honey, caramel, oxidative character', notes:'Traditional Tuscan dessert wine. Served with cantucci (almond biscuits). "Holy Wine."' },
+  ],
+  // ===== ITALY — CAMPANIA =====
+  'Campania': [
+    { name:'Taurasi DOCG', classification:'DOCG', grapes:['Aglianico (min 85%)'], method:'Oak aging', aging:'Min 3 years (Riserva: 4 years, 18 months in oak)', style:'Full body, very high tannin, high acid, dark fruit, smoke, leather, tar, mineral, earthy', notes:'"Barolo of the South." Aglianico is one of Italy\'s greatest red grapes. Extremely age-worthy.' },
+    { name:'Fiano di Avellino DOCG', classification:'DOCG', grapes:['Fiano (min 85%)'], method:'Stainless steel or light oak', aging:'No minimum', style:'Medium body, hazelnut, pear, honey, mineral, smoky notes, waxy texture', notes:'One of southern Italy\'s finest whites. Develops complex nutty character with age.' },
+    { name:'Greco di Tufo DOCG', classification:'DOCG', grapes:['Greco (min 85%)'], method:'Stainless steel', aging:'No minimum', style:'Medium body, high acid, citrus, peach, almond, mineral, slightly bitter finish', notes:'Volcanic tuff (tufo) soils. Powerful white with aging potential. Often overlooked gem of southern Italy.' },
+  ],
+  // ===== ITALY — SICILY =====
+  'Sicily': [
+    { name:'Etna Rosso DOC', classification:'DOC', grapes:['Nerello Mascalese (min 80%)','Nerello Cappuccio (up to 20%)'], method:'Oak aging, often large casks', aging:'No minimum (Riserva: 4 years)', style:'Medium body, high acid, fine tannin, red cherry, blood orange, volcanic mineral, smoky, elegant', notes:'Volcanic basalt soils at 600-1000m altitude. Often compared to Burgundy for elegance. Rising star of Italian wine.' },
+    { name:'Marsala DOC', classification:'DOC', grapes:['Grillo, Catarratto, Inzolia (white); Nero d\'Avola (red)'], method:'Fortified; Perpetuum/Solera-like system. Cooked must (cotta) or grape spirit (mistella) added', aging:'Fine: 1yr. Superiore: 2yr. Superiore Riserva: 4yr. Vergine: 5yr. Vergine Stravecchio: 10yr', abv:'17-20%', style:'Amber to brown, caramel, dried fruit, toffee, nuts, complex oxidative character', notes:'Oro (gold), Ambra (amber), Rubino (ruby) color classes. Secco, Semisecco, Dolce sweetness levels. Vergine is uncooked — finest style.' },
+  ],
+  // ===== ITALY — OTHER =====
+  'Umbria': [
+    { name:'Montefalco Sagrantino DOCG', classification:'DOCG', grapes:['Sagrantino (100%)'], method:'Extended oak aging', aging:'Min 37 months (12 in oak). Passito: 30 months', style:'Full body, extremely high tannin, blackberry, plum, dark chocolate, earthy, powerful', notes:'Sagrantino has some of the highest tannin levels of any grape. Also made as sweet Passito style.' },
+    { name:'Orvieto DOC', classification:'DOC', grapes:['Grechetto (min 60%)','Trebbiano (Procanico)'], method:'Stainless steel or light oak', aging:'No minimum', style:'Light body, crisp, citrus, green apple, almond, delicate', notes:'Umbria\'s best-known white. Also made in Abboccato (off-dry) and sweet Muffa Nobile (botrytis) styles.' },
+  ],
+  'Friuli-Venezia Giulia': [
+    { name:'Friuli Colli Orientali DOC / Collio DOC', classification:'DOC', grapes:['Pinot Grigio','Friulano','Sauvignon Blanc','Ribolla Gialla'], method:'Stainless steel, some skin-contact (orange wine)', aging:'No minimum', style:'Medium body, textured, stone fruit, floral, mineral, often richer than typical Italian whites', notes:'Italy\'s premier white wine zone. Collio on Slovenian border produces Italy\'s most complex Pinot Grigio.' },
+  ],
+  'Abruzzo': [
+    { name:'Montepulciano d\'Abruzzo DOC', classification:'DOC', grapes:['Montepulciano (min 85%)'], method:'Stainless steel or oak', aging:'No minimum (Riserva varies)', style:'Medium-full body, dark cherry, plum, herbal, moderate tannin, soft and fruity', notes:'Not related to Vino Nobile di Montepulciano (which uses Sangiovese). Montepulciano is the grape here. Good value Italian red.' },
+  ],
+  'Puglia': [
+    { name:'Primitivo di Manduria DOC', classification:'DOC', grapes:['Primitivo (same as Zinfandel)'], method:'Often dried-grape concentration', aging:'No minimum (Riserva: 2 years)', abv:'14-17%', style:'Full body, jammy, ripe dark fruit, prune, spice, high alcohol, sweet impression', notes:'Genetically identical to Zinfandel. Warm climate = ripe, concentrated wines. Also Dolce Naturale (sweet) version.' },
+  ],
+  // ===== SPAIN — RIOJA =====
+  'Rioja': [
+    { name:'Rioja DOCa — Joven', classification:'DOCa', grapes:['Tempranillo (dominant)','Garnacha','Mazuelo','Graciano'], method:'Little or no oak', aging:'No minimum oak aging', style:'Medium body, bright cherry, strawberry, fresh, fruity, immediate drinking', notes:'Young wine for early consumption. Some made with semi-carbonic maceration (whole-bunch).' },
+    { name:'Rioja DOCa — Crianza', classification:'DOCa', grapes:['Tempranillo (dominant)','Garnacha','Mazuelo','Graciano'], method:'American oak (traditional) or French oak (modern)', aging:'Min 24 months total (min 12 months in oak)', style:'Medium body, cherry, strawberry, vanilla, coconut, dill (American oak character)', notes:'First level of oak-aged Rioja. American oak gives distinctive vanilla/coconut. French oak = more subtle.' },
+    { name:'Rioja DOCa — Reserva', classification:'DOCa', grapes:['Tempranillo','Garnacha','Mazuelo','Graciano'], method:'Extended oak aging', aging:'Min 36 months total (min 12 months in oak)', style:'Medium-full body, developed cherry, leather, tobacco, vanilla, spice, silky tannins', notes:'Sweet spot for many Rioja lovers — balance of fruit and oak development.' },
+    { name:'Rioja DOCa — Gran Reserva', classification:'DOCa', grapes:['Tempranillo','Garnacha','Mazuelo','Graciano'], method:'Extended oak and bottle aging', aging:'Min 60 months total (min 24 months in oak)', style:'Full body, complex, leather, tobacco, dried fruit, cedar, earthy, tertiary notes', notes:'Only made in best vintages. Expensive, age-worthy. Traditional style: long oxidative aging.' },
+    { name:'White Rioja (aged)', classification:'DOCa', grapes:['Viura (Macabeo)','Malvasía','Garnacha Blanca'], method:'Traditional: long oxidative oak aging. Modern: stainless steel', aging:'Same Crianza/Reserva/Gran Reserva system', style:'Traditional: golden, nutty, honeyed, waxy, oxidative. Modern: fresh, citrus, clean', notes:'López de Heredia Viña Tondonia is benchmark for traditional style. Gaining renewed interest.' },
+  ],
+  // ===== SPAIN — RIBERA DEL DUERO =====
+  'Ribera del Duero': [
+    { name:'Ribera del Duero DO', classification:'DO', grapes:['Tinto Fino/Tinta del País (Tempranillo, min 75%)','Cabernet Sauvignon','Merlot','Malbec'], method:'French oak (mostly)', aging:'Crianza: 24m (12 oak). Reserva: 36m (12 oak). Gran Reserva: 60m (24 oak)', style:'Full body, dark fruit, blackberry, plum, firm tannin, spice, smoke, more concentrated than Rioja', notes:'Higher altitude (800-1000m) than Rioja = bigger diurnal range. Vega Sicilia: Spain\'s most prestigious estate. Pingus: cult wine.' },
+  ],
+  // ===== SPAIN — PRIORAT =====
+  'Priorat DOCa': [
+    { name:'Priorat DOCa', classification:'DOCa', grapes:['Garnacha','Cariñena (Carignan)','Cabernet Sauvignon','Syrah','Merlot'], method:'Low yields, French oak', aging:'Varies', abv:'14-16%', style:'Full body, concentrated, dark fruit, mineral, slate, licorice, powerful tannins, long finish', notes:'One of only two Spanish DOCa (with Rioja). Llicorella (slate) soils. Old vine Garnacha on steep terraces. Very limited production.' },
+  ],
+  // ===== SPAIN — JEREZ (SHERRY) =====
+  'Jerez (Sherry)': [
+    { name:'Fino', classification:'DO', grapes:['Palomino (100%)'], method:'Biological aging under flor (yeast film) in solera system', aging:'Min 2 years in solera', abv:'15-15.5%', style:'Bone dry, pale, saline, almond, bread dough, chamomile, tangy, delicate', notes:'Fortified to 15% to sustain flor growth. Must be from Jerez or El Puerto de Santa María. Serve chilled.' },
+    { name:'Manzanilla', classification:'DO', grapes:['Palomino (100%)'], method:'Biological aging under flor, only from Sanlúcar de Barrameda', aging:'Min 2 years in solera', abv:'15-15.5%', style:'Bone dry, lightest Sherry, saline, chamomile, iodine/sea-salt character, very fresh', notes:'Same as Fino but maritime conditions in Sanlúcar create thicker flor and distinctive salty tang. Pasada = older, more complex.' },
+    { name:'Amontillado', classification:'DO', grapes:['Palomino (100%)'], method:'Starts biological (flor), then oxidative aging after flor dies', aging:'Min 2 years biological + oxidative', abv:'16-22%', style:'Dry, amber, hazelnut, toffee, salted caramel, dried herbs, complex — combines flor and oxidative character', notes:'Bridge between Fino and Oloroso. True Amontillado is always dry (not sweet like in Poe\'s story).' },
+    { name:'Oloroso', classification:'DO', grapes:['Palomino (100%)'], method:'Purely oxidative aging (no flor), fortified to 17%+', aging:'Min 2 years in solera', abv:'17-22%', style:'Dry, dark mahogany, walnut, fig, toffee, dried fruit, rich but dry, full body, complex', notes:'Fortified above 15.5% to prevent flor. Naturally dry — sweetened commercial versions exist but true Oloroso is dry.' },
+    { name:'Palo Cortado', classification:'DO', grapes:['Palomino (100%)'], method:'Starts as Fino, flor dies unexpectedly, finishes oxidative', aging:'Extended solera aging', abv:'17-22%', style:'Dry, combines Amontillado aroma with Oloroso body — hazelnut, citrus peel, toffee, complex', notes:'Rarest Sherry style. Originally accidental. Now sometimes deliberately produced. Highly prized by connoisseurs.' },
+    { name:'Pedro Ximénez (PX)', classification:'DO', grapes:['Pedro Ximénez (100%)'], method:'Grapes sun-dried to raisins, fortified, oxidative aging in solera', aging:'Extended solera aging', abv:'15-22%', style:'Extremely sweet, viscous, black/dark brown, raisin, fig, date, treacle, coffee, chocolate', notes:'Among the sweetest wines in the world. Often used to blend with Oloroso for "Cream Sherry." Drizzled over ice cream in Spain.' },
+  ],
+  // ===== SPAIN — OTHER =====
+  'Rías Baixas': [
+    { name:'Rías Baixas DO', classification:'DO', grapes:['Albariño (dominant, often 100%)'], method:'Stainless steel, sometimes lees contact', aging:'No minimum', style:'Medium body, high acid, peach, apricot, citrus, saline/mineral, floral, refreshing', notes:'Atlantic-influenced. Granite soils. Pergola-trained vines (parras) for air circulation. Spain\'s finest white wine region.' },
+  ],
+  'Rueda DO': [
+    { name:'Rueda DO', classification:'DO', grapes:['Verdejo (min 50%, often 85%+)','Sauvignon Blanc'], method:'Protective winemaking, stainless steel', aging:'No minimum', style:'Light-medium body, high acid, herbaceous, fennel, citrus, green apple, grassy, fresh', notes:'Castilla y León\'s white wine answer to Ribera del Duero reds. Verdejo is indigenous and distinctive.' },
+  ],
+  'Navarra': [
+    { name:'Navarra DO Rosado', classification:'DO', grapes:['Garnacha (dominant)'], method:'Short skin contact, cold fermentation', aging:'No minimum', style:'Pale pink, strawberry, watermelon, fresh, dry, crisp', notes:'Historically famous for rosé. Now also producing serious reds from Tempranillo and Garnacha.' },
+  ],
+  'Penedès DO': [
+    { name:'Cava DO', classification:'DO', grapes:['Macabeo, Parellada, Xarel·lo (traditional); Chardonnay, Pinot Noir (permitted)'], method:'Traditional method (same as Champagne) — secondary fermentation in bottle', aging:'Min 9 months on lees. Reserva: 15m. Gran Reserva: 30m', style:'Brut: citrus, apple, toasty, nutty. Gran Reserva: biscuit, complexity', notes:'Spain\'s answer to Champagne at fraction of the price. 95% produced in Penedès, Catalonia. Corpinnat is premium breakaway.' },
+  ],
+  // ===== FRANCE — KEY WINES =====
+  'Bordeaux': [
+    { name:'Sauternes AOC', classification:'AOC', grapes:['Sémillon (dominant)','Sauvignon Blanc','Muscadelle'], method:'Botrytis cinerea (noble rot), barrel fermented/aged', aging:'Min 18 months in oak', abv:'13-15%', style:'Sweet, golden, honeyed, apricot, marmalade, peach, saffron, complex, unctuous, high acid balance', notes:'Château d\'Yquem is the benchmark. Ciron River mists create botrytis conditions. Expensive — tiny yields.' },
+  ],
+  'Champagne': [
+    { name:'Champagne NV (Non-Vintage)', classification:'AOC', grapes:['Chardonnay, Pinot Noir, Pinot Meunier (blend)'], method:'Traditional method — secondary fermentation in bottle, disgorgement', aging:'Min 15 months on lees (12 after tirage)', style:'Brioche, citrus, apple, toast, fine bubbles, balanced, complex', notes:'NV = blended across multiple vintages for house consistency. Dosage determines sweetness (Brut, Extra Brut, etc.).' },
+    { name:'Champagne Vintage/Prestige', classification:'AOC', grapes:['Chardonnay, Pinot Noir (often)'], method:'Traditional method, extended aging', aging:'Vintage: min 36 months on lees. Often 5-10+ years', style:'Complex, toasty, biscuity, brioche, hazelnut, honey, long, fine mousse', notes:'Only declared in exceptional years. Prestige Cuvées (Dom Pérignon, Krug, Cristal) are top tier.' },
+    { name:'Blanc de Blancs', classification:'AOC', grapes:['Chardonnay (100%)'], method:'Traditional method', aging:'Extended lees aging', style:'Elegant, citrus, mineral, chalky, precise, light and refined', notes:'Côte des Blancs is heartland. More delicate and linear than blends.' },
+  ],
+  'Northern Rhône (Côte Rôtie, Hermitage, Condrieu)': [
+    { name:'Condrieu AOC', classification:'AOC', grapes:['Viognier (100%)'], method:'Oak fermented and aged (often new oak)', aging:'No minimum', style:'Full body, low acid, apricot, peach, honeysuckle, ginger, oily texture, perfumed', notes:'Tiny AOC. Viognier\'s finest expression. Expensive. Best drunk young (1-4 years). Château-Grillet is single-estate AOC within.' },
+  ],
+  // ===== PORTUGAL =====
+  'Douro Valley': [
+    { name:'Ruby Port', classification:'DOC', grapes:['Touriga Nacional, Touriga Franca, Tinta Roriz, Tinto Cão, Tinta Barroca (blend of 5+ varieties)'], method:'Fortified during fermentation with aguardente (grape spirit) at 77%', aging:'Min 2-3 years in large oak or concrete', style:'Deep ruby, sweet, cherry, blackberry, plum, chocolate, youthful fruit', notes:'Entry-level Port. Reserve Ruby has more age and complexity. Aged in large vessels to preserve fruit.' },
+    { name:'Tawny Port (Aged)', classification:'DOC', grapes:['Same blend as Ruby'], method:'Extended oxidative aging in small barrels (pipes, 550L)', aging:'10yr, 20yr, 30yr, 40yr+ age-indicated categories', style:'Amber/tawny, sweet, caramel, walnut, dried fruit, fig, butterscotch, complex', notes:'Color lightens with age. 20yr Tawny is sweet spot for quality/value. Colheita = single-vintage Tawny (min 7yr).' },
+    { name:'Vintage Port (Vintage/LBV)', classification:'DOC', grapes:['Same blend'], method:'LBV: aged 4-6yr in cask. Vintage: 2yr in cask, then decades in bottle', aging:'Vintage Port: min 2yr cask + long bottle. LBV: 4-6yr cask', style:'Vintage: concentrated, complex, dark fruit, leather, spice, develops with decades. LBV: ready-to-drink, rich', notes:'Vintage Port is declared in exceptional years only. Needs decanting. LBV is "poor man\'s Vintage Port."' },
+  ],
+  'Vinho Verde': [
+    { name:'Vinho Verde DOC', classification:'DOC', grapes:['Alvarinho (Albariño), Loureiro, Trajadura, Arinto'], method:'Stainless steel, protective winemaking', aging:'No minimum', abv:'8.5-13%', style:'Light body, high acid, citrus, green apple, slight spritz, lean, refreshing', notes:'Best examples from Monção e Melgaço sub-region (Alvarinho). Basic Vinho Verde is simple; top crus are serious.' },
+  ],
+  // ===== GERMANY =====
+  'Mosel': [
+    { name:'Mosel Riesling — Kabinett', classification:'Prädikat', grapes:['Riesling (100%)'], method:'No chaptalization allowed. Often off-dry (feinherb)', aging:'No minimum', abv:'7-10%', style:'Light body, off-dry to dry, green apple, lime, slate mineral, racy acidity, delicate', notes:'Lowest Prädikat level. Low alcohol, refreshing. Steep slate slopes reflect sunlight for ripening.' },
+    { name:'Mosel Riesling — Spätlese', classification:'Prädikat', grapes:['Riesling (100%)'], method:'Late harvest, higher must weight', aging:'No minimum', abv:'7-12%', style:'Light-medium body, off-dry to sweet, ripe peach, apricot, honey, floral, balanced acid', notes:'"Late harvest" — riper grapes. Can be dry (trocken) or fruity. More body and concentration than Kabinett.' },
+    { name:'Mosel Riesling — Auslese', classification:'Prädikat', grapes:['Riesling (100%)'], method:'Selected bunches, often with some botrytis', aging:'No minimum', abv:'7-14%', style:'Medium body, sweet, concentrated, honeyed stone fruit, floral, mineral, long finish', notes:'Highest regular Prädikat you\'ll commonly see. BA and TBA are rare and extremely sweet/expensive.' },
+  ],
+  // ===== AUSTRALIA =====
+  'Barossa Valley': [
+    { name:'Barossa Shiraz', classification:'GI', grapes:['Shiraz (100% or dominant)'], method:'Often American oak, sometimes French', aging:'No legal minimum', style:'Full body, blackberry, plum, chocolate, vanilla, licorice, pepper, eucalyptus, powerful', notes:'Old vines (some pre-phylloxera, 100+ years). Penfolds Grange is benchmark. Rich, generous, warm-climate style.' },
+  ],
+  'Margaret River': [
+    { name:'Margaret River Cabernet Sauvignon', classification:'GI', grapes:['Cabernet Sauvignon (often blended with Merlot)'], method:'French oak aging', aging:'No legal minimum', style:'Full body, cassis, blackcurrant, cedar, eucalyptus/mint, firm tannins, elegant', notes:'Often compared to Bordeaux. Maritime climate moderates heat. Also excellent Chardonnay and SSB (Semillon-Sauvignon) blends.' },
+  ],
+  // ===== NEW ZEALAND =====
+  'Marlborough': [
+    { name:'Marlborough Sauvignon Blanc', classification:'GI', grapes:['Sauvignon Blanc (100%)'], method:'Stainless steel, protective winemaking', aging:'No minimum', style:'Medium body, high acid, intense passion fruit, gooseberry, grapefruit, herbaceous, pungent, crisp', notes:'Defined a new global style. Cloudy Bay pioneered. Wairau Valley: rounder. Awatere Valley: leaner, more mineral. NZ\'s most exported wine.' },
+  ],
+  'Central Otago': [
+    { name:'Central Otago Pinot Noir', classification:'GI', grapes:['Pinot Noir (100%)'], method:'French oak aging', aging:'No minimum', style:'Medium-full body, dark cherry, plum, spice, thyme, silky tannins, concentrated', notes:'World\'s southernmost wine region. Continental climate (unlike rest of NZ). Intense fruit, ripe but fresh. Bannockburn, Gibbston top sub-regions.' },
+  ],
+};
+
+// Helper: get all wines for a region (includes subregion wines)
+function getWinesForRegion(regionName) {
+  if (!WINE_DATA) return [];
+  let wines = [];
+  if (WINE_DATA[regionName]) wines = wines.concat(WINE_DATA[regionName]);
+  subregionData.filter(sr => sr.parentRegion === regionName).forEach(sr => {
+    if (WINE_DATA[sr.name]) wines = wines.concat(WINE_DATA[sr.name]);
+  });
+  const seen = new Set();
+  return wines.filter(w => { if (seen.has(w.name)) return false; seen.add(w.name); return true; });
+}
+
+// Helper: for a grape, find which wines in a region use it
+function getGrapeWineHints(grape, regionName) {
+  const wines = getWinesForRegion(regionName);
+  const gl = grape.toLowerCase();
+  const matches = wines.filter(w => w.grapes.some(g => g.toLowerCase().includes(gl)));
+  if (!matches.length) return '';
+  return matches.map(w => w.name).join(', ');
+}
+
+// Toggle grape note in info panel
+function toggleInfoGrapeNote(btn) {
+  const panel = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('active');
+  const body = document.getElementById('info-panel-body');
+  body.querySelectorAll('.grape-tag-btn.active').forEach(b => b.classList.remove('active'));
+  body.querySelectorAll('.grape-note-panel.visible').forEach(p => p.classList.remove('visible'));
+  if (!isOpen) {
+    btn.classList.add('active');
+    panel.classList.add('visible');
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
 }
 
 function buildSubCards(regionName) {
@@ -2867,12 +3062,12 @@ function openInfoPanel(regionName) {
 
   let html = '';
 
-  // Sibling regions navigation
+  // Section 1: Sibling regions navigation
   const siblings = group
     ? regions.filter(r2 => REGION_GROUPS[r2.name] === group)
     : [r];
   if (siblings.length > 0) {
-    html += `<div class="info-section"><div class="info-section-label">Regions in ${groupLabel}</div>`;
+    html += `<div class="info-section"><div class="info-section-label"><span>Regions in ${groupLabel}</span><span class="info-section-chevron">▼</span></div><div class="info-section-content">`;
     siblings.forEach(s => {
       const isActive = s.name === regionName;
       const subs = subregionData.filter(sr => sr.parentRegion === s.name);
@@ -2881,36 +3076,88 @@ function openInfoPanel(regionName) {
         ${subs.length ? `<div class="info-nav-sub">${subs.map(sr => sr.name).join(', ')}</div>` : ''}
       </div>`;
     });
-    html += '</div>';
+    html += '</div></div>';
   }
 
-  // Key grape varietals for this specific region
-  html += `<div class="info-section"><div class="info-section-label">Key Grapes — ${r.name}</div><div class="info-grape-list">`;
+  // Section 2: Key grapes (clickable with tasting notes + wine hints)
+  html += `<div class="info-section"><div class="info-section-label"><span>Key Grapes — ${r.name}</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-grape-list">`;
   r.grapes.forEach(g => {
-    html += `<span class="info-grape-tag ${getGrapeWineClass(g)}">${g}</span>`;
+    const wc = getGrapeWineClass(g);
+    const hasNote = !!grapeTastingNotes[g];
+    if (hasNote) {
+      const regionHint = getRegionalContext(g, r.name, groupLabel);
+      const wineHints = getGrapeWineHints(g, regionName);
+      html += `<span class="grape-tag-btn info-grape-tag ${wc}" onclick="toggleInfoGrapeNote(this)">▸ ${g}</span>`;
+      html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}`;
+      if (regionHint) html += `<div class="grape-note-region">⬦ In ${r.name}: ${regionHint}</div>`;
+      if (wineHints) html += `<div class="grape-note-region">⬦ Wines: ${wineHints}</div>`;
+      html += `</div>`;
+    } else {
+      html += `<span class="info-grape-tag ${wc}">${g}</span>`;
+    }
   });
-  html += '</div></div>';
+  html += '</div></div></div>';
 
-  // Climate & notes
-  if (r.climate) {
-    html += `<div class="info-section"><div class="info-section-label">Climate & Terroir</div><div class="info-text">${r.climate}</div></div>`;
-  }
-  if (r.notes) {
-    html += `<div class="info-section"><div class="info-section-label">Winemaking & Style</div><div class="info-text">${r.notes}</div></div>`;
-  }
-
-  // All grapes across the group
-  if (siblings.length > 1) {
-    const allGrapes = new Set();
-    siblings.forEach(s => s.grapes.forEach(g => allGrapes.add(g)));
-    html += `<div class="info-section"><div class="info-section-label">All Grapes in ${groupLabel}</div><div class="info-grape-list">`;
-    [...allGrapes].sort().forEach(g => {
-      html += `<span class="info-grape-tag ${getGrapeWineClass(g)}">${g}</span>`;
+  // Section 3: Wines & Appellations
+  const wines = getWinesForRegion(regionName);
+  if (wines.length > 0) {
+    html += `<div class="info-section"><div class="info-section-label"><span>Wines & Appellations (${wines.length})</span><span class="info-section-chevron">▼</span></div><div class="info-section-content">`;
+    wines.forEach(w => {
+      const bc = w.classification.toLowerCase().replace(/[^a-z]/g,'');
+      html += `<div class="info-wine-card">`;
+      html += `<div class="info-wine-name">${w.name} <span class="info-wine-badge ${bc}">${w.classification}</span></div>`;
+      html += `<div class="info-wine-detail"><strong>Grapes:</strong> ${w.grapes.join(', ')}</div>`;
+      if (w.aging) html += `<div class="info-wine-detail"><strong>Aging:</strong> ${w.aging}</div>`;
+      if (w.method) html += `<div class="info-wine-detail"><strong>Method:</strong> ${w.method}</div>`;
+      if (w.abv) html += `<div class="info-wine-detail"><strong>ABV:</strong> ${w.abv}</div>`;
+      html += `<div class="info-wine-detail"><strong>Style:</strong> ${w.style}</div>`;
+      if (w.notes) html += `<div class="info-wine-detail" style="margin-top:3px;color:#888;font-style:italic">${w.notes}</div>`;
+      html += `</div>`;
     });
     html += '</div></div>';
   }
 
+  // Section 4: Climate & Terroir
+  if (r.climate) {
+    html += `<div class="info-section"><div class="info-section-label"><span>Climate & Terroir</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${r.climate}</div></div></div>`;
+  }
+
+  // Section 5: Winemaking & Style
+  if (r.notes) {
+    html += `<div class="info-section"><div class="info-section-label"><span>Winemaking & Style</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${r.notes}</div></div></div>`;
+  }
+
+  // Section 6: All grapes across the group
+  if (siblings.length > 1) {
+    const allGrapes = new Set();
+    siblings.forEach(s => s.grapes.forEach(g => allGrapes.add(g)));
+    html += `<div class="info-section collapsed"><div class="info-section-label"><span>All Grapes in ${groupLabel}</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-grape-list">`;
+    [...allGrapes].sort().forEach(g => {
+      const wc = getGrapeWineClass(g);
+      const hasNote = !!grapeTastingNotes[g];
+      if (hasNote) {
+        const wineHints = getGrapeWineHints(g, regionName);
+        html += `<span class="grape-tag-btn info-grape-tag ${wc}" onclick="toggleInfoGrapeNote(this)">▸ ${g}</span>`;
+        html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}`;
+        if (wineHints) html += `<div class="grape-note-region">⬦ Wines: ${wineHints}</div>`;
+        html += `</div>`;
+      } else {
+        html += `<span class="info-grape-tag ${wc}">${g}</span>`;
+      }
+    });
+    html += '</div></div></div>';
+  }
+
   body.innerHTML = html;
+
+  // Attach collapse toggle handlers
+  body.querySelectorAll('.info-section-label').forEach(label => {
+    label.addEventListener('click', e => {
+      if (e.target.closest('.info-nav-item') || e.target.closest('.grape-tag-btn')) return;
+      label.parentElement.classList.toggle('collapsed');
+    });
+  });
+
   panel.classList.add('open');
   setTimeout(() => map.invalidateSize(), 300);
 }
