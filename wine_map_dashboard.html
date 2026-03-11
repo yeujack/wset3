@@ -163,6 +163,11 @@
   .grape-note-panel.wine-both { background: rgba(100,60,110,0.3); border-color: rgba(160,100,160,0.4); }
   .grape-note-panel.wine-both .grape-note-name { color: #d0b0d8; }
   .grape-note-name { font-weight: bold; color: #e8c97a; margin-bottom: 4px; font-size: 0.75rem; }
+  .grape-general-info { margin-bottom: 6px; padding: 5px 7px; background: rgba(255,255,255,0.04); border-radius: 4px; font-size: 0.68rem; line-height: 1.5; border-left: 2px solid rgba(200,180,100,0.3); }
+  .grape-general-info .ggi-row { margin-bottom: 1px; color: #b8b0a0; }
+  .grape-general-info .ggi-label { color: #a09880; font-weight: 600; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.3px; }
+  .grape-general-info .ggi-notes { color: #c0b890; margin-top: 3px; font-style: italic; font-size: 0.66rem; line-height: 1.45; }
+  .grape-tasting-header { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.5px; color: #887860; font-weight: 600; margin: 5px 0 3px 0; }
   .popup-footer {
     margin-top: 8px; padding-top: 8px; border-top: 1px solid #0f3460;
     font-size: 0.7rem; color: #666; font-style: italic;
@@ -202,6 +207,52 @@
     background: rgba(123,45,139,0.4); border-radius: 8px;
     font-size: 0.65rem; color: #e8c97a; vertical-align: middle;
   }
+
+  /* Climate overlay toggle */
+  #climate-toggle {
+    width: 100%; padding: 6px 10px; border-radius: 6px;
+    background: rgba(15,52,96,0.5); border: 1px solid #0f3460;
+    color: #aaa; cursor: pointer; font-size: 0.78rem;
+    transition: all 0.2s; text-align: left; margin-top: 6px;
+  }
+  #climate-toggle.active { background: rgba(46,125,50,0.35); border-color: #43A047; color: #A5D6A7; }
+  #climate-toggle:hover { border-color: #43A047; color: #A5D6A7; }
+
+  /* Climate badge */
+  .climate-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 7px; border-radius: 10px; font-size: 0.65rem;
+    font-weight: 600; letter-spacing: 0.3px; white-space: nowrap;
+    vertical-align: middle; margin-left: 5px;
+  }
+  .climate-badge .climate-help {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); color: inherit; font-size: 0.55rem;
+    cursor: help; position: relative; font-weight: 700;
+  }
+  .climate-badge .climate-help .climate-tooltip {
+    display: none; position: absolute; bottom: 120%; left: 50%;
+    transform: translateX(-50%); background: #1a1a2e; color: #ccc;
+    border: 1px solid #333; border-radius: 6px; padding: 8px 10px;
+    font-size: 0.68rem; font-weight: 400; line-height: 1.45;
+    white-space: normal; width: 220px; z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5); pointer-events: none;
+    text-align: left;
+  }
+  .climate-badge .climate-help:hover .climate-tooltip { display: block; }
+
+  /* Climate legend (floating on map) */
+  .climate-legend {
+    background: rgba(22,33,62,0.92) !important; border: 1px solid #0f3460 !important;
+    border-radius: 8px !important; padding: 10px 14px !important; font-size: 0.7rem;
+    color: #ccc; backdrop-filter: blur(6px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4); max-width: 200px;
+  }
+  .climate-legend h4 { margin: 0 0 6px 0; font-size: 0.75rem; color: #e8c97a; }
+  .legend-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.15); }
+  .legend-note { font-size: 0.6rem; color: #999; margin-top: 6px; font-style: italic; }
 
   /* Right info panel */
   #info-panel {
@@ -271,6 +322,54 @@
   .info-wine-badge.vdlt, .info-wine-badge.ava, .info-wine-badge.gi { background: rgba(100,160,100,0.3); color: #8c8; border: 1px solid rgba(100,160,100,0.3); }
   .info-wine-detail { color: #aaa; font-size: 0.7rem; }
   .info-wine-detail strong { color: #ccc; }
+  .info-wine-added { margin-top: 4px; padding: 3px 6px; font-size: 0.65rem; color: #a0c8b0; border-left: 2px solid rgba(100,180,130,0.4); background: rgba(60,120,80,0.1); line-height: 1.45; }
+
+  /* Wine source attribution badges */
+  .source-wang { font-size: 0.5rem; padding: 1px 4px; background: rgba(180,150,80,0.15); color: #c8a84a; border-radius: 3px; margin-left: 4px; vertical-align: middle; letter-spacing: 0.02em; }
+  .source-added { font-size: 0.5rem; padding: 1px 4px; background: rgba(100,180,130,0.15); color: #6db88a; border-radius: 3px; margin-left: 4px; vertical-align: middle; letter-spacing: 0.02em; }
+  .info-wine-card.added-wine { border-left: 2px solid rgba(100,180,130,0.3); }
+
+  /* Wine card coloring by wine type (red/white/rosé/orange/fortified) */
+  .info-wine-card.wtype-red { background: rgba(100,20,30,0.35); border-color: rgba(180,50,60,0.4); }
+  .info-wine-card.wtype-red .info-wine-name { color: #f0a0a0; }
+  .info-wine-card.wtype-white { background: rgba(120,110,40,0.25); border-color: rgba(180,170,70,0.35); }
+  .info-wine-card.wtype-white .info-wine-name { color: #e8d880; }
+  .info-wine-card.wtype-rose { background: rgba(180,100,110,0.25); border-color: rgba(220,140,150,0.35); }
+  .info-wine-card.wtype-rose .info-wine-name { color: #f0b0b8; }
+  .info-wine-card.wtype-orange { background: rgba(160,100,40,0.25); border-color: rgba(200,140,60,0.35); }
+  .info-wine-card.wtype-orange .info-wine-name { color: #e8c080; }
+  .info-wine-card.wtype-fortified { background: rgba(140,90,30,0.3); border-color: rgba(190,140,60,0.4); }
+  .info-wine-card.wtype-fortified .info-wine-name { color: #e8c070; }
+
+  /* WSET appearance badge */
+  .info-wine-appearance { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 0.58rem; font-weight: 600; margin-left: 4px; vertical-align: middle; letter-spacing: 0.3px; }
+  /* Red wines - intensity levels */
+  .info-wine-appearance.app-pale-ruby { background: rgba(180,50,60,0.3); color: #e8a0a0; border: 1px solid rgba(200,70,80,0.3); }
+  .info-wine-appearance.app-medium-ruby { background: rgba(160,30,40,0.4); color: #e08080; border: 1px solid rgba(180,50,60,0.35); }
+  .info-wine-appearance.app-medium-ruby-purple { background: rgba(130,20,55,0.45); color: #d078a0; border: 1px solid rgba(160,40,75,0.4); }
+  .info-wine-appearance.app-deep-ruby { background: rgba(140,15,30,0.55); color: #d87080; border: 1px solid rgba(170,30,50,0.45); }
+  .info-wine-appearance.app-deep-purple-ruby { background: rgba(100,10,50,0.6); color: #c860a0; border: 1px solid rgba(140,30,70,0.5); }
+  .info-wine-appearance.app-medium-ruby-garnet { background: rgba(140,30,30,0.4); color: #d88070; border: 1px solid rgba(160,50,40,0.35); }
+  .info-wine-appearance.app-deep-ruby-garnet { background: rgba(120,20,20,0.55); color: #d07060; border: 1px solid rgba(150,40,30,0.45); }
+  .info-wine-appearance.app-medium-garnet { background: rgba(130,40,20,0.4); color: #d09070; border: 1px solid rgba(160,60,40,0.35); }
+  /* Tawny / fortified */
+  .info-wine-appearance.app-pale-tawny { background: rgba(150,90,40,0.3); color: #d8b070; border: 1px solid rgba(170,110,60,0.3); }
+  .info-wine-appearance.app-medium-tawny { background: rgba(130,70,30,0.4); color: #d0a060; border: 1px solid rgba(160,90,40,0.35); }
+  .info-wine-appearance.app-medium-amber { background: rgba(160,110,25,0.4); color: #d8b050; border: 1px solid rgba(180,130,45,0.38); }
+  .info-wine-appearance.app-deep-tawny-brown { background: rgba(110,60,20,0.55); color: #c89050; border: 1px solid rgba(140,80,30,0.45); }
+  .info-wine-appearance.app-deep-amber { background: rgba(150,100,20,0.45); color: #d0a030; border: 1px solid rgba(170,120,40,0.45); }
+  /* White wines - intensity levels */
+  .info-wine-appearance.app-pale-lemon { background: rgba(190,190,70,0.2); color: #e0e080; border: 1px solid rgba(210,210,90,0.25); }
+  .info-wine-appearance.app-medium-lemon { background: rgba(180,180,60,0.25); color: #d8d870; border: 1px solid rgba(200,200,80,0.3); }
+  .info-wine-appearance.app-medium-lemon-gold { background: rgba(180,160,50,0.25); color: #d8c860; border: 1px solid rgba(200,180,70,0.3); }
+  .info-wine-appearance.app-medium-gold { background: rgba(180,150,40,0.3); color: #d8c050; border: 1px solid rgba(200,170,60,0.35); }
+  .info-wine-appearance.app-deep-gold { background: rgba(170,140,30,0.38); color: #d0b840; border: 1px solid rgba(190,160,50,0.4); }
+  /* Rosé wines */
+  .info-wine-appearance.app-pale-pink { background: rgba(200,130,140,0.3); color: #f0b0b8; border: 1px solid rgba(220,150,160,0.35); }
+  .info-wine-appearance.app-medium-salmon-pink { background: rgba(200,120,110,0.3); color: #e8a8a0; border: 1px solid rgba(220,140,130,0.35); }
+
+  /* Sidebar region card - key wines line */
+  .r-wines { font-size: 0.6rem; color: #b89860; opacity: 0.8; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
 
   /* Wine-colored grape tags for cards/popups */
   .grape-tag.red, .grape-tag-btn.red { background: rgba(139,30,30,0.4); border-color: rgba(200,60,60,0.35); color: #e88; }
@@ -293,6 +392,15 @@
   .geo-label-wind { color: #8ecfab; font-style: italic; }
   .geo-label-current { color: #6ab8d8; font-style: italic; }
   .geo-label-feature { color: #c9a0d8; }
+
+  /* Region name labels (visible at zoom) */
+  .region-name-label {
+    background: rgba(15,15,25,0.88) !important; color: #ddd !important; font-size: 0.6rem !important;
+    padding: 2px 6px !important; border-radius: 3px !important; border: 1px solid rgba(255,255,255,0.12) !important;
+    white-space: nowrap !important; font-weight: 500 !important; letter-spacing: 0.02em;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4); pointer-events: none !important;
+  }
+  .region-name-label::before { display: none !important; }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; }
@@ -341,6 +449,9 @@
     <div id="subregion-toggle-section">
       <button id="subregion-toggle" onclick="toggleSubregions()">
         ◎ Show Sub-appellations <span class="sub-badge" id="sub-count">0</span>
+      </button>
+      <button id="climate-toggle" onclick="toggleClimateOverlay()">
+        🌡 Show Climate Overlay
       </button>
     </div>
 
@@ -410,10 +521,10 @@ const GROUP_COLORS = {
   'Loire Valley':       '#2e86c1',  // bright blue
   'Rhône Valley':       '#884ea0',  // purple
   'South of France':    '#d4ac0d',  // golden yellow
-  // Germany
+  // Germany — distinct hues
   'Mosel':              '#e67e22',  // orange
-  'Rhine Regions':      '#d35400',  // dark orange
-  'Southern Germany':   '#ca6f1e',  // amber
+  'Rhine Regions':      '#3498db',  // blue (Rheingau, Pfalz, Rheinhessen, Nahe)
+  'Southern Germany':   '#f1c40f',  // yellow (Franken, Baden, Württemberg)
   // Austria
   'Niederösterreich':   '#e74c3c',  // red
   'Burgenland':         '#cb4335',  // dark red
@@ -421,21 +532,21 @@ const GROUP_COLORS = {
   'Tokaj':              '#27ae60',  // green
   // Greece
   'Greece':             '#16a085',  // teal
-  // Italy
-  'North-East Italy':   '#28b463',  // lime green
-  'Piemonte':           '#239b56',  // emerald
-  'Tuscany':            '#1d8348',  // dark green
-  'Central & Southern Italy': '#196f3d', // forest
-  // Spain
-  'Rioja & Navarra':    '#f39c12',  // yellow-orange
-  'Catalunya':          '#f5b041',  // light orange
-  'Castilla y León':    '#eb984e',  // peach
-  'Galicia':            '#dc7633',  // terracotta
-  'Eastern & Central Spain': '#e59866', // sand
-  'Andalucía':          '#d68910',  // deep gold
-  // Portugal
-  'Northern Portugal':  '#8e44ad',  // purple
-  'Central Portugal':   '#7d3c98',  // dark purple
+  // Italy — distinct hues per group
+  'North-East Italy':   '#3498db',  // blue (Veneto, Friuli, Alto Adige, Trentino)
+  'Piemonte':           '#e74c3c',  // red (Barolo, Barbaresco country)
+  'Tuscany':            '#f39c12',  // golden (Chianti, Brunello, Super Tuscans)
+  'Central & Southern Italy': '#2ecc71', // green (Umbria → Sicily)
+  // Spain — spread hue range
+  'Rioja & Navarra':    '#e74c3c',  // red
+  'Catalunya':          '#f39c12',  // golden orange
+  'Castilla y León':    '#e67e22',  // warm orange
+  'Galicia':            '#2ecc71',  // green (Atlantic NW)
+  'Eastern & Central Spain': '#f5b041', // light orange
+  'Andalucía':          '#d4ac0d',  // deep gold (sherry country)
+  // Portugal — distinct pair
+  'Northern Portugal':  '#8e44ad',  // purple (Douro, Vinho Verde)
+  'Central Portugal':   '#e67e22',  // warm orange (Dão, Bairrada, Alentejo)
   // USA
   'California':         '#c0392b',  // US red
   'Pacific Northwest':  '#a93226',  // dark red
@@ -457,6 +568,83 @@ function getRegionColor(regionName) {
   return COUNTRIES[r?.country]?.color || '#888';
 }
 
+// ============================================================
+// CLIMATE CLASSIFICATION SYSTEM
+// ============================================================
+const CLIMATE_DEFINITIONS = {
+  continental: 'Large temperature variation between seasons. Cold winters, warm to hot summers. Low to moderate rainfall. Risk of spring frost.',
+  maritime: 'Moderate temperature variation influenced by proximity to ocean or large water body. Mild winters, warm summers. Moderate to high rainfall.',
+  mediterranean: 'Warm to hot, dry summers. Mild, wet winters. Low summer rainfall. Long growing season.',
+  transition: 'Blend of two climate influences (e.g. Maritime–Continental). Characteristics vary between both types.'
+};
+const TEMP_DEFINITIONS = {
+  cool: 'Growing season avg below 16.5°C',
+  moderate: 'Growing season avg 16.5–18.5°C',
+  warm: 'Growing season avg 18.5–21°C',
+  hot: 'Growing season avg above 21°C'
+};
+const CLIMATE_COLORS = {
+  continental:   { cool: '#FFCC80', moderate: '#FF9800', warm: '#E65100', hot: '#BF360C' },
+  maritime:      { cool: '#81D4FA', moderate: '#039BE5', warm: '#01579B', hot: '#002171' },
+  mediterranean: { cool: '#A5D6A7', moderate: '#43A047', warm: '#1B5E20', hot: '#0D3B0F' },
+  transition:    { cool: '#CE93D8', moderate: '#AB47BC', warm: '#7B1FA2', hot: '#4A148C' },
+  unknown:       { cool: '#888', moderate: '#888', warm: '#888', hot: '#888' }
+};
+const CLIMATE_LABELS = { continental: 'Continental', maritime: 'Maritime', mediterranean: 'Mediterranean', transition: 'Transition', unknown: 'Unknown' };
+const TEMP_LABELS = { cool: 'Cool', moderate: 'Moderate', warm: 'Warm', hot: 'Hot' };
+
+function parseClimate(climateText) {
+  if (!climateText) return { type: 'unknown', temperature: 'moderate' };
+  const t = climateText.toLowerCase();
+  const first = t.split(/\.\s/)[0];
+  // --- Temperature ---
+  let temperature = 'moderate';
+  if (/very\s+hot|\bhot\b/.test(first)) temperature = 'hot';
+  else if (/warm\s*(to|[-–])\s*hot/.test(first)) temperature = 'hot';
+  else if (/warmer\s+cool/.test(first)) temperature = 'moderate';
+  else if (/cool\s*(to|[-–])\s*(moderate|warm)|moderate\s*(to|[-–])\s*warm/.test(first)) temperature = 'moderate';
+  else if (/\bwarm\b/.test(first)) temperature = 'warm';
+  else if (/very\s+cool/.test(first)) temperature = 'cool';
+  else if (/\bcool\b/.test(first)) temperature = 'cool';
+  else if (/\bmoderate\b/.test(first)) temperature = 'moderate';
+  else if (/sub-?tropical/.test(first)) temperature = 'warm';
+  if (temperature === 'moderate' && !/moderate|warm|cool|hot|tropical/.test(first)) {
+    if (/warmer/.test(first)) temperature = 'warm';
+  }
+  // --- Climate type ---
+  let type = 'unknown';
+  const hM = /\bmaritime\b|\bmarine\b/.test(first);
+  const hC = /\bcontinental\b|\bpannonian\b/.test(first);
+  const hMed = /\bmediterranean\b/.test(first);
+  if (/transition/.test(first) || (hM && hC) || (hM && hMed) || (hC && hMed)) type = 'transition';
+  else if (hC) type = 'continental';
+  else if (hMed) type = 'mediterranean';
+  else if (hM) type = 'maritime';
+  else if (/sub-?tropical/.test(first)) type = 'maritime';
+  else if (/semi-?arid/.test(first)) type = 'continental';
+  else if (/\bhot\b.*\bdry\b|\bdry\b.*\bhot\b/.test(first)) type = 'mediterranean';
+  if (type === 'unknown') {
+    if (/continental|pannonian/.test(t)) type = 'continental';
+    else if (/maritime|atlantic|ocean\b|marine/.test(t)) type = 'maritime';
+    else if (/mediterranean/.test(t)) type = 'mediterranean';
+    else if (/altitude|mountain|plateau|inland/.test(t)) type = 'continental';
+    else if (/cape|wind|rainfall|sea\b/.test(t)) type = 'maritime';
+    else type = 'mediterranean';
+  }
+  return { type, temperature };
+}
+
+function buildClimateBadge(regionName) {
+  const cc = climateClassification[regionName];
+  if (!cc || cc.type === 'unknown') return '';
+  const color = (CLIMATE_COLORS[cc.type] || CLIMATE_COLORS.unknown)[cc.temperature] || '#888';
+  const label = (TEMP_LABELS[cc.temperature] || '') + ' ' + (CLIMATE_LABELS[cc.type] || '');
+  const typeDef = CLIMATE_DEFINITIONS[cc.type] || '';
+  const tempDef = TEMP_DEFINITIONS[cc.temperature] || '';
+  const tooltipText = `<strong>${CLIMATE_LABELS[cc.type]}</strong>: ${typeDef}<br><br><strong>${TEMP_LABELS[cc.temperature]}</strong>: ${tempDef}`;
+  return `<span class="climate-badge" style="background:${color}22;color:${color};border:1px solid ${color}55">${label}<span class="climate-help">?<span class="climate-tooltip">${tooltipText}</span></span></span>`;
+}
+
 // WSET L3 region groupings — maps region name → group label
 const REGION_GROUPS = {
   // France — Bordeaux
@@ -474,6 +662,10 @@ const REGION_GROUPS = {
   // France — Rhône Valley
   'Northern Rhône (Côte Rôtie, Hermitage, Condrieu)': 'Rhône Valley',
   'Southern Rhône (Châteauneuf-du-Pape, Côtes du Rhône)': 'Rhône Valley',
+  // France — Champagne
+  'Champagne': 'Champagne',
+  // France — Jura
+  'Jura': 'Jura',
   // France — South
   'Languedoc-Roussillon': 'South of France', 'Provence': 'South of France',
   // Germany
@@ -497,6 +689,7 @@ const REGION_GROUPS = {
   'Umbria': 'Central & Southern Italy', 'Marche': 'Central & Southern Italy',
   'Abruzzo': 'Central & Southern Italy', 'Campania': 'Central & Southern Italy',
   'Puglia': 'Central & Southern Italy', 'Sicily': 'Central & Southern Italy',
+  'Lazio': 'Central & Southern Italy',
   // Spain
   'Rioja': 'Rioja & Navarra', 'Navarra': 'Rioja & Navarra', 'Cariñena & Calatayud': 'Rioja & Navarra',
   'Penedès & Priorat (Catalunya)': 'Catalunya',
@@ -542,6 +735,7 @@ const REGION_GROUPS = {
 const GROUP_COUNTRY = {
   'Bordeaux': '🇫🇷', 'Burgundy': '🇫🇷', 'Beaujolais': '🇫🇷', 'Alsace': '🇫🇷',
   'Loire Valley': '🇫🇷', 'Rhône Valley': '🇫🇷', 'South of France': '🇫🇷',
+  'Champagne': '🇫🇷', 'Jura': '🇫🇷',
   'Mosel': '🇩🇪', 'Rhine Regions': '🇩🇪', 'Southern Germany': '🇩🇪',
   'Niederösterreich': '🇦🇹', 'Burgenland': '🇦🇹',
   'Tokaj': '🇭🇺', 'Greece': '🇬🇷',
@@ -571,7 +765,7 @@ const GRAPE_WINE_TYPE = {
   'Pinotage': 'red', 'Tannat': 'red', 'Fer Servadou': 'red', 'Négrette': 'red',
   'Blaufränkisch': 'red', 'Zweigelt': 'red', 'St Laurent': 'red', 'Xinomavro': 'red', 'Agiorgitiko': 'red',
   'Schiava': 'red', 'Lagrein': 'red', 'Teroldego': 'red', 'Refosco': 'red',
-  'Bonarda': 'red', 'Criolla': 'red',
+  'Bonarda': 'red', 'Criolla': 'red', 'Cesanese': 'red', 'Malvasia Nera': 'red',
   // White grapes
   'Chardonnay': 'white', 'Sauvignon Blanc': 'white', 'Riesling': 'white', 'Pinot Gris': 'white',
   'Gewurztraminer': 'white', 'Muscat': 'white', 'Viognier': 'white', 'Marsanne': 'white',
@@ -588,10 +782,153 @@ const GRAPE_WINE_TYPE = {
   'Torrontés': 'white', 'Alvarinho': 'white', 'Loureiro': 'white', 'Encruzado': 'white',
   'Silvaner': 'white', 'Müller-Thurgau': 'white', 'Scheurebe': 'white', 'Kerner': 'white',
   'Carricante': 'white', 'Catarratto': 'white', 'Grillo': 'white', 'Inzolia': 'white',
+  'Nosiola': 'white', 'Bellone': 'white', 'Bombino Bianco': 'white', 'Verdeca': 'white',
+  'Malvasia Bianca di Candia': 'white', 'Malvasia del Lazio (Puntinata)': 'white',
+  'Trebbiano Toscano': 'white', 'Trebbiano d\'Abruzzo': 'white',
+  'Savagnin': 'white', 'Sylvaner': 'white', 'Aligoté': 'white',
+  // Jura reds
+  'Poulsard': 'red', 'Trousseau': 'red',
   // Rosé-associated
   'Grolleau': 'rose', 'Tibouren': 'rose',
 };
 function getGrapeWineClass(grape) { return GRAPE_WINE_TYPE[grape] || 'both'; }
+
+// Determine wine color type from its grape list (for wine card coloring)
+function getWineColorType(wine) {
+  // Check wine name/style for explicit clues
+  const nm = (wine.name || '').toLowerCase();
+  const st = (wine.style || '').toLowerCase();
+  const nt = (wine.notes || '').toLowerCase();
+  const grapeStr = (wine.grapes || []).join(' ').toLowerCase();
+  // Sparkling detection
+  if (nm.includes('spumante') || nm.includes('prosecco') || nm.includes('franciacorta') ||
+      nm.includes('cava') || nm.includes('champagne') || nm.includes('crémant') ||
+      nm.includes('sekt') || nm.includes('cap classique') || nm.includes('trentodoc') ||
+      st.includes('sparkling') || st.includes('mousse') || st.includes('traditional method')) {
+    if (/\brosé\b/i.test(nm) || /\brosé\b/i.test(wine.name || '')) return 'rose';
+    if (grapeStr.includes('pinot noir') || grapeStr.includes('pinot nero') || grapeStr.includes('pinot meunier')) {
+      if (grapeStr.includes('chardonnay') || grapeStr.includes('pinot bianco')) return 'white';
+    }
+    return 'white';
+  }
+  // Orange wine detection (must be before sweet/dessert — amber+tannic is orange, not sweet)
+  if (nm.includes('orange') || (st.includes('orange') && st.includes('tannic')) || (st.includes('amber') && st.includes('tannic'))) return 'orange';
+  // Sweet/dessert detection — based on style
+  if (st.includes('sweet') || st.includes('amber') || nm.includes('passito') || nm.includes('vin santo') ||
+      nm.includes('sauternes') || nm.includes('tokaj') || nm.includes('moscato di pantelleria') ||
+      nm.includes('recioto') || nm.includes('ramandolo')) {
+    if (grapeStr.includes('nero') || grapeStr.includes('corvina') || nm.includes('recioto della valpolicella')) return 'red';
+    return 'white';
+  }
+  // Rosé detection
+  if (nm.includes('rosé') || nm.includes('rosato') || nm.includes('cerasuolo d\'abruzzo') ||
+      nm.includes('kretzer') || st.includes('rosé') || st.includes('cherry-pink')) return 'rose';
+  // Fortified — check for sherry/port styles
+  if (nm.includes('fino') || nm.includes('manzanilla') || nm.includes('amontillado') ||
+      nm.includes('palo cortado') || nm.includes('oloroso') || nm.includes('pedro ximénez') ||
+      nm.includes('white port')) return 'fortified';
+  if (nm.includes('port') || nm.includes('porto')) return 'red';
+  // Check grape types
+  const types = (wine.grapes || []).map(g => {
+    const clean = g.replace(/\s*\(.*?\)\s*/g, '').replace(/\s*min\s+\d+.*$/i, '').trim();
+    return GRAPE_WINE_TYPE[clean] || 'unknown';
+  });
+  if (types.includes('red')) return 'red';
+  if (types.includes('rose')) return 'rose';
+  if (types.includes('white')) return 'white';
+  // Fallback: check style keywords
+  if (st.includes('full body') || st.includes('tannin') || st.includes('dark fruit') || st.includes('dark berry') ||
+      st.includes('red cherry') || st.includes('plum')) return 'red';
+  if (st.includes('citrus') || st.includes('crisp') || st.includes('green apple') || st.includes('mineral')) return 'white';
+  return 'red'; // default
+}
+
+// WSET L3 typical appearance based on wine type and style keywords
+function getWsetAppearance(wine) {
+  const type = getWineColorType(wine);
+  const st = (wine.style || '').toLowerCase();
+  const nm = (wine.name || '').toLowerCase();
+  const nt = (wine.notes || '').toLowerCase();
+  const grapeStr = (wine.grapes || []).join(' ').toLowerCase();
+
+  if (type === 'white' || type === 'orange') {
+    // Sparkling whites
+    if (st.includes('mousse') || st.includes('sparkling') || nm.includes('prosecco') ||
+        nm.includes('champagne') || nm.includes('crémant') || nm.includes('cava') ||
+        nm.includes('franciacorta') || nm.includes('trentodoc') || nm.includes('sekt') ||
+        nm.includes('cap classique')) {
+      if (st.includes('complex') || st.includes('brioche') || st.includes('aged') || st.includes('toasty')) return 'Medium lemon-gold';
+      return 'Pale lemon';
+    }
+    // Sweet/dessert whites
+    if (st.includes('sweet') || nm.includes('passito') || nm.includes('vin santo') ||
+        nm.includes('sauternes') || nm.includes('tokaj') || nm.includes('ramandolo') ||
+        nm.includes('recioto di soave')) {
+      if (st.includes('amber') || st.includes('caramel') || st.includes('oxidative') || st.includes('brown')) return 'Deep amber';
+      if (st.includes('golden') || st.includes('intense') || st.includes('concentrated')) return 'Deep gold';
+      return 'Medium gold';
+    }
+    // Orange wine
+    if (type === 'orange') return 'Deep amber';
+    // Oxidative whites (Vin Jaune, aged Sherry-like)
+    if (st.includes('oxidative') || nm.includes('vin jaune') || st.includes('walnut') || st.includes('curry')) return 'Deep gold';
+    if (st.includes('deep gold') || st.includes('deep amber')) return 'Deep gold';
+    // Oaked / full-bodied whites
+    if (st.includes('full body') || st.includes('waxy') || st.includes('honeyed')) return 'Medium gold';
+    if (st.includes('oak') || st.includes('butter') || st.includes('vanilla') || st.includes('toasty')) return 'Medium lemon-gold';
+    // Medium-bodied whites
+    if (st.includes('medium body') || st.includes('medium-full') || st.includes('textured') || st.includes('stone fruit')) return 'Medium lemon';
+    // Light fresh whites
+    return 'Pale lemon';
+  }
+
+  if (type === 'rose') {
+    if (st.includes('deep') || st.includes('structured') || st.includes('full') || nm.includes('cerasuolo d\'abruzzo')) return 'Medium salmon-pink';
+    if (st.includes('pale') || st.includes('delicate') || st.includes('light')) return 'Pale pink';
+    return 'Pale pink';
+  }
+
+  if (type === 'fortified') {
+    if (nm.includes('fino') || nm.includes('manzanilla')) return 'Pale lemon';
+    if (nm.includes('amontillado') || nm.includes('palo cortado')) return 'Medium amber';
+    if (nm.includes('oloroso')) return 'Deep tawny-brown';
+    if (nm.includes('pedro ximénez')) return 'Deep tawny-brown';
+    if (nm.includes('ruby port') || nm.includes('lbv')) return 'Deep ruby';
+    if (nm.includes('tawny')) return 'Medium tawny';
+    if (nm.includes('marsala')) {
+      if (st.includes('amber') || st.includes('brown')) return 'Deep amber';
+      return 'Medium amber';
+    }
+    return 'Medium amber';
+  }
+
+  // Red wines — determine intensity + color
+  // Garnet / aged styles
+  if (st.includes('garnet') || nt.includes('garnet') || st.includes('brick')) return 'Medium garnet';
+  if (st.includes('tawny') || nt.includes('tawny')) return 'Pale tawny';
+  // Very age-worthy, long-aged reds
+  if (st.includes('age-worthy') || st.includes('ages well') || nt.includes('age-worthy') ||
+      nt.includes('extremely age') || nt.includes('long aging') || nt.includes('long-lived'))  {
+    if (st.includes('full body') || st.includes('very high tannin')) return 'Deep ruby-garnet';
+    return 'Medium ruby-garnet';
+  }
+  // Deep / intense / opaque reds
+  if (st.includes('deep') || st.includes('inky') || st.includes('opaque') || st.includes('intense') ||
+      st.includes('very full') || st.includes('deep color') || st.includes('very high tannin')) return 'Deep purple-ruby';
+  // Light-bodied reds — pale
+  if (st.includes('light body') || st.includes('light red') || st.includes('pale') ||
+      st.includes('cotton candy') || st.includes('light') || grapeStr.includes('schiava') ||
+      grapeStr.includes('gamay')) return 'Pale ruby';
+  // Full body reds — deep
+  if (st.includes('full body') || st.includes('jammy') || st.includes('powerful') ||
+      st.includes('concentrated') || st.includes('high alcohol')) return 'Deep ruby';
+  // Medium-full body
+  if (st.includes('medium-full') || st.includes('firm tannin') || st.includes('moderate tannin')) return 'Medium ruby-purple';
+  // Medium body
+  if (st.includes('medium body')) return 'Medium ruby';
+  // Default
+  return 'Medium ruby';
+}
 
 const regions = [
   // ========== FRANCE ==========
@@ -664,6 +1001,20 @@ const regions = [
     climate: 'Cool Continental but dry. Rain shadow of Vosges Mountains — one of driest regions in France. Long dry autumns ideal for noble rot.',
     grapes: ['Riesling', 'Gewurztraminer', 'Pinot Gris', 'Muscat', 'Pinot Noir', 'Sylvaner'],
     notes: 'Noble varieties (Riesling, Gewurz, Pinot Gris, Muscat) can make Vendange Tardive (VT) and Sélection de Grains Nobles (SGN). Most wines dry, labelled by grape variety. Gewurztraminer: lychee, rose, spice. Riesling: petrol with age.'
+  },
+  {
+    name: 'Champagne', country: 'France', lat: 49.05, lng: 3.95,
+    subregions: 'Montagne de Reims, Vallée de la Marne, Côte des Blancs, Côte de Sézanne, Aube (Côte des Bar)',
+    climate: 'Cool Continental — northernmost major French wine region (49°N). Marginal for ripening; high acidity crucial for sparkling. Chalk subsoils provide excellent drainage, heat retention, and mineral character. Mean July temp ~18°C.',
+    grapes: ['Chardonnay', 'Pinot Noir', 'Pinot Meunier'],
+    notes: 'Traditional Method (méthode champenoise): primary fermentation → blending (assemblage) → secondary fermentation in bottle (tirage) → lees aging → riddling (remuage) → disgorgement (dégorgement) → dosage. NV: min 15m on lees. Vintage: min 36m. Blanc de Blancs: 100% Chardonnay, elegant. Blanc de Noirs: Pinot Noir/Meunier, fuller. Rosé: blending or saignée. Dosage levels: Brut Nature (0-3g/L), Extra Brut (0-6), Brut (0-12), Extra Dry (12-17), Sec (17-32), Demi-Sec (32-50), Doux (50+). Montagne de Reims: Pinot Noir heartland. Côte des Blancs: Chardonnay. Vallée de la Marne: Pinot Meunier on clay. Aube (Côte des Bar): southerly, Pinot Noir, warmer.'
+  },
+  {
+    name: 'Jura', country: 'France', lat: 46.75, lng: 5.88,
+    subregions: 'Arbois AOC, Château-Chalon AOC, L\'Étoile AOC, Côtes du Jura AOC, Crémant du Jura AOC',
+    climate: 'Cool Continental with Alpine influence. Sheltered by Jura mountains to the east. Lias and Triassic marls and limestone. Cold winters, warm summers. 250-400m altitude.',
+    grapes: ['Savagnin', 'Chardonnay', 'Poulsard (Ploussard)', 'Trousseau', 'Pinot Noir'],
+    notes: 'Vin Jaune (Yellow Wine): 100% Savagnin, aged min 6 years 3 months under a film of flor yeast (voile) in old barrels not topped up. Intense walnut, curry, dried apple, oxidative. Sold in 62cl clavelin bottle. Château-Chalon: finest Vin Jaune appellation. Vin de Paille (Straw Wine): dried grapes, sweet and concentrated. Crémant du Jura: traditional method sparkling, mostly Chardonnay. Poulsard: pale, delicate red. Trousseau: deeper color, more tannin. Oxidative winemaking tradition (ouillé vs non-ouillé).'
   },
   {
     name: 'Loire Valley — Central Vineyards', country: 'France', lat: 47.43, lng: 2.88,
@@ -825,86 +1176,93 @@ const regions = [
   {
     name: 'Alto Adige DOC', country: 'Italy', lat: 46.5, lng: 11.35,
     subregions: 'Alto Adige/Südtirol, Trentino-Alto Adige',
-    climate: 'Moderate Continental. Northerly, high altitude, large diurnal range, low rainfall. Valley terraces facing SE or SW.',
+    climate: 'Moderate Continental. Northerly, high altitude (200–1000m), large diurnal range, low rainfall. Valley terraces facing SE or SW.',
     grapes: ['Pinot Grigio', 'Gewurztraminer', 'Chardonnay', 'Pinot Blanc', 'Schiava', 'Lagrein'],
-    notes: 'Italy\'s most northerly region. German-speaking (Südtirol). Pinot Grigio: dry, light to medium body, high acid, green and citrus fruit. Gewurztraminer: originated here (Tramin village). Schiava: light, fruity red, low to medium tannin.'
+    notes: 'Italy\'s most northerly wine region; ~70% German-speaking (Südtirol). 98% DOC — highest proportion in Italy. ~30% of vineyards on slopes >30% grade; 14% above 500m. TRAINING: Pergola (traditional, esp. for Schiava — maximises canopy for shade); Guyot on steeper modern sites. Gewurztraminer originated in Tramin village. Pinot Grigio: dry, light to medium body, high acid, more structured/mineral than Veneto. Schiava (Vernatsch): light, fruity, low tannin, local everyday red. Lagrein from Bolzano/Gries: medium-full body, dark berry, smoky.'
   },
   {
     name: 'Trentino DOC', country: 'Italy', lat: 46.07, lng: 11.12,
     subregions: 'Trentino DOC, Trentodoc (traditional method sparkling)',
-    climate: 'South of Alto Adige, similar but warmer. Mountains protect from Lake Garda cooling effect.',
+    climate: 'South of Alto Adige, similar but warmer. Altitude 150–700m. Mountains protect from Lake Garda cooling effect.',
     grapes: ['Chardonnay', 'Pinot Grigio', 'Merlot', 'Teroldego', 'Nosiola'],
-    notes: 'Planted on slopes and valley floor. Teroldego: medium to high tannin, deep color, high acid, black fruit, oak-aged. Trentodoc: quality traditional method sparkling (Chardonnay/Pinot Nero).'
+    notes: 'Italian-speaking (unlike Alto Adige). TRAINING: Pergola on valley floor (Ora wind from Lake Garda aids ventilation, suits Teroldego); shift to Guyot at higher elevations (Pinot Noir, Chardonnay). Teroldego: indigenous to Campo Rotaliano alluvial plain, DNA parent of Lagrein. Deep color, high acid, blackberry, bitter chocolate. Trentodoc (Trento DOC): Italy\'s premier metodo classico sparkling — min 15mo on lees (Millesimato 24mo, Riserva 36mo). Ferrari (est. 1902) is benchmark producer.'
   },
   {
     name: 'Friuli-Venezia Giulia', country: 'Italy', lat: 46.07, lng: 13.23,
     subregions: 'Friuli Grave DOC (plain), Collio DOC (hills), Colli Orientali DOC (hills)',
-    climate: 'Moderate Continental (foothills) to Warm Maritime (plain near Adriatic).',
+    climate: 'Moderate Continental (foothills, 50–350m) to Warm Maritime (Grave plain, near sea level). Adriatic influence.',
     grapes: ['Pinot Grigio', 'Friulano', 'Merlot', 'Ribolla Gialla', 'Refosco', 'Pignolo'],
-    notes: 'Pinot Grigio: richest in Italy, medium to full body, peach and tropical. Friulano: medium to high acid, medium body, pear, red apple, herbs. Collio and Colli Orientali: premium whites from hillside sites. Orange wine tradition (skin contact).'
+    notes: 'Italy\'s premier white wine zone. SOILS: Ponca in Collio/Colli Orientali — layered marl and sandstone rich in minerals, yields complex, textured whites. Grave DOC: alluvial plain, larger volume, simpler wines. ORANGE WINE: Oslavia (sub-zone of Collio) is birthplace — pioneers Gravner and Radikon; Ribolla Gialla with extended skin contact in amphora/large oak. Pinot Grigio: richest in Italy, medium to full body, peach and tropical. Friulano: pear, red apple, herbs, medium body.'
   },
   {
     name: 'Veneto', country: 'Italy', lat: 45.44, lng: 11.88,
     subregions: 'Soave DOC, Valpolicella DOC, Amarone, Bardolino, Prosecco DOC/DOCG',
-    climate: 'Warm Continental. Alps to Lake Garda to R. Po. Varied from Alpine cool to warm flat plains.',
+    climate: 'Warm Continental. Alps to Lake Garda to R. Po. Altitude 50–450m (Valpolicella hills) to sea level (plains). Varied from Alpine cool to warm flat plains.',
     grapes: ['Garganega', 'Corvina', 'Glera (Prosecco)', 'Pinot Grigio', 'Trebbiano'],
-    notes: 'Soave: Garganega, pear and stone fruit. Valpolicella: Corvina, light cherry, unoaked. Amarone: dried grapes (appassimento), full body, 15–17% ABV, intense dark fruit, bitter finish. Recioto: sweet Corvina. Prosecco: Glera, Charmat method, fresh and fruity.'
+    notes: 'APPASSIMENTO technique: grapes dried 3-4 months in fruttaio (drying loft) on bamboo racks (arele); NO artificial heat allowed; lose 30-40% weight; vinification may not begin before Dec 1. Soave: volcanic basalt soils in Classico zone; Garganega min 70%, pear, almond, mineral. Valpolicella: Corvina 45-95%, light cherry, unoaked. Amarone DOCG: full body, 14-17% ABV, dried cherry, chocolate, bitter finish, min 2yr aging. Ripasso: refermented on Amarone pomace ("Baby Amarone"). Prosecco: Glera, Charmat method; Conegliano Valdobbiadene DOCG is premium; Cartizze single vineyard is top cru.'
   },
   {
     name: 'Piemonte', country: 'Italy', lat: 44.7, lng: 8.0,
     subregions: 'Barolo DOCG, Barbaresco DOCG, Barbera d\'Asti/d\'Alba, Dolcetto, Gavi DOCG, Moscato d\'Asti DOCG, Asti Spumante DOCG',
-    climate: 'Moderate Continental. Alpine foothills, fog (Nebbia). Large diurnal range. Late harvest.',
+    climate: 'Moderate Continental. Alpine foothills, altitude 150–500m (Langhe and Roero hills). Fog (Nebbia). Large diurnal range. Late harvest.',
     grapes: ['Nebbiolo', 'Barbera', 'Dolcetto', 'Cortese', 'Moscato'],
-    notes: 'Nebbiolo: high acid and tannin, little color, cherry/tar/rose/truffles. Barolo ages in large Slovenian oak (traditional) or barriques (modernist). Barbaresco: lighter, more elegant than Barolo. Barbera: high acid, deep color, low tannin. Gavi: Cortese, high acid, light body. Moscato d\'Asti: DOCG, low alcohol, sweet, frizzante.'
+    notes: 'TRAINING: Guyot at 4000-5000 vines/ha density. SOILS: Calcareous marl — Tortonian (younger, sandier; La Morra, Barbaresco = softer, more perfumed wines) vs Serravallian/Helvetian (older, limestone-rich; Serralunga = more powerful, structured). CLIMATE: Nebbia (fog) slows late-season ripening, preserving Nebbiolo\'s aromatics. Nebbiolo: high acid and tannin, little color, cherry/tar/rose/truffles. Barolo: min 38mo aging (18 in oak), Riserva 62mo. Barbaresco: min 26mo (9 in oak), Riserva 50mo. Large Slovenian oak botti (traditional) vs French barriques (modernist). Barbera: high acid, deep color, low tannin; Nizza DOCG is premium sub-zone. Gavi: Cortese, high acid. Moscato d\'Asti: DOCG, 5-5.5% ABV, sweet, frizzante.'
   },
   {
     name: 'Tuscany', country: 'Italy', lat: 43.3, lng: 11.1,
     subregions: 'Chianti DOCG, Chianti Classico DOCG, Brunello di Montalcino DOCG, Vino Nobile di Montepulciano DOCG, Morellino di Scansano DOCG, Bolgheri DOC (Super Tuscans), Vernaccia di San Gimignano DOCG',
-    climate: 'Warm Mediterranean. Hills (Apennines) provide altitude and cooling. Varied mesoclimates.',
+    climate: 'Warm Mediterranean. Hills (Apennines) at 200–600m provide altitude and cooling. Varied mesoclimates across Chianti, Montalcino, and coastal Bolgheri.',
     grapes: ['Sangiovese', 'Cabernet Sauvignon', 'Merlot', 'Syrah', 'Vernaccia'],
-    notes: 'Sangiovese: high acid, high tannin, late ripening, cherry, plum, leather. Chianti Classico: 80%+ Sangiovese. Brunello (100% Sangiovese, 5yr aging) = Italy\'s most prestigious red. Super Tuscans (IGT): Cab/Merlot/Sangiovese blends → Sassicaia, Tignanello. Vin Santo: sweet dried-grape wine.'
+    notes: 'SOILS: Galestro (schistous clay — good drainage, aromatic wines) and Alberese (calcareous rock — structured, tannic wines) in Chianti Classico. CLONES: Sangiovese Grosso (higher quality; includes Brunello in Montalcino and Prugnolo Gentile in Montepulciano) vs Sangiovese Piccolo (lesser). Sangiovese: high acid, high tannin, late ripening, cherry, plum, leather. Chianti Classico: 80%+ Sangiovese, Gallo Nero. Brunello: 100% Sangiovese, min 5yr aging (6yr Riserva). SUPER TUSCANS: began with Sassicaia (1968 vintage, released 1971) and Tignanello (Antinori, 1971); IGT classification created 1992 to accommodate these wines. Vin Santo: sweet, dried on straw mats, aged in small caratelli barrels.'
   },
   {
     name: 'Umbria', country: 'Italy', lat: 42.9, lng: 12.7,
     subregions: 'Orvieto DOC, Torgiano DOCG, Montefalco Sagrantino DOCG',
-    climate: 'Warm Mediterranean. Central Apennines. Inland, hills.',
+    climate: 'Warm Mediterranean. Central Apennines, altitude 200–500m. Inland, hills.',
     grapes: ['Grechetto', 'Trebbiano', 'Sagrantino', 'Sangiovese'],
-    notes: 'Orvieto: Grechetto + Trebbiano, light to medium body, fresh citrus and grapefruit, historically off-dry. Montefalco Sagrantino: highest tannin grape in Italy, full body, rich blackberry, needs years of aging.'
+    notes: 'Montefalco Sagrantino DOCG: highest tannin grape in Italy (Sagrantino, 100%); min 37 months aging (12 in oak). Also made as sweet Passito (30mo aging). Full body, rich blackberry, dark chocolate, powerful — needs years of cellaring. Orvieto DOC: volcanic tufo and sedimentary soils; Grechetto min 60% + Trebbiano (Procanico); light to medium body, fresh citrus, historically off-dry (Abboccato); also Muffa Nobile (botrytis) sweet style. Torgiano Rosso Riserva DOCG: Sangiovese-based, Lungarotti is benchmark producer.'
   },
   {
     name: 'Marche', country: 'Italy', lat: 43.6, lng: 13.38,
     subregions: 'Verdicchio dei Castelli di Jesi DOC, Conero DOCG',
-    climate: 'Warm Mediterranean coast. Adriatic Sea moderation.',
+    climate: 'Warm Mediterranean coast. Altitude 100–500m (Adriatic hills to Apennines). Adriatic Sea moderation.',
     grapes: ['Verdicchio', 'Montepulciano', 'Sangiovese'],
-    notes: 'Verdicchio: green apple, lemon, fennel, almond, high acid — simple and fresh. Rosso Conero DOCG: Montepulciano, deep color, high tannin, plum and cherry.'
+    notes: 'Verdicchio: green apple, lemon, fennel, almond, high acid — but significant aging potential (develops honeyed, nutty complexity over 5-10+ years). Traditional amphora-shaped bottle designed 1953 by Antonio Maiocchi. Castelli di Jesi DOC: main zone; Classico Superiore is premium. Matelica DOC: more inland, continental, higher acid. Rosso Conero DOC: Montepulciano min 85%, deep color, firm structure, plum and cherry — serious, age-worthy reds from Monte Conero promontory.'
   },
   {
     name: 'Abruzzo', country: 'Italy', lat: 42.35, lng: 13.9,
     subregions: 'Montepulciano d\'Abruzzo DOC, Trebbiano d\'Abruzzo DOC',
-    climate: 'Warm to Hot Mediterranean. Apennines provide altitude and breeze.',
+    climate: 'Warm to Hot Mediterranean. Apennines provide altitude (200–600m) and breeze.',
     grapes: ['Montepulciano', 'Trebbiano d\'Abruzzo'],
-    notes: 'Montepulciano: high color and tannin, medium acid, plum and cherry. Many simple unoaked versions; top wines with oak aging, full-bodied. Cerasuolo d\'Abruzzo: rosé from Montepulciano (deep color).'
+    notes: 'TRAINING: Pergola Abruzzese (flat overhead canopy) — traditional but prone to humidity/disease, being replaced by Guyot. Montepulciano: high color and tannin, medium acid, plum and cherry. NOT the same grape as Vino Nobile di Montepulciano (which uses Sangiovese). Many simple unoaked versions; top wines with oak aging, full-bodied. Trebbiano d\'Abruzzo: distinct clone from Trebbiano Toscano — Valentini produces legendary, age-worthy versions. Cerasuolo d\'Abruzzo DOC: Italy\'s most structured rosé, deep cherry-pink from Montepulciano.'
   },
   {
     name: 'Campania', country: 'Italy', lat: 40.85, lng: 14.27,
-    subregions: 'Fiano di Avellino DOCG, Greco di Tufo DOCG, Taurasi DOCG',
-    climate: 'Hot Mediterranean. Altitude in Apennines moderates heat. Volcanic soils near Vesuvius.',
+    subregions: 'Fiano di Avellino DOCG, Greco di Tufo DOCG, Taurasi DOCG, Aglianico del Vulture DOC (Basilicata)',
+    climate: 'Hot Mediterranean. Altitude 300–700m in Irpinia/Avellino moderates heat. Volcanic soils near Vesuvius. Monte Vulture (Basilicata): extinct volcano, north-facing slopes at 200-600m.',
     grapes: ['Fiano', 'Greco', 'Aglianico'],
-    notes: 'Fiano di Avellino: medium acid, medium to full body, stone fruit, melon, mango. Greco di Tufo: more acidity, leaner, citrus and mineral. Taurasi: 100% Aglianico — high tannin, high acid, dark fruit, tar, earth. Often called "Barolo of the South."'
+    notes: 'SOILS: Volcanic — Vesuvius and Campi Flegrei active zones; tuff (tufo), pumice, and ash soils in Irpinia hills give minerality. Fiano di Avellino DOCG: medium to full body, hazelnut, pear, honey, smoky, waxy — develops nutty character with age. Greco di Tufo DOCG: named for volcanic tuff soils; higher acidity, citrus, mineral, almond, aging potential. Taurasi DOCG: Aglianico min 85%, grown on volcanic tuff; very high tannin and acid, dark fruit, tar, earth. "Barolo of the South" — min 3yr aging (Riserva 4yr, 18mo in oak). Extremely age-worthy. Mastroberardino: historic producer. Aglianico del Vulture DOC/DOCG (Basilicata): 100% Aglianico on volcanic slopes of Monte Vulture. North-facing aspect provides cooler conditions, longer growing season. Superiore DOCG since 2011. Key producers: Elena Fucci, Basilisco, Paternoster.'
   },
   {
     name: 'Puglia', country: 'Italy', lat: 40.65, lng: 17.65,
     subregions: 'Primitivo di Manduria DOC, Salice Salentino DOC, Puglia IGT',
-    climate: 'Hot Mediterranean. Italy\'s heel, very dry and sunny.',
+    climate: 'Hot Mediterranean. Italy\'s heel, very dry and sunny. Sea level–200m (flat Tavoliere and Salento).',
     grapes: ['Primitivo (= Zinfandel)', 'Negroamaro', 'Malvasia Nera', 'Fiano', 'Verdeca'],
-    notes: 'Negroamaro: full body, medium tannin and acid, high alcohol, baked red and black fruit. Primitivo: same grape as Zinfandel — rich, high alcohol, jammy dark fruit. Large volumes of inexpensive wine. Improving quality in top estates.'
+    notes: 'TRAINING: Alberello (bush vines) — traditional, labor-intensive, low yields, 2-3m spacing, suited to hot dry climate. Increasingly replaced by wire-trained for mechanisation but old-vine alberello produces finest quality. Italy\'s largest wine-producing region by volume — historically bulk wine, now dramatic quality improvement. Negroamaro ("black bitter"): full body, medium tannin, baked red and dark fruit. Primitivo (= Zinfandel genetically): rich, high alcohol, jammy dark fruit; best from Manduria. Salice Salentino DOC: Negroamaro min 75%, good value; notable rosato. Gioia del Colle DOC: higher altitude (300-500m) = more structured Primitivo.'
   },
   {
     name: 'Sicily', country: 'Italy', lat: 37.6, lng: 14.0,
     subregions: 'Sicilia DOC, Etna DOC (volcanic), Marsala DOC (fortified), Moscato di Pantelleria DOC',
-    climate: 'Hot Mediterranean. Island, dry, hot. Etna: altitude (600–1000m), cool, volcanic basalt soil.',
+    climate: 'Hot Mediterranean. Island, dry, hot. Sea level–1000m. Etna: altitude 600–1000m, cool, volcanic basalt soil.',
     grapes: ['Nero d\'Avola', 'Nerello Mascalese', 'Nerello Cappuccio', 'Catarratto', 'Grillo', 'Insolia'],
-    notes: 'Nero d\'Avola: medium to full body, medium acid and tannin, black cherry, plum. Etna Rosso (Nerello Mascalese + Cappuccio): high acid, high tannin, fragrant, Burgundian-style. Etna: volcanic minerals, old vines up to 150 years. Marsala: fortified, oxidised, amber.'
+    notes: 'ETNA: contrada system with 142 districts based on distinct lava flows (codified 2011) — similar to Burgundy climats. Altitude 600-1000m with volcanic basalt/ash soils; old vines up to 150 years. Nerello Mascalese: high acid, fine tannin, pale ruby, fragrant — "Burgundy of Sicily." Etna renaissance began late 1990s (Passopisciaro, Benanti). Cerasuolo di Vittoria DOCG: Sicily\'s only DOCG; Nero d\'Avola 50-70% + Frappato 30-50%. Nero d\'Avola: medium to full body, black cherry, plum. MARSALA DOC: fortified; declined mid-20th century from cheapening; revival through Vergine style (uncooked, finest). Oro/Ambra/Rubino colors. Pantelleria: Zibibbo (Muscat of Alexandria) bush vines, UNESCO-recognized alberello cultivation.'
+  },
+  {
+    name: 'Lazio', country: 'Italy', lat: 41.75, lng: 12.7,
+    subregions: 'Frascati DOC / Frascati Superiore DOCG, Castelli Romani DOC, Est! Est!! Est!!! di Montefiascone DOC',
+    climate: 'Warm Mediterranean. Volcanic hills (Colli Albani) south-east of Rome. Altitude 200–500m. Tufa and volcanic soils.',
+    grapes: ['Malvasia Bianca di Candia', 'Malvasia del Lazio (Puntinata)', 'Trebbiano Toscano', 'Bellone', 'Bombino Bianco', 'Cesanese'],
+    notes: 'SOILS: Volcanic Colli Albani (Alban Hills) — rich in potassium from ancient eruptions, good drainage. Frascati DOC: Rome\'s house white; since 2011 reforms, Malvasia del Lazio (Puntinata) can be up to 70% — higher quality clone than Malvasia Bianca di Candia. Modern improvements in yield control and cold fermentation producing more serious wines. Frascati Superiore DOCG: stricter yields, higher quality. Castelli Romani DOC: broader zone. Cesanese del Piglio DOCG: Lazio\'s only red DOCG, indigenous Cesanese grape, gaining recognition.'
   },
 
   // ========== SPAIN ==========
@@ -1312,6 +1670,18 @@ const subregionData = [
   { name:'Graves', country:'France', parentRegion:'Bordeaux', lat:44.62, lng:-0.52, grapes:['Cabernet Sauvignon','Merlot','Sauvignon Blanc','Sémillon'], notes:'South of Pessac-Léognan. Named for gravel soils. Both red and white wines. More affordable Left Bank wines.' },
   { name:'Haut-Médoc', country:'France', parentRegion:'Bordeaux', lat:45.08, lng:-0.78, grapes:['Cabernet Sauvignon','Merlot'], notes:'AC surrounding village appellations. 5 Classified Growths. Gravel ridges. Cab Sauv dominant. Cassis, cedar, firm tannins.' },
 
+  // === FRANCE — Champagne ===
+  { name:'Montagne de Reims', country:'France', parentRegion:'Champagne', lat:49.15, lng:3.92, grapes:['Pinot Noir','Chardonnay'], notes:'Heart of Pinot Noir country. South-facing chalk slopes. Grand Cru villages: Verzenay, Verzy, Mailly, Ambonnay, Bouzy. Full-bodied, structured base wines. Bouzy Rouge: rare still Pinot Noir.' },
+  { name:'Vallée de la Marne', country:'France', parentRegion:'Champagne', lat:49.05, lng:3.55, grapes:['Pinot Meunier','Pinot Noir','Chardonnay'], notes:'River Marne valley, east-west orientation. Clay-rich soils suit Pinot Meunier (dominant). Fruity, rounded, early-maturing. Ay: Grand Cru for Pinot Noir. Meunier thrives on cooler north-facing slopes.' },
+  { name:'Côte des Blancs', country:'France', parentRegion:'Champagne', lat:48.92, lng:3.95, grapes:['Chardonnay'], notes:'East-facing chalk escarpment south of Épernay. Grand Cru villages: Avize, Cramant, Le Mesnil-sur-Oger, Oger, Chouilly. Heartland of Blanc de Blancs. Pure chalk subsoil — mineral, elegant, precise.' },
+  { name:'Côte de Sézanne', country:'France', parentRegion:'Champagne', lat:48.72, lng:3.72, grapes:['Chardonnay'], notes:'South of Côte des Blancs. Similar chalk soils but slightly warmer. Softer, rounder Chardonnay. Growing reputation. Good value alternative to Côte des Blancs.' },
+  { name:'Aube (Côte des Bar)', country:'France', parentRegion:'Champagne', lat:48.15, lng:4.35, grapes:['Pinot Noir'], notes:'Southern Champagne, 110km from Épernay. Kimmeridgian limestone (same as Chablis). Warmer climate, riper fruit. Dominated by grower-producers. Rising quality and recognition.' },
+
+  // === FRANCE — Jura ===
+  { name:'Arbois AOC', country:'France', parentRegion:'Jura', lat:46.90, lng:5.77, grapes:['Savagnin','Chardonnay','Poulsard','Trousseau','Pinot Noir'], notes:'Largest and most diverse Jura AC. All styles: whites (oxidative and ouillé), reds, rosé, Vin Jaune, Vin de Paille, sparkling. Centre: town of Arbois (Pasteur\'s hometown). Marl and limestone.' },
+  { name:'Château-Chalon AOC', country:'France', parentRegion:'Jura', lat:46.77, lng:5.75, grapes:['Savagnin'], notes:'Vin Jaune ONLY. The finest expression: steep blue/grey marl slopes at 400m. Strict quality control — tasting panel can declassify entire vintage (as in 1974, 1980, 1984, 2001). Min 6yr 3m under flor.' },
+  { name:'L\'Étoile AOC', country:'France', parentRegion:'Jura', lat:46.73, lng:5.63, grapes:['Chardonnay','Savagnin'], notes:'White wines and Vin Jaune only. Named for star-shaped fossil crinoids in soil. Small appellation south of Arbois. Elegant, mineral whites. Also Crémant and Vin de Paille.' },
+
   // === FRANCE — Chablis ===
   { name:'Chablis Grand Cru', country:'France', parentRegion:'Chablis', lat:47.827, lng:3.793, grapes:['Chardonnay'], notes:'7 GC climats: Blanchot, Bougros, Les Clos, Grenouilles, Preuses, Valmur, Vaudésir. SW-facing. Mineral, flinty. Oak used by some producers.' },
   { name:'Chablis Premier Cru (Montée de Tonnerre)', country:'France', parentRegion:'Chablis', lat:47.820, lng:3.808, grapes:['Chardonnay'], notes:'Montée de Tonnerre: most prestigious PC. Kimmeridgian limestone. Steel/concrete typical. High acid, green apple, flint.' },
@@ -1449,7 +1819,45 @@ const subregionData = [
   { name:'Roero DOCG', country:'Italy', parentRegion:'Piemonte', lat:44.744, lng:7.958, grapes:['Nebbiolo','Arneis'], notes:'Left bank of Tanaro. Sandy soils = lighter Nebbiolo than Barolo. Roero Arneis: crisp white (almond, pear). Growing reputation.' },
   { name:'Etna DOC', country:'Italy', parentRegion:'Sicily', lat:37.730, lng:15.003, grapes:['Nerello Mascalese','Carricante'], notes:'Volcanic basalt, 500–1000m altitude, old vines (up to 150yr). Nerello Mascalese: high acid/tannin, pale ruby, fragrant — "Burgundy of Sicily."' },
   { name:'Montefalco Sagrantino', country:'Italy', parentRegion:'Umbria', lat:42.890, lng:12.675, grapes:['Sagrantino'], notes:'Highest tannin grape in Italy. Full body, rich blackberry. DOCG. Needs years of aging. Umbrian rarity.' },
-  { name:'Taurasi DOCG', country:'Italy', parentRegion:'Campania', lat:41.002, lng:15.010, grapes:['Aglianico'], notes:'"Barolo of the South." High tannin, high acid, dark fruit, tar, earth. Volcanic soils. Min 3yr aging. Mastroberardino: historic producer.' },
+  { name:'Taurasi DOCG', country:'Italy', parentRegion:'Campania', lat:41.002, lng:15.010, grapes:['Aglianico'], notes:'"Barolo of the South." High tannin, high acid, dark fruit, tar, earth. Volcanic tuff soils. Min 3yr aging (Riserva 4yr, 18mo oak). Mastroberardino: historic producer.' },
+  { name:'Aglianico del Vulture DOC', country:'Italy', parentRegion:'Campania', lat:40.950, lng:15.630, grapes:['Aglianico'], notes:'Basilicata, on slopes of extinct Monte Vulture volcano. Volcanic ash/tuff soils at 200-600m. North-facing slopes = cooler, longer growing season. Superiore elevated to DOCG 2011. Key producers: Elena Fucci, Basilisco, Paternoster. Slightly more elegant than Taurasi.' },
+
+  // === ITALY — PUGLIA ===
+  { name:'Primitivo di Manduria DOC', country:'Italy', parentRegion:'Puglia', lat:40.400, lng:17.630, grapes:['Primitivo'], notes:'Primitivo = Zinfandel genetically. Hot climate = ripe, concentrated, high alcohol (14-17%). Traditional alberello (bush vine) training. Also Dolce Naturale (sweet) version. Riserva: 2yr aging.' },
+  { name:'Salice Salentino DOC', country:'Italy', parentRegion:'Puglia', lat:40.390, lng:17.960, grapes:['Negroamaro','Malvasia Nera'], notes:'Salento peninsula (heel of Italy). Negroamaro min 75%. Medium-full body, baked red fruit, plum, fig, earthy. Good value. Notable rosato (rosé) also important. Riserva: 2yr (8mo oak).' },
+  { name:'Gioia del Colle DOC', country:'Italy', parentRegion:'Puglia', lat:40.800, lng:16.920, grapes:['Primitivo','Negroamaro'], notes:'Higher altitude (300-500m) Puglia DOC on the Murge plateau. More structured, fresh Primitivo than low-elevation Manduria. Cooler nights preserve acidity. Rising quality reputation.' },
+
+  // === ITALY — SICILY (additional) ===
+  { name:'Cerasuolo di Vittoria DOCG', country:'Italy', parentRegion:'Sicily', lat:36.930, lng:14.720, grapes:['Nero d\'Avola','Frappato'], notes:'Sicily\'s only DOCG. Nero d\'Avola 50-70% (power) + Frappato 30-50% (elegance, fragrance). Southeastern Sicily (Ragusa/Vittoria). Medium body, red cherry, strawberry, floral, silky. Min 18mo aging.' },
+  { name:'Marsala DOC', country:'Italy', parentRegion:'Sicily', lat:37.800, lng:12.430, grapes:['Grillo','Catarratto','Inzolia'], notes:'Fortified wine from western Sicily. Oro/Ambra/Rubino colors; Secco/Semisecco/Dolce sweetness. Declined mid-20th century from cheapening. Revival through Vergine style (uncooked, finest). Fine 1yr, Superiore 2yr, Vergine 5yr, Stravecchio 10yr.' },
+  { name:'Moscato di Pantelleria DOC', country:'Italy', parentRegion:'Sicily', lat:36.830, lng:11.950, grapes:['Zibibbo (Muscat of Alexandria)'], notes:'Volcanic island between Sicily and Tunisia. Passito: sun-dried grapes, intensely sweet — apricot, orange peel, honey, dried fig. UNESCO-recognized alberello (bush vine) cultivation against strong winds. 14-20% ABV.' },
+
+  // === ITALY — TUSCANY (additional) ===
+  { name:'Maremma Toscana DOC', country:'Italy', parentRegion:'Tuscany', lat:42.410, lng:11.470, grapes:['Sangiovese','Vermentino','Cabernet Sauvignon','Merlot','Syrah'], notes:'Coastal southern Tuscany (Grosseto province). Warmer, more maritime than inland. International varieties thrive alongside Sangiovese. Less restrictive than Chianti — creative blends. Bolgheri is within this broader zone. Rising quality.' },
+
+  // === ITALY — ABRUZZO ===
+  { name:'Montepulciano d\'Abruzzo DOC', country:'Italy', parentRegion:'Abruzzo', lat:42.35, lng:14.10, grapes:['Montepulciano'], notes:'Abruzzo\'s signature red. NOT the same grape as Vino Nobile di Montepulciano (which uses Sangiovese). High color, medium-high tannin, plum, dark cherry, earth. Range from simple/fruity to structured/oak-aged. Colline Teramane: sub-zone DOCG (2003), higher quality. Pergola Abruzzese training traditional.' },
+  { name:'Trebbiano d\'Abruzzo DOC', country:'Italy', parentRegion:'Abruzzo', lat:42.20, lng:13.75, grapes:['Trebbiano d\'Abruzzo'], notes:'Distinct clone from Trebbiano Toscano — more aromatic and age-worthy. Valentini: legendary producer, among Italy\'s greatest whites. Typically light, crisp, neutral, but top examples show remarkable depth, honey, and almond with age.' },
+  { name:'Cerasuolo d\'Abruzzo DOC', country:'Italy', parentRegion:'Abruzzo', lat:42.40, lng:13.95, grapes:['Montepulciano'], notes:'Italy\'s most structured rosé (rosato). Deep cherry-pink color from Montepulciano grape. More body and tannin than most rosés. Fresh red cherry, raspberry, herbal notes. Separate DOC since 2010 (previously a sub-category of Montepulciano d\'Abruzzo).' },
+
+  // === ITALY — MARCHE ===
+  { name:'Verdicchio dei Castelli di Jesi DOC', country:'Italy', parentRegion:'Marche', lat:43.52, lng:13.25, grapes:['Verdicchio'], notes:'Main zone for Verdicchio. Green apple, lemon, fennel, almond, high acid. Classico Superiore: premium hillside. Riserva: extended aging. Significant aging potential — develops honeyed, nutty complexity over 5-10+ years. Traditional amphora-shaped bottle. Italy\'s finest native white grape.' },
+  { name:'Verdicchio di Matelica DOC', country:'Italy', parentRegion:'Marche', lat:43.25, lng:13.01, grapes:['Verdicchio'], notes:'More inland, higher altitude, continental climate than Castelli di Jesi. Higher acidity, more mineral and austere. Smaller production, less well-known but often more age-worthy. Enclosed valley between two mountain ranges.' },
+  { name:'Rosso Conero DOC', country:'Italy', parentRegion:'Marche', lat:43.55, lng:13.55, grapes:['Montepulciano','Sangiovese'], notes:'Monte Conero promontory on the Adriatic coast near Ancona. Montepulciano min 85%. Deep color, firm structure, plum, cherry — serious, age-worthy reds. Conero DOCG (Riserva): minimum 2 years aging. Umani Ronchi: notable producer.' },
+
+  // === ITALY — LAZIO ===
+  { name:'Frascati DOC / Superiore DOCG', country:'Italy', parentRegion:'Lazio', lat:41.81, lng:12.68, grapes:['Malvasia del Lazio (Puntinata)','Malvasia Bianca di Candia','Trebbiano Toscano'], notes:'Rome\'s house white from the Colli Albani (Alban Hills). Volcanic soils. Since 2011 reforms: Malvasia del Lazio (Puntinata) up to 70% — higher quality clone. Modern cold fermentation and yield control producing more serious wines. Superiore DOCG: stricter yields.' },
+  { name:'Cesanese del Piglio DOCG', country:'Italy', parentRegion:'Lazio', lat:41.83, lng:13.10, grapes:['Cesanese'], notes:'Lazio\'s only red DOCG. Indigenous Cesanese grape: medium body, cherry, spice, herbal. From hills east of Rome (Ciociaria). Small production, gaining recognition. Historically used for sweet/sparkling, now quality dry reds.' },
+  { name:'Est! Est!! Est!!! di Montefiascone DOC', country:'Italy', parentRegion:'Lazio', lat:42.53, lng:11.83, grapes:['Trebbiano Toscano','Malvasia'], notes:'Famous for its name (legend of Bishop Defuk\'s servant marking inns). Northern Lazio, near Lake Bolsena. Volcanic soils. Light, crisp, simple white. Historically mediocre but some producers now making more serious versions.' },
+
+  // === ITALY — ALTO ADIGE ===
+  { name:'Bolzano / Gries (Lagrein)', country:'Italy', parentRegion:'Alto Adige DOC', lat:46.50, lng:11.36, grapes:['Lagrein'], notes:'Bolzano basin: warmest part of Alto Adige. Lagrein\'s historic heartland (Santa Maddalena/Gries). Alluvial gravel soils with good drainage. Medium-full body, dark berry, smoky, chocolate, moderate tannin. Dunkel (dark/red) is the main style; Kretzer (rosé) also traditional.' },
+  { name:'Tramin / Termeno (Gewürztraminer)', country:'Italy', parentRegion:'Alto Adige DOC', lat:46.33, lng:11.24, grapes:['Gewurztraminer'], notes:'Village where Gewürztraminer likely originated (Traminer = from Tramin). South-facing slopes at 250-400m. Volcanic porphyry soils. Lychee, rose petal, spice. Dry style typical (vs Alsace late harvest). Cantina Tramin co-operative: top producer.' },
+  { name:'Eisacktal / Valle Isarco', country:'Italy', parentRegion:'Alto Adige DOC', lat:46.73, lng:11.44, grapes:['Sylvaner','Müller-Thurgau','Kerner','Grüner Veltliner'], notes:'Northernmost sub-zone. Narrow Isarco valley, steep slopes, 350-900m altitude. Very crisp, aromatic whites. Mineral, high acid. Abbazia di Novacella: historic monastery winery (est. 1142). Coolest growing conditions in Alto Adige.' },
+
+  // === ITALY — TRENTINO ===
+  { name:'Campo Rotaliano (Teroldego)', country:'Italy', parentRegion:'Trentino DOC', lat:46.19, lng:11.08, grapes:['Teroldego'], notes:'Alluvial plain near Mezzocorona. Teroldego Rotaliano DOC: 100% indigenous Teroldego (DNA parent of Lagrein). Deep color, high acid, blackberry, bitter chocolate. Traditional Pergola Trentina training. Ora wind from Lake Garda aids ventilation. Foradori: benchmark producer.' },
+  { name:'Trentodoc (Sparkling)', country:'Italy', parentRegion:'Trentino DOC', lat:46.07, lng:11.12, grapes:['Chardonnay','Pinot Noir'], notes:'Italy\'s premier metodo classico sparkling wine. Min 15 months on lees (Millesimato 24mo, Riserva 36mo). Ferrari (est. 1902): benchmark, 5M+ bottles/yr. Mountain altitude (300-800m) preserves acidity. Elegant, citrus, apple, brioche, fine persistent mousse. Growing international recognition.' },
 
   // === SPAIN ===
   { name:'Rioja Alavesa', country:'Spain', parentRegion:'Rioja', lat:42.555, lng:-2.650, grapes:['Tempranillo','Garnacha'], notes:'Basque Country (Álava). Atlantic climate, clay-limestone. Most elegant, lightest Rioja. Many single-estate finca wines.' },
@@ -1510,6 +1918,16 @@ const subregionData = [
   { name:'Swartland', country:'South Africa', parentRegion:'Swartland', lat:-33.450, lng:18.670, grapes:['Chenin Blanc','Syrah','Grenache','Cinsault'], notes:'New wave revolution (Eben Sadie). Old vine 60–100+ yr Chenin Blanc. Rhône-style reds. Minimal intervention. "Swartland Revolution."' }
 ];
 
+// Pre-computed climate classification for every region
+const climateClassification = {};
+regions.forEach(r => { climateClassification[r.name] = parseClimate(r.climate); });
+
+function getClimateColor(regionName) {
+  const cc = climateClassification[regionName];
+  if (!cc) return '#888';
+  return (CLIMATE_COLORS[cc.type] || CLIMATE_COLORS.unknown)[cc.temperature] || '#888';
+}
+
 // ============================================================
 // REGION BOUNDS (for polygon overlays)
 // Format: [S,W,N,E] for rectangles, or [[lat,lng],...] for custom shapes
@@ -1526,14 +1944,16 @@ const regionBounds = {
   'Mâconnais': [[46.12,4.64],[46.14,4.88],[46.28,4.92],[46.45,4.90],[46.52,4.80],[46.48,4.65],[46.35,4.58],[46.20,4.60]],
   'Beaujolais': [[45.88,4.40],[45.90,4.72],[46.05,4.80],[46.25,4.78],[46.38,4.68],[46.35,4.42],[46.18,4.35],[45.98,4.36]],
   'Alsace': [[47.48,7.20],[47.50,7.52],[48.00,7.55],[48.60,7.58],[49.00,7.54],[48.98,7.18],[48.50,7.14],[47.90,7.12]],
+  'Champagne': [[48.60,3.10],[48.62,3.65],[48.75,4.15],[49.00,4.55],[49.25,4.60],[49.45,4.25],[49.50,3.70],[49.40,3.20],[49.15,2.95],[48.85,2.90]],
+  'Jura': [[46.40,5.40],[46.42,5.85],[46.55,6.15],[46.80,6.25],[47.10,6.20],[47.15,5.80],[47.00,5.45],[46.75,5.30],[46.55,5.32]],
   'Loire Valley — Central Vineyards': [[47.18,2.52],[47.20,3.12],[47.35,3.22],[47.52,3.10],[47.50,2.55],[47.38,2.42]],
   'Loire Valley — Touraine': [[47.05,0.02],[47.08,0.75],[47.15,1.38],[47.30,1.45],[47.32,0.80],[47.25,0.10],[47.12,-0.05]],
   'Loire Valley — Anjou-Saumur': [[47.08,-1.52],[47.10,-0.70],[47.18,0.00],[47.30,-0.05],[47.28,-0.80],[47.22,-1.48],[47.12,-1.58]],
   'Loire Valley — Muscadet (Nantais)': [[47.02,-2.22],[47.05,-1.55],[47.15,-1.08],[47.28,-1.15],[47.25,-1.85],[47.15,-2.28]],
   'Northern Rhône (Côte Rôtie, Hermitage, Condrieu)': [[44.88,4.76],[44.90,4.90],[45.15,4.92],[45.45,4.88],[45.60,4.82],[45.55,4.72],[45.25,4.70],[44.95,4.72]],
   'Southern Rhône (Châteauneuf-du-Pape, Côtes du Rhône)': [[43.70,4.48],[43.72,5.15],[43.95,5.28],[44.30,5.22],[44.48,4.95],[44.40,4.52],[44.10,4.38],[43.85,4.40]],
-  'Languedoc-Roussillon': [[42.42,1.90],[42.38,2.85],[42.55,3.60],[43.10,4.30],[43.60,4.75],[43.95,4.85],[44.00,4.20],[43.70,3.30],[43.30,2.50],[42.80,1.95]],
-  'Provence': [[43.10,4.55],[43.18,5.60],[43.30,6.40],[43.55,7.08],[43.78,6.95],[43.95,6.15],[44.05,5.20],[43.85,4.55],[43.45,4.42]],
+  'Languedoc-Roussillon': [[42.42,1.90],[42.38,2.42],[42.48,2.88],[42.65,3.22],[43.05,3.48],[43.25,3.85],[43.42,4.28],[43.62,4.72],[43.95,4.85],[44.02,4.22],[43.75,3.32],[43.38,2.55],[42.92,2.00],[42.68,1.88]],
+  'Provence': [[43.18,4.55],[43.18,5.22],[43.25,5.62],[43.22,6.08],[43.18,6.42],[43.38,7.02],[43.62,7.08],[43.82,6.92],[44.12,6.35],[44.12,5.72],[44.05,5.20],[43.88,4.55],[43.50,4.40],[43.25,4.50]],
   // ── GERMANY ─────────────────────────────────────────────────
   'Mosel': [[50.46,6.97],[50.36,7.58],[49.85,7.80],[49.50,7.28],[49.50,6.72],[49.85,6.47]],
   'Nahe': [[49.58,7.55],[49.60,7.90],[49.75,8.08],[49.98,8.05],[50.02,7.72],[49.88,7.48],[49.72,7.45]],
@@ -1553,23 +1973,24 @@ const regionBounds = {
   // ── ITALY ───────────────────────────────────────────────────
   'Alto Adige DOC': [[46.35,10.82],[46.38,11.35],[46.58,11.68],[46.90,11.65],[47.02,11.20],[46.85,10.80],[46.55,10.72]],
   'Trentino DOC': [[45.80,10.90],[45.82,11.30],[46.00,11.50],[46.25,11.45],[46.28,11.05],[46.12,10.82],[45.92,10.82]],
-  'Friuli-Venezia Giulia': [[45.70,12.35],[45.72,13.15],[45.90,13.80],[46.30,13.95],[46.58,13.55],[46.50,12.60],[46.20,12.28],[45.88,12.25]],
+  'Friuli-Venezia Giulia': [[45.82,12.58],[45.80,13.05],[45.78,13.48],[45.88,13.70],[46.05,13.78],[46.28,13.82],[46.60,13.55],[46.62,13.05],[46.52,12.58],[46.22,12.38],[45.92,12.42]],
   'Veneto': [[45.05,10.85],[45.08,11.60],[45.30,12.50],[45.70,12.75],[46.00,12.40],[45.90,11.35],[45.65,10.72],[45.30,10.68]],
   'Piemonte': [[44.05,7.25],[44.10,7.90],[44.40,8.55],[44.75,8.95],[45.08,8.85],[45.10,8.20],[44.85,7.50],[44.50,7.12]],
   'Tuscany': [[42.45,10.50],[42.50,11.40],[42.85,12.20],[43.50,12.35],[44.15,12.15],[44.45,11.40],[44.30,10.55],[43.80,10.00],[43.10,10.10]],
   'Umbria': [[42.42,11.85],[42.45,12.60],[42.72,13.15],[43.15,13.18],[43.55,12.80],[43.50,12.05],[43.20,11.78],[42.75,11.75]],
-  'Marche': [[42.72,12.55],[42.75,13.30],[43.10,13.75],[43.60,13.80],[43.98,13.40],[43.90,12.65],[43.50,12.42],[43.00,12.45]],
-  'Abruzzo': [[41.72,13.25],[41.78,13.90],[42.10,14.55],[42.45,14.75],[42.70,14.40],[42.60,13.55],[42.30,13.15],[41.95,13.12]],
-  'Campania': [[40.05,14.05],[40.10,14.80],[40.45,15.55],[40.90,15.75],[41.40,15.50],[41.45,14.70],[41.15,14.10],[40.65,13.92]],
-  'Puglia': [[39.05,15.20],[39.10,16.50],[39.50,17.50],[40.20,18.40],[41.00,18.45],[41.45,17.50],[41.40,16.10],[40.80,15.15],[40.10,15.05]],
-  'Sicily': [[36.65,12.50],[36.70,13.80],[37.10,15.10],[37.60,15.60],[38.20,15.50],[38.28,14.40],[37.90,13.10],[37.30,12.40]],
+  'Marche': [[42.82,12.68],[42.90,13.12],[43.08,13.52],[43.35,13.62],[43.58,13.55],[43.85,13.20],[43.88,13.00],[43.72,12.65],[43.40,12.48],[43.08,12.52],[42.95,12.60]],
+  'Abruzzo': [[41.85,13.38],[41.92,13.72],[42.08,14.30],[42.30,14.38],[42.50,14.18],[42.58,13.88],[42.55,13.52],[42.30,13.25],[42.05,13.22],[41.90,13.32]],
+  'Campania': [[41.42,13.85],[41.48,14.18],[41.45,14.62],[41.38,15.05],[41.12,15.42],[40.88,15.52],[40.62,15.38],[40.38,15.18],[40.18,15.35],[40.08,15.08],[40.25,14.62],[40.42,14.18],[40.62,13.88],[40.88,13.92],[41.22,14.02]],
+  'Puglia': [[41.62,15.08],[41.72,15.55],[41.88,16.12],[41.88,16.42],[41.55,16.22],[41.20,16.55],[40.88,17.28],[40.78,17.88],[40.55,17.92],[40.28,18.12],[39.85,18.22],[39.80,17.98],[40.08,17.52],[40.35,17.05],[40.52,16.80],[40.78,16.42],[41.05,15.98],[41.30,15.62],[41.45,15.22]],
+  'Sicily': [[38.12,13.32],[38.20,14.08],[38.10,14.75],[38.15,15.22],[38.18,15.52],[37.98,15.28],[37.78,15.22],[37.50,15.08],[37.25,14.98],[36.75,15.05],[36.80,14.48],[37.02,13.62],[37.22,13.05],[37.60,12.52],[37.92,12.68],[38.15,12.98]],
+  'Lazio': [[41.30,13.05],[41.38,13.22],[41.50,13.32],[41.80,13.92],[42.20,13.88],[42.50,13.22],[42.55,12.38],[42.50,12.05],[42.38,11.75],[42.08,11.78],[41.82,11.95],[41.65,12.25],[41.48,12.65],[41.35,12.98]],
   // ── SPAIN ───────────────────────────────────────────────────
   'Rioja': [[42.02,-3.15],[42.05,-2.40],[42.18,-1.72],[42.48,-1.68],[42.55,-2.30],[42.45,-3.05],[42.20,-3.22]],
   'Navarra': [[42.00,-2.18],[42.05,-1.40],[42.40,-0.72],[42.85,-0.68],[43.25,-1.10],[43.20,-1.85],[42.80,-2.18],[42.35,-2.25]],
   'Cariñena & Calatayud': [[41.08,-2.18],[41.12,-1.60],[41.35,-1.08],[41.65,-1.10],[41.68,-1.65],[41.50,-2.15],[41.28,-2.22]],
   'Penedès & Priorat (Catalunya)': [[41.08,0.78],[41.12,1.40],[41.35,1.95],[41.65,2.02],[41.72,1.50],[41.60,0.85],[41.35,0.70]],
   'Ribera del Duero': [[41.22,-4.75],[41.25,-3.80],[41.38,-2.85],[41.58,-2.80],[41.60,-3.70],[41.52,-4.65],[41.35,-4.82]],
-  'Rías Baixas': [[42.10,-9.40],[42.15,-8.70],[42.40,-8.20],[42.80,-8.25],[42.95,-8.80],[42.80,-9.35],[42.45,-9.48]],
+  'Rías Baixas': [[41.92,-8.70],[41.98,-8.90],[42.15,-9.02],[42.38,-9.05],[42.55,-8.95],[42.75,-8.85],[42.92,-8.88],[43.00,-8.68],[42.88,-8.45],[42.65,-8.22],[42.38,-8.20],[42.15,-8.38],[41.95,-8.55]],
   'Bierzo': [[42.22,-7.45],[42.28,-6.80],[42.50,-6.32],[42.85,-6.38],[42.95,-6.95],[42.75,-7.42],[42.48,-7.52]],
   'Valencia & Levante': [[38.55,-1.40],[38.60,-0.60],[39.05,0.30],[39.70,0.45],[40.40,0.20],[40.45,-0.60],[40.10,-1.25],[39.40,-1.48]],
   'La Mancha & Castilla-La Mancha': [[38.55,-5.40],[38.60,-3.80],[39.00,-2.10],[39.60,-1.50],[40.30,-1.60],[40.45,-3.00],[40.30,-4.50],[39.70,-5.35]],
@@ -1603,7 +2024,7 @@ const regionBounds = {
   // ── SOUTH AFRICA ────────────────────────────────────────────
   'Stellenbosch': [[-34.18,18.72],[-34.15,19.05],[-33.98,19.20],[-33.72,19.15],[-33.70,18.82],[-33.85,18.68],[-34.05,18.65]],
   'Paarl': [[-33.95,18.85],[-33.92,19.10],[-33.72,19.18],[-33.55,19.10],[-33.52,18.88],[-33.65,18.78],[-33.82,18.78]],
-  'Constantia': [[-34.15,18.35],[-34.12,18.50],[-34.02,18.52],[-33.92,18.48],[-33.95,18.32],[-34.05,18.28]],
+  'Constantia': [[-34.18,18.35],[-34.12,18.48],[-34.05,18.55],[-33.92,18.52],[-33.88,18.42],[-33.95,18.30],[-34.08,18.25],[-34.16,18.30]],
   'Swartland': [[-33.72,18.42],[-33.68,18.80],[-33.40,18.95],[-32.92,18.90],[-32.85,18.52],[-33.10,18.35],[-33.45,18.32]],
   'Walker Bay & Elgin': [[-34.45,19.05],[-34.42,19.38],[-34.25,19.48],[-34.05,19.40],[-34.02,19.12],[-34.18,19.00]],
   // ── AUSTRALIA ───────────────────────────────────────────────
@@ -1616,13 +2037,13 @@ const regionBounds = {
   'Yarra Valley': [[-37.85,145.28],[-37.82,145.62],[-37.65,145.75],[-37.45,145.68],[-37.42,145.35],[-37.55,145.22],[-37.72,145.22]],
   'Mornington Peninsula': [[-38.55,144.88],[-38.52,145.20],[-38.35,145.35],[-38.15,145.28],[-38.12,144.98],[-38.28,144.82],[-38.45,144.82]],
   'Hunter Valley': [[-33.05,150.85],[-33.02,151.25],[-32.75,151.38],[-32.38,151.30],[-32.35,150.95],[-32.60,150.78],[-32.88,150.80]],
-  'Margaret River': [[-34.22,114.88],[-34.18,115.18],[-33.95,115.28],[-33.58,115.20],[-33.55,114.92],[-33.78,114.80],[-34.08,114.82]],
+  'Margaret River': [[-34.38,115.08],[-34.22,114.92],[-34.00,114.88],[-33.78,114.85],[-33.55,115.00],[-33.52,115.20],[-33.65,115.35],[-33.90,115.32],[-34.18,115.22],[-34.38,115.15]],
   // ── NEW ZEALAND ─────────────────────────────────────────────
   'Auckland & Northland': [[-37.42,174.58],[-37.38,174.92],[-37.05,175.05],[-36.42,174.98],[-36.38,174.62],[-36.72,174.48],[-37.15,174.48]],
   "Hawke's Bay": [[-39.92,176.58],[-39.88,177.15],[-39.55,177.35],[-39.35,177.22],[-39.38,176.68],[-39.60,176.50]],
   'Gisborne': [[-38.85,177.85],[-38.82,178.28],[-38.62,178.38],[-38.42,178.28],[-38.45,177.88],[-38.62,177.78]],
   'Wairarapa (Martinborough)': [[-41.35,175.48],[-41.32,175.88],[-41.10,176.02],[-40.85,175.92],[-40.88,175.52],[-41.08,175.40]],
-  'Marlborough': [[-41.72,173.68],[-41.68,174.22],[-41.45,174.42],[-41.25,174.32],[-41.28,173.78],[-41.48,173.58]],
+  'Marlborough': [[-41.72,173.68],[-41.72,174.08],[-41.60,174.28],[-41.45,174.38],[-41.28,174.22],[-41.12,173.98],[-41.12,173.72],[-41.28,173.58],[-41.48,173.55],[-41.65,173.60]],
   'Nelson': [[-41.45,172.98],[-41.42,173.42],[-41.22,173.55],[-41.05,173.42],[-41.08,173.00],[-41.25,172.88]],
   'Canterbury & Waipara': [[-43.90,172.10],[-43.85,172.72],[-43.50,172.95],[-42.88,172.85],[-42.85,172.25],[-43.20,172.02],[-43.65,172.02]],
   'Central Otago': [[-45.42,168.62],[-45.38,169.50],[-45.05,170.35],[-44.50,170.38],[-44.45,169.40],[-44.80,168.58],[-45.15,168.52]],
@@ -1644,6 +2065,18 @@ const subregionBounds = {
   'Pessac-Léognan': [[44.70,-0.68],[44.72,-0.60],[44.76,-0.56],[44.80,-0.60],[44.78,-0.68],[44.74,-0.72]],
   'Graves': [[44.50,-0.58],[44.54,-0.44],[44.62,-0.38],[44.70,-0.44],[44.68,-0.58],[44.58,-0.64]],
   'Haut-Médoc': [[44.96,-0.80],[44.98,-0.68],[45.05,-0.62],[45.28,-0.70],[45.30,-0.80],[45.10,-0.86]],
+
+  // ── CHAMPAGNE ──────────────────────────────────────────────
+  'Montagne de Reims': [[49.08,3.75],[49.10,4.00],[49.18,4.12],[49.25,4.08],[49.22,3.82],[49.15,3.72]],
+  'Vallée de la Marne': [[48.98,3.30],[49.00,3.60],[49.08,3.80],[49.12,3.75],[49.05,3.50],[49.00,3.25]],
+  'Côte des Blancs': [[48.82,3.85],[48.84,3.98],[48.92,4.02],[48.98,3.98],[48.95,3.85],[48.88,3.82]],
+  'Côte de Sézanne': [[48.62,3.60],[48.65,3.78],[48.74,3.82],[48.80,3.76],[48.76,3.60],[48.68,3.56]],
+  'Aube (Côte des Bar)': [[48.05,4.15],[48.08,4.42],[48.18,4.55],[48.28,4.50],[48.25,4.25],[48.15,4.10]],
+
+  // ── JURA ──────────────────────────────────────────────────
+  'Arbois AOC': [[46.84,5.68],[46.86,5.82],[46.94,5.86],[46.98,5.80],[46.95,5.68],[46.88,5.64]],
+  'Château-Chalon AOC': [[46.74,5.68],[46.75,5.76],[46.79,5.79],[46.81,5.75],[46.80,5.68],[46.76,5.66]],
+  'L\'Étoile AOC': [[46.70,5.56],[46.71,5.64],[46.75,5.67],[46.77,5.63],[46.76,5.56],[46.72,5.54]],
 
   // ── CHABLIS ───────────────────────────────────────────────
   'Chablis Grand Cru': [[47.82,3.78],[47.82,3.80],[47.84,3.81],[47.85,3.80],[47.85,3.78],[47.83,3.77]],
@@ -1787,14 +2220,50 @@ const subregionBounds = {
   'Vino Nobile di Montepulciano': [[43.08,11.76],[43.10,11.82],[43.13,11.84],[43.15,11.81],[43.13,11.76],[43.10,11.74]],
   'Vernaccia di San Gimignano': [[43.44,11.02],[43.46,11.08],[43.48,11.10],[43.50,11.07],[43.48,11.02],[43.46,11.00]],
 
+  // ── ITALY — TUSCANY (additional) ───────────────────────────
+  'Maremma Toscana DOC': [[42.35,11.38],[42.38,11.52],[42.44,11.56],[42.48,11.52],[42.46,11.38],[42.40,11.34]],
+
+  // ── ITALY — PUGLIA ───────────────────────────────────────
+  'Primitivo di Manduria DOC': [[40.36,17.56],[40.38,17.66],[40.42,17.70],[40.46,17.66],[40.44,17.56],[40.40,17.52]],
+  'Salice Salentino DOC': [[40.35,17.90],[40.37,17.99],[40.41,18.02],[40.44,17.98],[40.42,17.90],[40.38,17.87]],
+  'Gioia del Colle DOC': [[40.76,16.86],[40.78,16.95],[40.82,16.98],[40.85,16.94],[40.83,16.86],[40.80,16.83]],
+
   // ── ITALY — SICILY ────────────────────────────────────────
   'Etna DOC': [[37.70,14.92],[37.72,15.00],[37.78,15.05],[37.82,15.00],[37.80,14.92],[37.74,14.88]],
+  'Cerasuolo di Vittoria DOCG': [[36.89,14.66],[36.91,14.76],[36.95,14.80],[36.99,14.76],[36.97,14.66],[36.93,14.62]],
+  'Marsala DOC': [[37.76,12.36],[37.78,12.46],[37.82,12.50],[37.86,12.46],[37.84,12.36],[37.80,12.32]],
+  'Moscato di Pantelleria DOC': [[36.79,11.88],[36.81,11.98],[36.85,12.02],[36.88,11.98],[36.86,11.88],[36.82,11.84]],
 
   // ── ITALY — UMBRIA ────────────────────────────────────────
   'Montefalco Sagrantino': [[42.86,12.58],[42.88,12.64],[42.91,12.66],[42.93,12.63],[42.91,12.58],[42.88,12.56]],
 
   // ── ITALY — CAMPANIA ──────────────────────────────────────
   'Taurasi DOCG': [[41.00,14.92],[41.02,15.00],[41.06,15.04],[41.10,15.00],[41.08,14.92],[41.04,14.88]],
+  'Aglianico del Vulture DOC': [[40.90,15.55],[40.92,15.65],[40.97,15.70],[41.02,15.67],[41.00,15.58],[40.95,15.52]],
+
+  // ── ITALY — ABRUZZO ──────────────────────────────────────
+  'Montepulciano d\'Abruzzo DOC': [[42.28,14.00],[42.30,14.15],[42.36,14.20],[42.42,14.18],[42.40,14.02],[42.35,13.96]],
+  'Trebbiano d\'Abruzzo DOC': [[42.14,13.65],[42.16,13.80],[42.22,13.85],[42.28,13.82],[42.26,13.68],[42.20,13.62]],
+  'Cerasuolo d\'Abruzzo DOC': [[42.34,13.85],[42.36,13.98],[42.42,14.03],[42.47,14.00],[42.45,13.88],[42.40,13.82]],
+
+  // ── ITALY — MARCHE ───────────────────────────────────────
+  'Verdicchio dei Castelli di Jesi DOC': [[43.42,13.12],[43.44,13.28],[43.50,13.35],[43.58,13.30],[43.55,13.15],[43.48,13.08]],
+  'Verdicchio di Matelica DOC': [[43.18,12.92],[43.20,13.04],[43.26,13.08],[43.32,13.05],[43.30,12.95],[43.24,12.88]],
+  'Rosso Conero DOC': [[43.50,13.48],[43.52,13.56],[43.56,13.60],[43.60,13.58],[43.58,13.50],[43.54,13.46]],
+
+  // ── ITALY — LAZIO ────────────────────────────────────────
+  'Frascati DOC / Superiore DOCG': [[41.75,12.60],[41.77,12.72],[41.82,12.76],[41.87,12.72],[41.85,12.62],[41.80,12.56]],
+  'Cesanese del Piglio DOCG': [[41.78,13.02],[41.80,13.12],[41.85,13.16],[41.89,13.13],[41.87,13.04],[41.82,12.98]],
+  'Est! Est!! Est!!! di Montefiascone DOC': [[42.48,11.75],[42.50,11.86],[42.55,11.90],[42.59,11.87],[42.57,11.78],[42.52,11.72]],
+
+  // ── ITALY — ALTO ADIGE ───────────────────────────────────
+  'Bolzano / Gries (Lagrein)': [[46.44,11.28],[46.46,11.38],[46.52,11.42],[46.56,11.38],[46.54,11.30],[46.50,11.26]],
+  'Tramin / Termeno (Gewürztraminer)': [[46.28,11.18],[46.30,11.26],[46.35,11.30],[46.39,11.27],[46.37,11.20],[46.32,11.16]],
+  'Eisacktal / Valle Isarco': [[46.65,11.35],[46.68,11.46],[46.74,11.52],[46.80,11.48],[46.77,11.38],[46.70,11.32]],
+
+  // ── ITALY — TRENTINO ─────────────────────────────────────
+  'Campo Rotaliano (Teroldego)': [[46.14,11.00],[46.16,11.10],[46.21,11.14],[46.25,11.10],[46.23,11.02],[46.18,10.98]],
+  'Trentodoc (Sparkling)': [[46.00,11.04],[46.02,11.14],[46.08,11.20],[46.14,11.18],[46.12,11.08],[46.06,11.02]],
 
   // ── SPAIN — RIOJA ─────────────────────────────────────────
   'Rioja Alavesa': [[42.58,-2.65],[42.60,-2.52],[42.65,-2.45],[42.68,-2.52],[42.66,-2.65],[42.62,-2.70]],
@@ -1935,18 +2404,18 @@ const GEO_FEATURES = {
     { name: 'Nahe River', path: [[49.68,7.50],[49.78,7.70],[49.88,7.90]], tooltip: 'Nahe — between Mosel & Rheingau; intermediate style Riesling' },
   ],
   mountains: [
-    { name: 'Vosges Mtns', lat: 48.20, lng: 7.10, tooltip: 'Vosges — rain shadow makes Alsace one of driest French regions; enables long dry autumns' },
-    { name: 'Alps', lat: 46.60, lng: 11.10, tooltip: 'Alps — Alpine cooling for Trentino-Alto Adige; varied mesoclimates from cool peaks to warm valleys' },
+    // Vosges now rendered as range polyline (see ranges array)
+    // Alps now rendered as range polyline (see ranges array)
     { name: 'Andes', lat: -33.50, lng: -69.80, tooltip: 'Andes — dramatic diurnal range; snowmelt irrigation; altitude up to 1500m for Argentine vineyards' },
     { name: 'Sierra de Cantabria', lat: 42.60, lng: -2.70, tooltip: 'Cantabrian Mountains — shelter Rioja from Atlantic; cooler maritime influence in western sub-zones' },
     { name: 'Massif Central', lat: 45.50, lng: 3.20, tooltip: 'Massif Central — continental influence on central French wine regions' },
     { name: 'Mt Etna', lat: 37.75, lng: 15.00, tooltip: 'Mount Etna — volcanic basalt soils at 600-1000m; cool conditions for Nerello Mascalese & Carricante' },
     { name: 'Table Mtn', lat: -33.96, lng: 18.42, tooltip: 'Table Mountain — creates Cape Doctor wind channel; cool maritime conditions for Constantia' },
-    { name: 'Apennines', lat: 43.30, lng: 11.80, tooltip: 'Apennines — altitude moderates Mediterranean heat; diverse mesoclimates across central Italy' },
+    // Apennines now rendered as range polyline (see ranges array)
     { name: 'Marão Mtns', lat: 41.10, lng: -7.90, tooltip: 'Marão — western boundary of Douro; creates cooler/wetter gradient from west to dry east' },
     { name: 'Serra da Estrela', lat: 40.40, lng: -7.70, tooltip: 'Serra da Estrela — protects Dão region; elegant reds with high acidity' },
-    { name: 'Taunus Hills', lat: 50.15, lng: 8.20, tooltip: 'Taunus — protects Rheingau slopes from cold winds; humid microclimate for botrytis' },
-    { name: 'Haardt Mtns', lat: 49.25, lng: 8.00, tooltip: 'Haardt — rain shadow for Pfalz; more sunshine for fuller, spicier Rieslings' },
+    // Taunus now rendered as range polyline (see ranges array)
+    // Haardt now rendered as range polyline (see ranges array)
     { name: 'Pyrenees', lat: 42.80, lng: -0.50, tooltip: 'Pyrenees — northern boundary of Navarra; cooler northern zones vs warmer south near Ebro' },
     { name: 'Dentelles de Montmirail', lat: 44.18, lng: 5.05, tooltip: 'Dentelles de Montmirail — hillside terraces for powerful Gigondas GSM blends' },
     { name: 'Drakensberg', lat: -29.50, lng: 29.30, tooltip: 'Drakensberg — mountain range influencing South African wine climate patterns' },
@@ -1962,6 +2431,13 @@ const GEO_FEATURES = {
     { name: 'Gulf Stream', path: [[43.50,-3.50],[44.50,-2.80],[45.50,-2.00],[46.50,-2.50],[47.50,-3.50]], tooltip: 'Gulf Stream — warm Atlantic current moderating W European climate; key to Bordeaux & Loire', arrow: true },
     { name: 'Humboldt Current', path: [[-36.00,-72.80],[-33.50,-72.00],[-31.00,-72.20],[-29.00,-72.50]], tooltip: 'Humboldt — cold Pacific current cooling Chilean coast; fog & low temperatures for coastal valleys', arrow: true },
     { name: 'Benguela Current', path: [[-35.50,17.50],[-34.00,17.20],[-32.50,17.00]], tooltip: 'Benguela — cold Atlantic current cooling South African west coast; maritime influence', arrow: true },
+  ],
+  ranges: [
+    { name: 'Alps', path: [[43.75,7.20],[44.30,7.00],[45.00,6.80],[45.50,7.30],[45.85,7.80],[46.15,8.60],[46.50,9.50],[46.65,10.30],[46.80,11.00],[47.00,11.60],[47.20,12.30],[47.30,13.00],[47.40,13.70],[47.20,14.30],[46.80,14.60],[46.50,14.90]], tooltip: 'Alps — Europe\'s greatest mountain range; provides altitude cooling, large diurnal range, shelter from cold winds, and varied mesoclimates for Alpine viticulture (Alto Adige, Trentino, Savoie, Valais)' },
+    { name: 'Apennines', path: [[44.30,8.20],[44.40,9.30],[44.20,10.00],[43.80,11.00],[43.30,11.80],[42.80,12.50],[42.30,13.20],[41.80,14.00],[41.30,14.80],[40.80,15.40],[40.30,15.70],[39.80,16.00],[39.30,16.20],[38.80,16.30],[38.20,16.00]], tooltip: 'Apennines — spine of the Italian peninsula (1200km); provides altitude moderation for central Italian wine regions (Tuscany, Umbria, Marche, Abruzzo, Campania); rain shadow effect on eastern slopes' },
+    { name: 'Vosges', path: [[47.85,7.05],[47.95,7.08],[48.05,7.10],[48.15,7.10],[48.25,7.08],[48.35,7.07],[48.45,7.10],[48.55,7.12],[48.65,7.14],[48.75,7.15]], tooltip: 'Vosges Mountains — rain shadow makes Alsace one of driest French regions (500mm/yr vs 1000mm on western slopes); enables long dry autumns ideal for late-harvest and noble rot wines' },
+    { name: 'Haardt', path: [[49.05,7.92],[49.12,7.95],[49.20,7.98],[49.28,8.00],[49.36,8.02],[49.42,8.04],[49.50,8.06]], tooltip: 'Haardt Mountains — eastern extension of Vosges into Germany; rain shadow gives Pfalz more sunshine and warmth than Mosel; enables fuller, spicier Rieslings and successful Pinot Noir' },
+    { name: 'Taunus Hills', path: [[50.08,8.05],[50.12,8.12],[50.16,8.20],[50.20,8.28],[50.23,8.35],[50.26,8.42]], tooltip: 'Taunus Hills — north of Rheingau; protects south-facing vineyard slopes from cold northerly winds; creates humid microclimate ideal for botrytis (Trockenbeerenauslese)' },
   ],
   features: [
     { name: 'Landes Pine Forest', lat: 44.30, lng: -1.00, tooltip: 'Landes — protects Bordeaux from Atlantic storms; combined with Gulf Stream warmth' },
@@ -1985,6 +2461,19 @@ function buildGeoFeatures() {
       interactive: false
     }).addTo(geoLayer);
   });
+
+  // Mountain ranges - brown dashed polylines
+  if (GEO_FEATURES.ranges) {
+    GEO_FEATURES.ranges.forEach(r => {
+      const line = L.polyline(r.path, { color: '#a0785a', weight: 3, opacity: 0.55, dashArray: '6,4' }).addTo(geoLayer);
+      line.bindTooltip(r.tooltip, { sticky: true, className: 'geo-tooltip' });
+      const mid = r.path[Math.floor(r.path.length / 2)];
+      L.marker(mid, {
+        icon: L.divIcon({ className: 'geo-label geo-label-mountain', html: `▲▲▲ ${r.name}`, iconSize: [0,0], iconAnchor: [-5, 8] }),
+        interactive: false
+      }).addTo(geoLayer);
+    });
+  }
 
   // Mountains - triangle markers
   GEO_FEATURES.mountains.forEach(m => {
@@ -2158,6 +2647,87 @@ const grapeTastingNotes = {
   'Petit Verdot': 'Minor Bordeaux red blending variety. Adds deep colour, violet perfume, firm tannins, spice. Rarely ripe enough for a major role in cool Bordeaux vintages. Adds complexity in blends. New World: sometimes bottled solo.',
 };
 
+// ============================================================
+// GRAPE GENERAL INFO (origin, synonyms, viticulture)
+// ============================================================
+const grapeGeneralInfo = {
+  'Chardonnay': { origin: 'Burgundy, France', synonyms: 'Morillon (Austria)', type: 'white', climate: 'Cool to warm', vigor: 'Moderate', ripening: 'Early', notes: 'Extremely versatile — adapts to many climates and winemaking styles. Susceptible to spring frost (early budding). Thrives on limestone and chalk.' },
+  'Sauvignon Blanc': { origin: 'Loire Valley / Bordeaux, France', synonyms: 'Fumé Blanc (USA)', type: 'white', climate: 'Cool to moderate', vigor: 'High', ripening: 'Early-mid', notes: 'Vigorous vine needing canopy management to control herbaceous character. Pyrazine compounds give hallmark green aromas. Parent of Cabernet Sauvignon (with Cabernet Franc).' },
+  'Riesling': { origin: 'Rhine region, Germany', synonyms: 'Johannisberg Riesling, White Riesling', type: 'white', climate: 'Cool', vigor: 'Moderate', ripening: 'Late', notes: 'Excellent terroir expression. Late-ripening, thick skin resists botrytis but allows noble rot in right conditions. Retains acidity even at high sugar levels. Among the world\'s most age-worthy whites.' },
+  'Pinot Gris': { origin: 'Burgundy, France (mutation of Pinot Noir)', synonyms: 'Pinot Grigio (Italy), Grauburgunder (Germany), Ruländer', type: 'white', climate: 'Cool to moderate', vigor: 'Moderate', ripening: 'Early-mid', notes: 'Grey-pink skinned mutation of Pinot Noir. Style varies dramatically: rich and spicy in Alsace, light and crisp in northern Italy.' },
+  'Gewurztraminer': { origin: 'Alsace, France / Alto Adige, Italy', synonyms: 'Traminer Aromatico (Italy), Gewürztraminer', type: 'white', climate: 'Cool', vigor: 'Low', ripening: 'Early', notes: 'Deep pink-skinned variety. Low yields, prone to downy mildew. "Gewürz" means spice. Needs cool climate to retain acidity. Highly distinctive aromatic profile.' },
+  'Viognier': { origin: 'Northern Rhône, France (Condrieu)', synonyms: 'None widely used', type: 'white', climate: 'Warm', vigor: 'Moderate', ripening: 'Late', notes: 'Nearly extinct in 1960s (only 14ha). Now globally planted. Low acidity requires careful harvest timing. Often co-fermented with Syrah (up to 20% in Côte Rôtie) to add perfume and stabilise colour.' },
+  'Marsanne': { origin: 'Northern Rhône, France', synonyms: 'Ermitage (Switzerland)', type: 'white', climate: 'Warm', vigor: 'Moderate-high', ripening: 'Mid', notes: 'Often blended with Roussanne. Prone to oxidation — typically harvested early. Produces full, waxy wines. Important in Hermitage, St-Joseph, Crozes-Hermitage white blends.' },
+  'Roussanne': { origin: 'Northern Rhône, France', synonyms: 'Bergeron (Savoie)', type: 'white', climate: 'Warm', vigor: 'Low', ripening: 'Late', notes: 'More aromatic and higher acidity than Marsanne. "Roux" (russet) refers to the colour of ripe grapes. Susceptible to powdery mildew and wind damage. Adds complexity to Rhône white blends.' },
+  'Grüner Veltliner': { origin: 'Austria', synonyms: 'Grüner, GruVe', type: 'white', climate: 'Cool to moderate', vigor: 'High', ripening: 'Mid-late', notes: 'Austria\'s most planted variety (~30% of plantings). Vigorous, needs canopy management. Hallmark white pepper character. Wachau: terraced, steep slopes. Ranging from light Federspiel to powerful Smaragd.' },
+  'Chenin Blanc': { origin: 'Loire Valley, France (Anjou)', synonyms: 'Steen (South Africa), Pineau de la Loire', type: 'white', climate: 'Cool to warm', vigor: 'Moderate-high', ripening: 'Late', notes: 'Extraordinarily versatile: dry, off-dry, sweet, sparkling. Late ripening retains high acidity. Very susceptible to botrytis (used for sweet Vouvray, Quarts de Chaume). South Africa: most planted white.' },
+  'Albariño': { origin: 'Galicia, NW Spain / N Portugal', synonyms: 'Alvarinho (Portugal)', type: 'white', climate: 'Cool maritime', vigor: 'Moderate', ripening: 'Early', notes: 'Thick skins resist the humid Atlantic climate. Traditionally trained on pergolas (high canopy) for air circulation. Rías Baixas: granite soils. Naturally high acidity and aromatic intensity.' },
+  'Verdejo': { origin: 'Rueda, Castilla y León, Spain', synonyms: 'None widely used', type: 'white', climate: 'Continental', vigor: 'Moderate', ripening: 'Mid', notes: 'High-altitude (700-800m) continental climate with hot days and cool nights. Harvested at night to preserve freshness. Distinctive fennel and herbaceous character. Skin contact often used.' },
+  'Assyrtiko': { origin: 'Santorini, Greece', synonyms: 'None widely used', type: 'white', climate: 'Hot, dry, volcanic', vigor: 'Low', ripening: 'Mid', notes: 'Grown in kouloura (basket-trained vines) to protect from fierce Aegean winds. Volcanic soils. Phylloxera-free (own roots). Retains remarkable acidity in extreme heat. Pre-Hellenic origins.' },
+  'Muscat Blanc à Petits Grains': { origin: 'Greece (ancient)', synonyms: 'Moscato Bianco (Italy), Muskateller, Yellow Muscat', type: 'white', climate: 'Warm', vigor: 'Moderate', ripening: 'Early-mid', notes: 'The oldest and finest Muscat variety. Small, round berries. One of few grapes that actually tastes of grapes. Used for everything from dry Alsace Muscat to sparkling Asti to sweet fortified VDN.' },
+  'Torrontés': { origin: 'Argentina (Muscat of Alexandria × Criolla Chica)', synonyms: 'Torrontés Riojano (main type)', type: 'white', climate: 'Warm continental, high altitude', vigor: 'High', ripening: 'Mid', notes: 'Argentina\'s signature white. Best at high altitude (1,700m+ in Cafayate, Salta) where UV intensity concentrates aromatics while cool nights preserve acidity. Three sub-types exist.' },
+  'Pinot Blanc': { origin: 'Burgundy, France (mutation of Pinot Gris)', synonyms: 'Weissburgunder (Germany/Austria), Pinot Bianco (Italy)', type: 'white', climate: 'Cool to moderate', vigor: 'Moderate', ripening: 'Early', notes: 'Less aromatic mutation of Pinot Gris. Understated, versatile. Important in Alsace (Crémant d\'Alsace base) and Alto Adige. Clean, round style.' },
+  'Pinot Noir': { origin: 'Burgundy, France', synonyms: 'Spätburgunder (Germany), Blauburgunder (Austria)', type: 'red', climate: 'Cool', vigor: 'Moderate', ripening: 'Early', notes: 'Notoriously difficult to grow — thin-skinned, susceptible to disease, poor weather, and many clonal mutations. Thrives on limestone. Early budding risks frost. Benchmark: Côte d\'Or, Burgundy.' },
+  'Cabernet Sauvignon': { origin: 'Bordeaux, France (Cab Franc × Sauvignon Blanc)', synonyms: 'Cab Sauv', type: 'red', climate: 'Warm', vigor: 'Moderate-high', ripening: 'Late', notes: 'World\'s most planted red variety. Small, thick-skinned berries give deep colour and high tannins. Late ripening needs warm sites to fully mature. Left Bank Bordeaux: benchmark. Adapts globally.' },
+  'Merlot': { origin: 'Bordeaux, France', synonyms: 'None widely used', type: 'red', climate: 'Moderate to warm', vigor: 'Moderate', ripening: 'Mid', notes: 'Earlier ripening and thinner skin than Cabernet Sauvignon. Thrives on clay soils (Right Bank Bordeaux). More approachable and softer than Cab Sauv. Pomerol/St-Émilion: Merlot-dominant.' },
+  'Cabernet Franc': { origin: 'Bordeaux / Loire, France', synonyms: 'Bouchet (old Bordeaux name), Breton (Loire)', type: 'red', climate: 'Cool to moderate', vigor: 'Moderate', ripening: 'Mid', notes: 'Parent of Cabernet Sauvignon. Ripens earlier than Cab Sauv, thrives in cooler sites. Loire (Chinon, Bourgueil): lighter, more herbaceous. Bordeaux: blending role. Thin-skinned, aromatic (violet, pepper).' },
+  'Syrah': { origin: 'Northern Rhône, France', synonyms: 'Shiraz (Australia, S. Africa)', type: 'red', climate: 'Moderate to warm', vigor: 'Moderate', ripening: 'Mid-late', notes: 'Small, thick-skinned berries. Sensitive to wind damage. Northern Rhône: steep granite slopes (Hermitage, Côte Rôtie). Rotundone compound gives black pepper character. DNA: Dureza × Mondeuse Blanche.' },
+  'Shiraz': { origin: 'Same as Syrah — Rhône origin, Australian name', synonyms: 'Syrah (France/rest of world)', type: 'red', climate: 'Warm to hot', vigor: 'Moderate', ripening: 'Mid-late', notes: 'Same grape as Syrah but Australian name signals a richer, warmer-climate style. Barossa Valley old vines (some 150+ years, own-rooted). Often picked riper with more oak treatment.' },
+  'Grenache': { origin: 'Aragon, Spain', synonyms: 'Garnacha (Spain), Cannonau (Sardinia)', type: 'red', climate: 'Warm to hot', vigor: 'High', ripening: 'Late', notes: 'Late ripening, drought resistant, high alcohol potential. Upright growth, susceptible to wind. Thin skins → pale colour, low tannins. Needs blending partners for structure. GSM blend: Grenache-Syrah-Mourvèdre.' },
+  'Mourvèdre': { origin: 'Spain (Catalonia)', synonyms: 'Monastrell (Spain), Mataro (Australia)', type: 'red', climate: 'Hot', vigor: 'Moderate', ripening: 'Very late', notes: 'Needs extreme heat and sunshine to ripen fully. Thick-skinned, deep colour, high tannins. Bandol (Provence): benchmark. Blending grape in GSM and southern Rhône. Meaty, gamey character.' },
+  'Tempranillo': { origin: 'Rioja, Spain', synonyms: 'Tinta Roriz/Aragonez (Portugal), Tinto Fino (Ribera del Duero), Cencibel (La Mancha)', type: 'red', climate: 'Moderate continental', vigor: 'Moderate', ripening: 'Early ("temprano"=early)', notes: 'Spain\'s most noble variety. Name means "early one." Thick-skinned but moderate tannins. Excellent with oak (both American and French). Continental climate preserves acidity. High-altitude plantings.' },
+  'Garnacha': { origin: 'Aragon, Spain', synonyms: 'Grenache (France), Cannonau (Sardinia)', type: 'red', climate: 'Warm to hot', vigor: 'High', ripening: 'Late', notes: 'Same variety as Grenache. In Spain: old bush vines (gobelet) on poor soils give concentration. Priorat: llicorella (black slate) soils. Navarra: excellent rosé. Naturally high sugar/alcohol.' },
+  'Sangiovese': { origin: 'Tuscany, Italy', synonyms: 'Brunello (Montalcino), Prugnolo Gentile (Montepulciano), Morellino (Scansano)', type: 'red', climate: 'Warm', vigor: 'High', ripening: 'Late', notes: 'Italy\'s most planted variety. Thin-skinned with high acidity and tannins. Late ripening needs warm, sunny hillsides. Many clonal variations. Sangiovese Grosso (larger berry) used for Brunello.' },
+  'Nebbiolo': { origin: 'Piemonte, Italy', synonyms: 'Spanna (N Piemonte), Chiavennasca (Lombardy)', type: 'red', climate: 'Cool-moderate continental', vigor: 'Moderate', ripening: 'Very late', notes: 'Named from "nebbia" (fog) — ripens in autumn fog season. Very late ripening, requires best south-facing sites (sori). Thin-skinned but extremely high tannins and acidity. Calcareous marl soils. Finicky, site-specific.' },
+  'Aglianico': { origin: 'Southern Italy (Campania/Basilicata)', synonyms: 'From "Helleniko" (Greek origin)', type: 'red', climate: 'Warm', vigor: 'Moderate-high', ripening: 'Very late', notes: 'Ancient Greek variety. Very late ripening, high tannins and acidity. Volcanic soils of Campania and Basilicata. Taurasi DOCG and Aglianico del Vulture DOC: benchmarks. Requires extended aging.' },
+  'Primitivo': { origin: 'Croatia originally; established in Puglia, Italy', synonyms: 'Zinfandel (USA), Crljenak Kaštelanski (Croatia)', type: 'red', climate: 'Hot', vigor: 'Moderate', ripening: 'Early ("primitivo"=early ripening)', notes: 'Genetically identical to Zinfandel. Uneven ripening leads to raisined berries alongside fresh ones → high sugar/alcohol. Bush-trained (alberello) in Puglia. Primitivo di Manduria: benchmark.' },
+  'Nero d\'Avola': { origin: 'Sicily, Italy', synonyms: 'Calabrese (old name)', type: 'red', climate: 'Hot Mediterranean', vigor: 'Moderate-high', ripening: 'Late', notes: 'Sicily\'s most important native red. Named after the town of Avola. Thick-skinned, heat and drought resistant. Bush-trained (alberello). Modern winemaking has elevated quality dramatically.' },
+  'Zinfandel': { origin: 'Croatia (as Crljenak); iconic in California', synonyms: 'Primitivo (Italy), Tribidrag (Croatia)', type: 'red', climate: 'Warm to hot', vigor: 'Moderate', ripening: 'Uneven', notes: 'Uneven ripening is signature challenge — cluster can have raisined and unripe berries. Old vine (100+ year) plantings in Lodi, Sonoma, Paso Robles prized. White Zinfandel (off-dry rosé) is most produced style.' },
+  'Malbec': { origin: 'Cahors, SW France', synonyms: 'Côt (Loire), Auxerrois (Cahors)', type: 'red', climate: 'Warm continental', vigor: 'Moderate', ripening: 'Mid', notes: 'Thin-skinned, susceptible to frost and mildew in France. Found its ideal home in Argentina (Mendoza) at high altitude (900-1,500m). UV intensity concentrates colour and flavour. Argentina: world\'s largest plantings.' },
+  'Carménère': { origin: 'Bordeaux, France', synonyms: 'Grande Vidure (old French name)', type: 'red', climate: 'Warm', vigor: 'High', ripening: 'Very late', notes: 'Virtually extinct in Bordeaux after phylloxera. Rediscovered in Chile in 1994 (previously confused with Merlot). Very late ripening, needs warmth. Green/pyrazine character when underripe. Chile\'s signature variety.' },
+  'Pinotage': { origin: 'South Africa (1925 crossing)', synonyms: 'None', type: 'red', climate: 'Warm', vigor: 'High', ripening: 'Mid', notes: 'Pinot Noir × Cinsault cross created by Prof. Perold at Stellenbosch. Unique to South Africa. High yields need controlling. Can produce acetone off-flavours if poorly made. Cape Blend: Pinotage-based.' },
+  'Gamay': { origin: 'Beaujolais, France', synonyms: 'Gamay Noir à Jus Blanc (full name)', type: 'red', climate: 'Cool to moderate', vigor: 'High', ripening: 'Early', notes: 'Banned from Burgundy in 1395 by Duke Philip the Bold. Thrives on granite soils of Beaujolais. Often processed by carbonic maceration for fruity nouveau style. Cru Beaujolais: more serious, terroir-driven.' },
+  'Xinomavro': { origin: 'Macedonia, Northern Greece', synonyms: 'Name means "acid-black"', type: 'red', climate: 'Cool continental', vigor: 'Moderate', ripening: 'Late', notes: 'High-altitude vineyards (200-700m) in Naoussa. Often compared to Nebbiolo for its high acid, high tannin, pale colour, and age-worthiness. Needs extended aging to soften.' },
+  'Agiorgitiko': { origin: 'Nemea, Peloponnese, Greece', synonyms: 'St George (translation)', type: 'red', climate: 'Warm Mediterranean', vigor: 'Moderate-high', ripening: 'Mid', notes: 'Most widely planted Greek red. Versatile: rosé to sweet red to serious age-worthy reds. Nemea PDO: vineyards from 250-800m altitude (higher = more acidity and elegance). Deep colour, generous fruit.' },
+  'Touriga Nacional': { origin: 'Dão, Portugal', synonyms: 'Touriga', type: 'red', climate: 'Warm continental', vigor: 'Low', ripening: 'Mid', notes: 'Small berries, thick skins, low yields — extremely concentrated. Portugal\'s finest native variety. Essential in premium Port blends. Increasingly used for quality Douro and Dão table wines. Deeply coloured, floral, structured.' },
+  'Baga': { origin: 'Bairrada, Portugal', synonyms: 'None widely used', type: 'red', climate: 'Cool maritime', vigor: 'Moderate', ripening: 'Late', notes: 'Extremely thick-skinned with very high tannins. Traditional foot-treading in lagares extracts colour and tannin. Clay soils of Bairrada. Modern producers use gentler extraction. Challenging but rewarding when well made.' },
+  'Tannat': { origin: 'Basque Country / SW France', synonyms: 'Harriague (Uruguay)', type: 'red', climate: 'Moderate to warm', vigor: 'Moderate', ripening: 'Late', notes: 'Among the world\'s most tannic varieties. Madiran birthplace invented micro-oxygenation to soften the wine. Uruguay: national grape, more approachable style. High polyphenol content (health claims).' },
+  'Pinot Meunier': { origin: 'Champagne, France', synonyms: 'Meunier, Schwarzriesling (Germany)', type: 'red', climate: 'Cool', vigor: 'Moderate', ripening: 'Early-mid', notes: 'More frost-resistant than Pinot Noir (buds later). "Meunier" means miller (white downy underside of leaves resembles flour). Adds fruitiness and roundness to Champagne blends. Marne Valley: dominant variety.' },
+  'Cinsault': { origin: 'Southern France', synonyms: 'Cinsaut (alternative spelling)', type: 'red', climate: 'Hot', vigor: 'High', ripening: 'Late', notes: 'Large berries, thin skins → light colour, low tannins. Drought resistant, heat-loving. Parent of Pinotage (with Pinot Noir). Important for rosé in Provence. Blending variety in southern Rhône and Languedoc.' },
+  'Carignan': { origin: 'Cariñena, Aragon, Spain', synonyms: 'Cariñena/Mazuelo (Spain), Carignano (Italy)', type: 'red', climate: 'Hot', vigor: 'High', ripening: 'Very late', notes: 'Once most planted variety in France (Languedoc). High yields unless old vine. Old bush vines produce concentrated, complex wines. Late ripening, susceptible to powdery mildew. Priorat: excellent quality.' },
+  'Grenache Blanc': { origin: 'Spain/Southern France', synonyms: 'Garnacha Blanca (Spain)', type: 'white', climate: 'Warm to hot', vigor: 'High', ripening: 'Mid', notes: 'White mutation of Grenache Noir. Low acidity, full body, prone to oxidation — needs careful handling. Important in Châteauneuf-du-Pape blanc, Côtes du Rhône blanc blends.' },
+  'Vermentino': { origin: 'Liguria, Italy / Sardinia', synonyms: 'Rolle (Provence, France)', type: 'white', climate: 'Warm maritime', vigor: 'Moderate', ripening: 'Late', notes: 'Coastal Mediterranean variety. Thick skin resists maritime conditions. Important in Provence (as Rolle), Sardinia (Vermentino di Gallura DOCG), and Ligurian coast. Aromatic, mineral, fresh.' },
+  'Furmint': { origin: 'Hungary (Tokaj)', synonyms: 'Šipon (Slovenia)', type: 'white', climate: 'Cool continental', vigor: 'Moderate', ripening: 'Late', notes: 'Principal grape of Tokaj Aszú (world\'s great sweet wine). Thin skin, susceptible to botrytis. Late ripening, high acidity retained. Volcanic soils of Tokaj. Dry Furmint wines gaining recognition.' },
+  'Sémillon': { origin: 'Bordeaux, France', synonyms: 'Semillon (without accent)', type: 'white', climate: 'Moderate to warm', vigor: 'Moderate', ripening: 'Early', notes: 'Thin-skinned, highly susceptible to botrytis → essential for Sauternes sweet wines. When healthy: waxy, full-bodied dry whites. Hunter Valley (Australia): extraordinary age-worthy unoaked style.' },
+  'Semillon': { origin: 'Same as Sémillon — Australian spelling', synonyms: 'Sémillon (French spelling)', type: 'white', climate: 'Warm', vigor: 'Moderate', ripening: 'Early', notes: 'In Hunter Valley: picked early at low sugar for a lean, neutral style that transforms with 10-15 years bottle age into toasty, honeyed complexity — entirely without oak. Unique Australian tradition.' },
+  'Muscadelle': { origin: 'Bordeaux, France', synonyms: 'Tokay (old Australian name)', type: 'white', climate: 'Moderate', vigor: 'Moderate', ripening: 'Early', notes: 'NOT related to Muscat despite aromatic similarity. Minor Bordeaux blending component (typically 5-10% of Sauternes blend). Adds floral perfume. Very susceptible to disease — declining plantings.' },
+  'Aligoté': { origin: 'Burgundy, France', synonyms: 'None widely used', type: 'white', climate: 'Cool', vigor: 'High', ripening: 'Early', notes: 'Burgundy\'s secondary white after Chardonnay. Bouzeron AC: its only village-level appellation. Often planted on less favourable sites. Base for Kir (with crème de cassis). Brisk, refreshing.' },
+  'Melon de Bourgogne (Muscadet)': { origin: 'Burgundy originally; now Loire Valley', synonyms: 'Muscadet (regional name), Melon', type: 'white', climate: 'Cool maritime', vigor: 'Moderate', ripening: 'Early', notes: 'Frost-resistant, which is why it survived in the Loire after the devastating 1709 winter. Neutral variety that gains character through sur lie aging. Atlantic-influenced terroir adds salinity.' },
+  'Corvina': { origin: 'Veneto, Italy', synonyms: 'Corvina Veronese', type: 'red', climate: 'Cool to moderate continental', vigor: 'High', ripening: 'Late', notes: 'Backbone of Valpolicella, Ripasso, and Amarone. Thick skin dries well (appassimento technique). Grows on hillside pergola systems. Contributes cherry character and almond notes to Amarone.' },
+  'Rondinella': { origin: 'Veneto, Italy', synonyms: 'None', type: 'red', climate: 'Moderate continental', vigor: 'Moderate', ripening: 'Late', notes: 'Minor blending variety in Valpolicella/Amarone. Reliable yields, good disease resistance. Dries well for appassimento. Adds colour and body to Corvina-based blends.' },
+  'Molinara': { origin: 'Veneto, Italy', synonyms: 'None', type: 'red', climate: 'Moderate continental', vigor: 'Moderate', ripening: 'Late', notes: 'Declining in Valpolicella blends. Thin-skinned, light colour. Name from "mulino" (mill) — dusty bloom on berries. Being replaced by Oseleta and Corvinone in modern blends.' },
+  'Garganega': { origin: 'Veneto, Italy', synonyms: 'Grecanico Dorato (Sicily)', type: 'white', climate: 'Moderate continental', vigor: 'High', ripening: 'Late', notes: 'Soave\'s principal variety. Late ripening, vigorous. Best on volcanic hillside soils of Soave Classico. Can develop botrytis for sweet Recioto di Soave. Almond character is distinctive.' },
+  'Trebbiano di Soave': { origin: 'Veneto, Italy', synonyms: 'Verdicchio (Marche) — genetically identical', type: 'white', climate: 'Moderate', vigor: 'High', ripening: 'Late', notes: 'Distinct from Trebbiano Toscano. Genetically same as Verdicchio. Higher quality than the more common Trebbiano varieties. Good acidity, mineral character.' },
+  'Glera': { origin: 'Veneto/Friuli, Italy', synonyms: 'Formerly called Prosecco (grape renamed 2009)', type: 'white', climate: 'Moderate', vigor: 'High', ripening: 'Late', notes: 'Renamed from "Prosecco" to "Glera" in 2009 to protect the Prosecco geographic designation. High yields. Charmat method preserves freshness and floral aromatics. Steep hillsides of Conegliano Valdobbiadene.' },
+  'Sangiovese Grosso (Brunello)': { origin: 'Montalcino, Tuscany, Italy', synonyms: 'Brunello', type: 'red', climate: 'Warm continental', vigor: 'Moderate', ripening: 'Late', notes: 'Larger-berried clone of Sangiovese. 100% used for Brunello di Montalcino DOCG. South/SW facing slopes at 150-500m. Galestro (flakey marl) and clay soils. Among Italy\'s finest and most age-worthy wines.' },
+  'Cortese': { origin: 'Piemonte, Italy', synonyms: 'None widely used', type: 'white', climate: 'Cool to moderate', vigor: 'Moderate', ripening: 'Mid', notes: 'Principal variety of Gavi DOCG. Light, clean, neutral. Best on calcareous clay soils. Gavi di Gavi (commune of Gavi): finest expressions. Important seafood wine in Piemonte.' },
+  'Spätburgunder': { origin: 'Same as Pinot Noir — German name', synonyms: 'Pinot Noir (France), Blauburgunder (Austria)', type: 'red', climate: 'Cool', vigor: 'Moderate', ripening: 'Early', notes: 'German Pinot Noir. Ahr Valley: warmest site in Germany. Baden: most Burgundian style. Pfalz: emerging region. Quality has dramatically improved since 2000s. Often lighter than French Pinot.' },
+  'Grauburgunder': { origin: 'Same as Pinot Gris — German name', synonyms: 'Pinot Gris (France), Pinot Grigio (Italy), Ruländer (sweeter style)', type: 'white', climate: 'Cool to moderate', vigor: 'Moderate', ripening: 'Early-mid', notes: 'When labelled Grauburgunder: dry, modern style. When labelled Ruländer: traditional, sweeter style. Baden: benchmark. Fuller-bodied than Italian Pinot Grigio.' },
+  'Silvaner': { origin: 'Austria (possibly Transylvania)', synonyms: 'Sylvaner (Alsace)', type: 'white', climate: 'Cool continental', vigor: 'Moderate', ripening: 'Early', notes: 'Franken: principal variety, served in distinctive Bocksbeutel flagon. Earthy, herbal, mineral character. Alsace Sylvaner: lighter, simpler. Declining plantings globally but treasured in Franken.' },
+  'Welschriesling': { origin: 'Central Europe (NOT related to Riesling)', synonyms: 'Olasz Rizling (Hungary), Laški Rizling (Slovenia)', type: 'white', climate: 'Cool to moderate', vigor: 'Moderate-high', ripening: 'Late', notes: 'Confusingly named — no relation to Riesling. Widely planted in Austria, Hungary, Slovenia. Everyday dry wine + excellent Eiswein and TBA sweet wines in Burgenland. Neutral aromatic profile.' },
+  'Zweigelt': { origin: 'Austria (1922 crossing by Dr. Zweigelt)', synonyms: 'Rotburger (old name)', type: 'red', climate: 'Cool to moderate', vigor: 'High', ripening: 'Mid', notes: 'Austria\'s most planted red. Blaufränkisch × St Laurent cross. Named controversially after its creator. Versatile: light fruity to serious oak-aged. Reliable, winter-hardy, generous yields.' },
+  'Blaufränkisch': { origin: 'Austria / Central Europe', synonyms: 'Lemberger (Germany/USA), Kékfrankos (Hungary), Frankovka', type: 'red', climate: 'Cool to moderate', vigor: 'Moderate', ripening: 'Late', notes: 'Burgenland: Austria\'s finest reds (especially Mittelburgenland). Late ripening needs warm sites. Deep colour, firm tannins, spicy. Increasingly compared to Syrah. Iron-rich soils in Burgenland.' },
+  'Nerello Mascalese': { origin: 'Mt Etna, Sicily, Italy', synonyms: 'None widely used', type: 'red', climate: 'Cool volcanic (altitude)', vigor: 'Moderate', ripening: 'Late', notes: 'Grown on volcanic slopes of Mt Etna (400-1000m+). Old bush vines (alberello) on black lava and ash soils. Phylloxera-free (volcanic soils). Compared to Pinot Noir for elegance. Rapidly rising reputation.' },
+  'Carricante': { origin: 'Mt Etna, Sicily, Italy', synonyms: 'None widely used', type: 'white', climate: 'Cool volcanic (altitude)', vigor: 'Moderate', ripening: 'Late', notes: 'Etna\'s principal white grape. Altitude (600-900m) and volcanic terroir give mineral, saline character. Etna Bianco Superiore: Milo commune, east-facing slopes. Gaining international recognition.' },
+  'Sagrantino': { origin: 'Montefalco, Umbria, Italy', synonyms: 'None', type: 'red', climate: 'Warm continental', vigor: 'Moderate', ripening: 'Late', notes: 'Among the world\'s highest tannin varieties. Tiny production zone centred on Montefalco. Originally used for Passito (dried grape sweet wine). DOCG requires minimum 37 months aging. Extremely concentrated.' },
+  'Palomino Fino': { origin: 'Jerez, Andalusia, Spain', synonyms: 'Listán Blanco (Canary Islands)', type: 'white', climate: 'Hot', vigor: 'High', ripening: 'Early', notes: 'Neutral on its own — transformed by flor yeast aging (biological) into Fino/Manzanilla or oxidative aging into Oloroso. Albariza (white chalk) soils of Jerez are essential. Solera system for aging.' },
+  'Pedro Ximénez': { origin: 'Montilla-Moriles / Jerez, Spain', synonyms: 'PX', type: 'white', climate: 'Very hot', vigor: 'Moderate', ripening: 'Early', notes: 'Sun-dried on esparto grass mats (soleo) to concentrate sugars to extreme levels (400+ g/L RS). Creates the world\'s sweetest wines. Also used to sweeten Cream Sherry blends.' },
+  'Moscatel': { origin: 'Mediterranean', synonyms: 'Muscat of Alexandria, Moscatel de Alejandría, Zibibbo (Sicily)', type: 'white', climate: 'Hot', vigor: 'High', ripening: 'Late', notes: 'Larger-berried, less fine than Muscat Blanc à Petits Grains. Used for sweet fortified wines in Málaga, Setúbal, and Pantelleria (as Zibibbo). Also used for table grapes and raisins.' },
+  'Cariñena': { origin: 'Aragon, Spain', synonyms: 'Carignan (France), Carignano (Italy), Mazuelo (Rioja)', type: 'red', climate: 'Hot', vigor: 'High', ripening: 'Very late', notes: 'Named after the town of Cariñena in Aragon. Same variety as French Carignan. Old bush vines on slate soils (Priorat) produce exceptional quality. Key component in GSM+ blends.' },
+  'Muscat de Frontignan': { origin: 'Languedoc, France', synonyms: 'Same grape as Muscat Blanc à Petits Grains', type: 'white', climate: 'Hot Mediterranean', vigor: 'Moderate', ripening: 'Early-mid', notes: 'Frontignan is the appellation, not a separate grape. Vin Doux Naturel (VDN): fortified during fermentation. Also made in Beaumes-de-Venise, Rivesaltes. Intensely aromatic sweet wine.' },
+  'Petit Verdot': { origin: 'Bordeaux, France', synonyms: 'None widely used', type: 'red', climate: 'Warm', vigor: 'Moderate', ripening: 'Very late', notes: 'Latest ripening Bordeaux variety — often fails to fully ripen. Used in small proportions (2-5%) for colour, tannin and violet perfume. New World (Australia, California): can ripen fully, sometimes varietal.' }
+};
+
 function showGrapeNote(btn) {
   const panel = btn.nextElementSibling; // always the grape-note-panel div
   const isOpen = btn.classList.contains('active');
@@ -2204,14 +2774,29 @@ function createSubIcon(color, size = 14) {
   return L.divIcon({ html: svg, className: '', iconSize: [size, size], iconAnchor: [size/2, size/2], popupAnchor: [0, -(size/2 + 6)] });
 }
 
+function buildGrapeInfoHtml(g) {
+  const info = grapeGeneralInfo[g];
+  if (!info) return '';
+  let h = '<div class="grape-general-info">';
+  h += `<div class="ggi-row"><span class="ggi-label">Origin:</span> ${info.origin}</div>`;
+  if (info.synonyms) h += `<div class="ggi-row"><span class="ggi-label">Synonyms:</span> ${info.synonyms}</div>`;
+  h += `<div class="ggi-row"><span class="ggi-label">Climate:</span> ${info.climate} · <span class="ggi-label">Vigor:</span> ${info.vigor} · <span class="ggi-label">Ripening:</span> ${info.ripening}</div>`;
+  if (info.notes) h += `<div class="ggi-notes">${info.notes}</div>`;
+  h += '</div>';
+  return h;
+}
+
 function formatGrapesClickable(grapes, contextRegion) {
   return grapes.map(g => {
     const wc = getGrapeWineClass(g);
     const hasNote = !!grapeTastingNotes[g];
     if (!hasNote) return `<span class="grape-tag ${wc}">${g}</span>`;
     const wineHints = contextRegion ? getGrapeWineHints(g, contextRegion) : '';
+    const infoHtml = buildGrapeInfoHtml(g);
     return `<span class="grape-tag-btn ${wc}" onclick="showGrapeNote(this)">▸ ${g}</span>` +
-           `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}` +
+           `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>` +
+           infoHtml +
+           `<div class="grape-tasting-header">Tasting Profile</div>${grapeTastingNotes[g]}` +
            (wineHints ? `<div class="grape-note-region">♦ Wines: ${wineHints}</div>` : '') +
            `</div>`;
   }).join('');
@@ -2271,6 +2856,7 @@ const markers = regions.map(r => {
     regionData: r
   });
   marker.bindPopup(createPopup(r), { maxWidth: 340, className: 'wine-popup' });
+  marker.bindTooltip(r.name, { permanent: true, direction: 'top', offset: [0, -28], className: 'region-name-label' });
   marker.on('click', () => { highlightListItem(r.name); activateRegion(r.name); showRegionSubappellations(r.name); });
   markerMap[r.name] = marker;
   return marker;
@@ -2278,6 +2864,23 @@ const markers = regions.map(r => {
 
 clusterGroup.addLayers(markers);
 map.addLayer(clusterGroup);
+
+// Region name label visibility — only show at zoom >= 7
+let regionLabelsVisible = false;
+function updateRegionLabelVisibility() {
+  const z = map.getZoom();
+  const shouldShow = z >= 7;
+  if (shouldShow === regionLabelsVisible) return;
+  regionLabelsVisible = shouldShow;
+  markers.forEach(m => {
+    if (shouldShow) m.openTooltip();
+    else m.closeTooltip();
+  });
+}
+map.on('zoomend', updateRegionLabelVisibility);
+// Also update when cluster animations finish (markers become visible)
+clusterGroup.on('animationend', () => { if (regionLabelsVisible) { markers.forEach(m => { if (map.hasLayer(m)) m.openTooltip(); }); } });
+updateRegionLabelVisibility();
 
 // ============================================================
 // REGION POLYGONS
@@ -2299,13 +2902,21 @@ function polyActiveStyle(color) {
 function polyGroupStyle(color) {
   return { color, weight: 2, opacity: 0.6, fillColor: color, fillOpacity: 0.07, dashArray: '8 5' };
 }
+function polyClimateStyle(color) {
+  return { color, weight: 1.5, opacity: 0.6, fillColor: color, fillOpacity: 0.25, dashArray: null };
+}
+
+function getPolyDefaultStyle(name) {
+  if (showClimateOverlay) return polyClimateStyle(getClimateColor(name));
+  return polyDefaultStyle(getRegionColor(name));
+}
 
 function activateRegion(name) {
   // Deactivate previously active polygons
   activePolygons.forEach(prev => {
     if (polygonMap[prev]) {
       const prevR = regions.find(r => r.name === prev);
-      if (prevR) polygonMap[prev].setStyle(polyDefaultStyle(getRegionColor(prev)));
+      if (prevR) polygonMap[prev].setStyle(getPolyDefaultStyle(prev));
     }
   });
   activePolygons.clear();
@@ -2359,6 +2970,7 @@ regions.forEach(r => {
 // SUBREGION MARKERS
 // ============================================================
 let showSubregions = false;
+let showClimateOverlay = false;
 const subMarkerMap = {};
 
 const subClusterGroup = L.markerClusterGroup({
@@ -2399,6 +3011,47 @@ function toggleSubregions() {
   btn.classList.toggle('active', showSubregions);
   btn.innerHTML = (showSubregions ? '◉' : '◎') + ` ${showSubregions ? 'Hide' : 'Show'} Sub-appellations <span class="sub-badge" id="sub-count">${subregionData.length}</span>`;
   applyFilters();
+}
+
+// ── Climate overlay toggle ──────────────────────────────────
+let climateLegendControl = null;
+function toggleClimateOverlay() {
+  showClimateOverlay = !showClimateOverlay;
+  const btn = document.getElementById('climate-toggle');
+  btn.classList.toggle('active', showClimateOverlay);
+  btn.textContent = showClimateOverlay ? '🌡 Hide Climate Overlay' : '🌡 Show Climate Overlay';
+  // Recolor all non-active polygons
+  regions.forEach(r => {
+    if (!polygonMap[r.name] || activePolygons.has(r.name)) return;
+    polygonMap[r.name].setStyle(getPolyDefaultStyle(r.name));
+  });
+  // Show/hide legend
+  if (showClimateOverlay) {
+    if (!climateLegendControl) {
+      climateLegendControl = L.control({ position: 'bottomright' });
+      climateLegendControl.onAdd = function() {
+        const div = L.DomUtil.create('div', 'climate-legend');
+        const types = [
+          { key: 'continental', label: 'Continental', emoji: '🏔' },
+          { key: 'maritime', label: 'Maritime', emoji: '🌊' },
+          { key: 'mediterranean', label: 'Mediterranean', emoji: '☀️' },
+          { key: 'transition', label: 'Transition', emoji: '🔀' }
+        ];
+        let html = '<h4>Climate Types</h4>';
+        types.forEach(t => {
+          const c = CLIMATE_COLORS[t.key].moderate;
+          html += `<div class="legend-row"><span class="legend-swatch" style="background:${c}"></span>${t.emoji} ${t.label}</div>`;
+        });
+        html += '<div class="legend-note">Lighter = cooler · Darker = warmer</div>';
+        div.innerHTML = html;
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+      };
+    }
+    climateLegendControl.addTo(map);
+  } else {
+    if (climateLegendControl) climateLegendControl.remove();
+  }
 }
 
 // ============================================================
@@ -2547,8 +3200,11 @@ function formatSidebarGrapes(grapes, subName, parentRegion) {
     if (!note) return `<span class="grape-tag ${wc}">${g}</span>`;
     const regionHint = getRegionalContext(g, subName, parentRegion);
     const wineHints = getGrapeWineHints(g, parentRegion);
+    const infoHtml = buildGrapeInfoHtml(g);
     return `<span class="grape-tag-btn ${wc}" data-grape="${g}" data-sub="${subName}" data-parent="${parentRegion}">▸ ${g}</span>` +
-      `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${note}` +
+      `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>` +
+      infoHtml +
+      `<div class="grape-tasting-header">Tasting Profile</div>${note}` +
       (regionHint ? `<div class="grape-note-region">⬦ In ${subName}: ${regionHint}</div>` : '') +
       (wineHints ? `<div class="grape-note-region">♦ Wines: ${wineHints}</div>` : '') +
       `</div>`;
@@ -2640,7 +3296,7 @@ function getRegionalContext(grape, subName, parentRegion) {
 var WINE_DATA = {
   // ===== ITALY — VENETO =====
   'Veneto': [
-    { name:'Amarone della Valpolicella DOCG', classification:'DOCG', grapes:['Corvina (45-95%)','Rondinella (5-30%)','Molinara (optional)'], method:'Appassimento — grapes dried 3-4 months on racks, losing 30-40% weight before fermentation', aging:'Min 2 years (Riserva: 4 years)', abv:'14-17%', style:'Full body, dried cherry, chocolate, fig, prune, bitter almond finish, velvety tannins', notes:'Fermented to dryness from partially raisined grapes. One of Italy\'s most distinctive and expensive wines. Recioto is the sweet version.' },
+    { name:'Amarone della Valpolicella DOCG', classification:'DOCG', grapes:['Corvina (45-95%)','Rondinella (5-30%)','Molinara (optional)'], method:'Appassimento — grapes dried 3-4 months in fruttaio (drying loft) on bamboo racks (arele). NO artificial heat allowed. Vinification may not begin before Dec 1. Lose 30-40% weight.', aging:'Min 2 years (Riserva: 4 years)', abv:'14-17%', style:'Full body, dried cherry, chocolate, fig, prune, bitter almond finish, velvety tannins', notes:'Fermented to dryness from partially raisined grapes. One of Italy\'s most distinctive and expensive wines. Recioto is the sweet version (fermentation stopped early).' },
     { name:'Valpolicella DOC', classification:'DOC', grapes:['Corvina (45-95%)','Rondinella (5-30%)'], method:'Standard vinification, some carbonic maceration', aging:'No minimum', style:'Light-medium body, fresh cherry, almond, herbal, low tannin', notes:'Classico zone produces best examples. Basic Valpolicella is a light everyday red.' },
     { name:'Valpolicella Ripasso DOC', classification:'DOC', grapes:['Corvina','Rondinella'], method:'Refermented on Amarone grape skins (pomace), adding body and complexity', aging:'Min 1 year', abv:'12-14%', style:'Medium-full body, dried cherry, spice, chocolate, richer than basic Valpolicella', notes:'"Baby Amarone" — bridge between Valpolicella and Amarone at mid-range price.' },
     { name:'Recioto della Valpolicella DOCG', classification:'DOCG', grapes:['Corvina (45-95%)','Rondinella'], method:'Appassimento, but fermentation stopped early to retain sugar', aging:'Min 1 year', style:'Sweet, full body, dried fruit, cherry jam, chocolate, velvety', notes:'The original Valpolicella wine style — sweet. Amarone was historically a "failed" Recioto where fermentation went too far.' },
@@ -2649,47 +3305,83 @@ var WINE_DATA = {
   ],
   // ===== ITALY — PIEMONTE =====
   'Piemonte': [
-    { name:'Barolo DOCG', classification:'DOCG', grapes:['Nebbiolo (100%)'], method:'Traditional: large Slovenian oak botti (3000L+). Modernist: French barriques (225L)', aging:'Min 38 months total (18 in oak). Riserva: 62 months', style:'Full body, very high tannin, high acid, tar, roses, cherry, truffle, violet, tobacco', notes:'"King of Italian wine." Serralunga: powerful, tannic. La Morra: elegant, perfumed. Among world\'s longest-lived reds (20-50+ years).' },
-    { name:'Barbaresco DOCG', classification:'DOCG', grapes:['Nebbiolo (100%)'], method:'Similar to Barolo, often slightly shorter oak aging', aging:'Min 26 months total (9 in oak). Riserva: 50 months', style:'Full body, high tannin/acid but more approachable than Barolo, red cherry, roses, tar, silk', notes:'"Queen to Barolo\'s King." Softer Tortonian soils yield slightly more elegant wine. Top producers: Gaja, Produttori del Barbaresco.' },
+    { name:'Barolo DOCG', classification:'DOCG', grapes:['Nebbiolo (100%)'], method:'Traditional: large Slovenian oak botti (3000L+). Modernist: French barriques (225L). Guyot training at 4000-5000 vines/ha.', aging:'Min 38 months total (18 in oak). Riserva: 62 months', style:'Full body, very high tannin, high acid, tar, roses, cherry, truffle, violet, tobacco', notes:'"King of Italian wine." SOILS: Serravallian/Helvetian marl in Serralunga (powerful, tannic); Tortonian marl in La Morra (elegant, perfumed). Nebbia fog slows ripening, preserves aromatics. Among world\'s longest-lived reds (20-50+ years).' },
+    { name:'Barbaresco DOCG', classification:'DOCG', grapes:['Nebbiolo (100%)'], method:'Similar to Barolo, often slightly shorter oak aging. Guyot training.', aging:'Min 26 months total (9 in oak). Riserva: 50 months', style:'Full body, high tannin/acid but more approachable than Barolo, red cherry, roses, tar, silk', notes:'"Queen to Barolo\'s King." Predominantly Tortonian (younger, sandier) marl soils yield slightly more elegant, earlier-drinking wines. Warmer mesoclimate than Barolo. Top producers: Gaja (revolutionized with French oak), Produttori del Barbaresco.' },
     { name:'Barbera d\'Asti DOCG', classification:'DOCG', grapes:['Barbera (min 90%)'], method:'Stainless steel or oak-aged', aging:'Superiore: 14 months (6 in oak)', style:'Medium-full body, high acid, low tannin, deep color, sour cherry, plum, sometimes oaky', notes:'Barbera\'s best expression. High acid makes it food-friendly. Nizza DOCG is the premium sub-zone.' },
     { name:'Gavi DOCG', classification:'DOCG', grapes:['Cortese (100%)'], method:'Protective winemaking', aging:'No minimum', style:'Light body, high acid, citrus, green apple, almond, mineral, lean', notes:'Piedmont\'s premier dry white. Best from Gavi di Gavi (commune of Gavi itself).' },
     { name:'Moscato d\'Asti DOCG', classification:'DOCG', grapes:['Moscato Bianco (100%)'], method:'Charmat method, stopped early to retain sugar and low alcohol', aging:'No minimum', abv:'5-5.5%', style:'Sweet, frizzante (lightly sparkling), peach, grape, orange blossom, musky, delicate mousse', notes:'Lower pressure than Asti Spumante. One of Italy\'s most exported sweet wines. Very low alcohol.' },
     { name:'Asti Spumante DOCG', classification:'DOCG', grapes:['Moscato Bianco (100%)'], method:'Charmat method, fully sparkling', aging:'No minimum', abv:'7-9%', style:'Sweet, sparkling, grapey, peach, floral, exuberant mousse', notes:'More fizz and slightly higher alcohol than Moscato d\'Asti. Both from same grape, different sparkle level.' },
     { name:'Roero DOCG', classification:'DOCG', grapes:['Nebbiolo (min 95%) for red; Arneis (min 95%) for white'], method:'Oak aging for reds', aging:'Red: 20 months. Riserva: 32 months', style:'Red: lighter Nebbiolo, sandy soils, red fruit, floral. White (Arneis): pear, almond, herbal', notes:'Left bank of Tanaro river. Sandier soils = lighter, earlier-drinking Nebbiolo than Barolo/Barbaresco.' },
+    { name:'Dolcetto d\'Alba DOC', classification:'DOC', grapes:['Dolcetto (100%)'], method:'Stainless steel or brief oak', aging:'No minimum', style:'Medium body, low acid, moderate tannin, dark cherry, plum, almond, bitter finish', notes:'Everyday Piedmontese red. Name means "little sweet one" but wine is dry. Early-drinking, meant to be consumed young while Nebbiolo ages.' },
   ],
   // ===== ITALY — TUSCANY =====
   'Tuscany': [
-    { name:'Chianti Classico DOCG', classification:'DOCG', grapes:['Sangiovese (min 80%)','Canaiolo, Colorino, Cab Sauv, Merlot (up to 20%)'], method:'Oak aging in various sizes', aging:'Annata: 12 months. Riserva: 24 months. Gran Selezione: 30 months', style:'Medium-full body, high acid, firm tannin, sour cherry, plum, dried herbs, leather, earthy', notes:'Gallo Nero (Black Rooster) logo. Gran Selezione is top tier — estate grapes only. Galestro and Alberese soils.' },
-    { name:'Brunello di Montalcino DOCG', classification:'DOCG', grapes:['Sangiovese Grosso (Brunello) 100%'], method:'Traditional: large Slavonian oak botti. Modern: mix of botti and barriques', aging:'Min 5 years total (2 in oak). Riserva: 6 years (2 in oak)', style:'Full body, very high acid, firm tannin, dark cherry, leather, tobacco, dried herbs, truffle, cedar', notes:'Italy\'s most prestigious red alongside Barolo. Rosso di Montalcino is the younger, more accessible version (1 year aging).' },
+    { name:'Chianti Classico DOCG', classification:'DOCG', grapes:['Sangiovese (min 80%)','Canaiolo, Colorino, Cab Sauv, Merlot (up to 20%)'], method:'Oak aging in various sizes', aging:'Annata: 12 months. Riserva: 24 months. Gran Selezione: 30 months', style:'Medium-full body, high acid, firm tannin, sour cherry, plum, dried herbs, leather, earthy', notes:'Gallo Nero (Black Rooster) logo. Gran Selezione is top tier — estate grapes only. SOILS: Galestro (schistous clay — good drainage, aromatic wines) and Alberese (calcareous rock — structured, tannic wines). White grapes no longer permitted since 2006.' },
+    { name:'Brunello di Montalcino DOCG', classification:'DOCG', grapes:['Sangiovese Grosso (Brunello clone) 100%'], method:'Traditional: large Slavonian oak botti. Modern: mix of botti and barriques', aging:'Min 5 years total (2 in oak). Riserva: 6 years (2 in oak)', style:'Full body, very high acid, firm tannin, dark cherry, leather, tobacco, dried herbs, truffle, cedar', notes:'Italy\'s most prestigious red alongside Barolo. Sangiovese Grosso = higher quality biotype (also called Brunello locally). Rosso di Montalcino: younger, more accessible (1yr aging). 20-50+ year aging potential.' },
     { name:'Vino Nobile di Montepulciano DOCG', classification:'DOCG', grapes:['Sangiovese (Prugnolo Gentile clone, min 70%)'], method:'Oak aging', aging:'Min 2 years (Riserva: 3 years)', style:'Medium-full body, plum, cherry, spice, moderate tannin, between Chianti Classico and Brunello in weight', notes:'Distinct from Montepulciano d\'Abruzzo grape. Uses Sangiovese clone called Prugnolo Gentile.' },
-    { name:'Bolgheri DOC (Super Tuscans)', classification:'DOC', grapes:['Cabernet Sauvignon','Merlot','Cabernet Franc','Sangiovese'], method:'French barrique aging', aging:'Varies by producer', style:'Full body, cassis, dark fruit, cedar, chocolate, polished tannins, Bordeaux-style', notes:'Sassicaia, Ornellaia, Masseto — world-class wines. Originally sold as IGT to avoid DOC rules. Now has its own DOC.' },
+    { name:'Bolgheri DOC (Super Tuscans)', classification:'DOC', grapes:['Cabernet Sauvignon','Merlot','Cabernet Franc','Sangiovese'], method:'French barrique aging', aging:'Varies by producer', style:'Full body, cassis, dark fruit, cedar, chocolate, polished tannins, Bordeaux-style', notes:'SUPER TUSCAN history: Sassicaia (1968 vintage, released 1971 by Marchese Incisa della Rocchetta) pioneered Bordeaux varieties in Tuscany. Tignanello (Antinori, 1971): Sangiovese + Cab in barriques. Originally sold as Vino da Tavola/IGT; IGT classification created 1992. Now Bolgheri has own DOC. Ornellaia, Masseto also world-class.' },
     { name:'Vernaccia di San Gimignano DOCG', classification:'DOCG', grapes:['Vernaccia (min 85%)'], method:'Stainless steel or light oak', aging:'No minimum (Riserva: 14 months)', style:'Light-medium body, crisp, mineral, almond, citrus, bitter finish', notes:'Italy\'s first DOCG white (1993). From medieval hilltop town of San Gimignano.' },
     { name:'Vin Santo DOC', classification:'DOC', grapes:['Trebbiano, Malvasia (white); Sangiovese (Occhio di Pernice)'], method:'Grapes dried on straw mats (appassimento), aged in small caratelli barrels', aging:'Min 3 years (Riserva: 4 years)', abv:'15.5-18%', style:'Amber, sweet, hazelnut, dried apricot, honey, caramel, oxidative character', notes:'Traditional Tuscan dessert wine. Served with cantucci (almond biscuits). "Holy Wine."' },
+    { name:'Maremma Toscana DOC', classification:'DOC', grapes:['Sangiovese','Cabernet Sauvignon','Merlot','Syrah','Vermentino'], method:'Stainless steel or oak aging depending on style', aging:'No minimum (Riserva: 2 years)', style:'Red: medium-full body, ripe dark fruit, soft tannin, warm spice. White (Vermentino): light-medium, citrus, saline, Mediterranean herbs', notes:'Coastal southern Tuscany (Grosseto province). Warmer, more maritime than inland Tuscany. International varieties thrive alongside Sangiovese. Less restrictive than Chianti — allows creative blends. Bolgheri is within this broader zone. Rising quality and reputation.' },
   ],
   // ===== ITALY — CAMPANIA =====
   'Campania': [
     { name:'Taurasi DOCG', classification:'DOCG', grapes:['Aglianico (min 85%)'], method:'Oak aging', aging:'Min 3 years (Riserva: 4 years, 18 months in oak)', style:'Full body, very high tannin, high acid, dark fruit, smoke, leather, tar, mineral, earthy', notes:'"Barolo of the South." Aglianico is one of Italy\'s greatest red grapes. Extremely age-worthy.' },
     { name:'Fiano di Avellino DOCG', classification:'DOCG', grapes:['Fiano (min 85%)'], method:'Stainless steel or light oak', aging:'No minimum', style:'Medium body, hazelnut, pear, honey, mineral, smoky notes, waxy texture', notes:'One of southern Italy\'s finest whites. Develops complex nutty character with age.' },
-    { name:'Greco di Tufo DOCG', classification:'DOCG', grapes:['Greco (min 85%)'], method:'Stainless steel', aging:'No minimum', style:'Medium body, high acid, citrus, peach, almond, mineral, slightly bitter finish', notes:'Volcanic tuff (tufo) soils. Powerful white with aging potential. Often overlooked gem of southern Italy.' },
+    { name:'Greco di Tufo DOCG', classification:'DOCG', grapes:['Greco (min 85%)'], method:'Stainless steel', aging:'No minimum', style:'Medium body, high acid, citrus, peach, almond, mineral, slightly bitter finish', notes:'Named for volcanic tuff (tufo) soils of the Irpinia hills. Powerful white with aging potential. Vesuvius and Campi Flegrei volcanic activity created these mineral-rich soils. Often overlooked gem of southern Italy.' },
+    { name:'Aglianico del Vulture DOC', classification:'DOC', grapes:['Aglianico (100%)'], method:'Oak aging (large and small barrels)', aging:'Min 1 year (Vecchio: 3 years, Riserva: 5 years). Superiore DOCG: min 3 years total, 1 in oak', style:'Full body, very high tannin, high acid, dark fruit, smoke, tar, volcanic mineral, leather, black cherry, dried herbs', notes:'From Basilicata, on the slopes of the extinct Monte Vulture volcano. Volcanic ash and tuff soils at 200-600m altitude. North-facing slopes provide cooler conditions than nearby Campania, extending the growing season. The Superiore was elevated to DOCG in 2011. Key producers: Elena Fucci, Basilisco, Paternoster. Often compared to Taurasi but with slightly more elegance and freshness from the cooler volcanic slopes.' },
   ],
   // ===== ITALY — SICILY =====
   'Sicily': [
-    { name:'Etna Rosso DOC', classification:'DOC', grapes:['Nerello Mascalese (min 80%)','Nerello Cappuccio (up to 20%)'], method:'Oak aging, often large casks', aging:'No minimum (Riserva: 4 years)', style:'Medium body, high acid, fine tannin, red cherry, blood orange, volcanic mineral, smoky, elegant', notes:'Volcanic basalt soils at 600-1000m altitude. Often compared to Burgundy for elegance. Rising star of Italian wine.' },
+    { name:'Etna Rosso DOC', classification:'DOC', grapes:['Nerello Mascalese (min 80%)','Nerello Cappuccio (up to 20%)'], method:'Oak aging, often large casks', aging:'No minimum (Riserva: 4 years)', style:'Medium body, high acid, fine tannin, red cherry, blood orange, volcanic mineral, smoky, elegant', notes:'Volcanic basalt/ash soils at 600-1000m altitude. Contrada system: 142 districts based on distinct lava flows (codified 2011) — similar to Burgundy\'s climats. Old vines up to 150 years. Renaissance began late 1990s (Passopisciaro, Benanti, Graci). Often compared to Burgundy for elegance and terroir expression.' },
     { name:'Marsala DOC', classification:'DOC', grapes:['Grillo, Catarratto, Inzolia (white); Nero d\'Avola (red)'], method:'Fortified; Perpetuum/Solera-like system. Cooked must (cotta) or grape spirit (mistella) added', aging:'Fine: 1yr. Superiore: 2yr. Superiore Riserva: 4yr. Vergine: 5yr. Vergine Stravecchio: 10yr', abv:'17-20%', style:'Amber to brown, caramel, dried fruit, toffee, nuts, complex oxidative character', notes:'Oro (gold), Ambra (amber), Rubino (ruby) color classes. Secco, Semisecco, Dolce sweetness levels. Vergine is uncooked — finest style.' },
+    { name:'Etna Bianco DOC', classification:'DOC', grapes:['Carricante (min 60%)','Catarratto'], method:'Stainless steel, some oak', aging:'No minimum', style:'Medium body, high acid, citrus, mineral, volcanic, saline, white flowers', notes:'Same volcanic terroir as Etna Rosso. Carricante is the signature white grape. Ages well — develops honeyed, nutty complexity.' },
+    { name:'Cerasuolo di Vittoria DOCG', classification:'DOCG', grapes:['Nero d\'Avola (50-70%)','Frappato (30-50%)'], method:'Stainless steel or light oak', aging:'Min 18 months', style:'Medium body, red cherry, strawberry, floral, fresh, silky tannins', notes:'Sicily\'s only DOCG. Blend of power (Nero d\'Avola) and elegance (Frappato). Southeastern Sicily (Ragusa/Vittoria).' },
+    { name:'Moscato di Pantelleria DOC (Passito)', classification:'DOC', grapes:['Muscat of Alexandria (Zibibbo, 100%)'], method:'Sun-dried grapes (appassimento) on volcanic island', aging:'No minimum', abv:'14-20%', style:'Sweet, golden-amber, apricot, orange peel, honey, caramel, dried fig, intense', notes:'Pantelleria island between Sicily and Tunisia. UNESCO-recognized alberello (bush vine) cultivation against strong winds.' },
   ],
   // ===== ITALY — OTHER =====
   'Umbria': [
-    { name:'Montefalco Sagrantino DOCG', classification:'DOCG', grapes:['Sagrantino (100%)'], method:'Extended oak aging', aging:'Min 37 months (12 in oak). Passito: 30 months', style:'Full body, extremely high tannin, blackberry, plum, dark chocolate, earthy, powerful', notes:'Sagrantino has some of the highest tannin levels of any grape. Also made as sweet Passito style.' },
-    { name:'Orvieto DOC', classification:'DOC', grapes:['Grechetto (min 60%)','Trebbiano (Procanico)'], method:'Stainless steel or light oak', aging:'No minimum', style:'Light body, crisp, citrus, green apple, almond, delicate', notes:'Umbria\'s best-known white. Also made in Abboccato (off-dry) and sweet Muffa Nobile (botrytis) styles.' },
+    { name:'Montefalco Sagrantino DOCG', classification:'DOCG', grapes:['Sagrantino (100%)'], method:'Extended oak aging', aging:'Min 37 months total (12 in oak). Passito: 30 months', style:'Full body, extremely high tannin, blackberry, plum, dark chocolate, earthy, powerful', notes:'Sagrantino has some of the highest tannin levels of any grape variety in the world. Also made as sweet Passito style. Historically associated with sacramental wine (name from "sacro" = sacred).' },
+    { name:'Orvieto DOC', classification:'DOC', grapes:['Grechetto (min 60%)','Trebbiano (Procanico)'], method:'Stainless steel or light oak', aging:'No minimum', style:'Light body, crisp, citrus, green apple, almond, delicate', notes:'Umbria\'s best-known white. Volcanic tufo and sedimentary soils. Also made in Abboccato (off-dry) and sweet Muffa Nobile (botrytis) styles. Classico zone is historical heartland.' },
   ],
   'Friuli-Venezia Giulia': [
-    { name:'Friuli Colli Orientali DOC / Collio DOC', classification:'DOC', grapes:['Pinot Grigio','Friulano','Sauvignon Blanc','Ribolla Gialla'], method:'Stainless steel, some skin-contact (orange wine)', aging:'No minimum', style:'Medium body, textured, stone fruit, floral, mineral, often richer than typical Italian whites', notes:'Italy\'s premier white wine zone. Collio on Slovenian border produces Italy\'s most complex Pinot Grigio.' },
+    { name:'Friuli Colli Orientali DOC / Collio DOC', classification:'DOC', grapes:['Pinot Grigio','Friulano','Sauvignon Blanc','Ribolla Gialla'], method:'Stainless steel, some skin-contact (orange wine)', aging:'No minimum', style:'Medium body, textured, stone fruit, floral, mineral, often richer than typical Italian whites', notes:'Italy\'s premier white wine zone. SOILS: Ponca — layered marl and sandstone rich in minerals, yields complex whites. Collio on Slovenian border produces Italy\'s most complex Pinot Grigio.' },
+    { name:'Friuli Grave DOC', classification:'DOC', grapes:['Pinot Grigio','Merlot','Cabernet Franc','Friulano'], method:'Stainless steel, protective winemaking', aging:'No minimum', style:'Light-medium body, fresh, fruity, easy-drinking, clean', notes:'Largest Friuli DOC by volume. Alluvial plain. More volume-oriented than hill-zone Collio/Colli Orientali. Good value.' },
+    { name:'Ramandolo DOCG', classification:'DOCG', grapes:['Verduzzo Friulano (100%)'], method:'Late-harvest or dried grapes (appassimento)', aging:'Min 2 years', style:'Sweet, golden, honey, dried apricot, almond, spice, waxy texture', notes:'Tiny DOCG within Colli Orientali. One of Italy\'s finest sweet wines. Late-harvest or passito method.' },
+    { name:'Ribolla Gialla (Orange Wine)', classification:'DOC', grapes:['Ribolla Gialla (100%)'], method:'Extended skin-contact (days to months), often amphora/qvevri or large oak. No temperature control in some traditional producers.', aging:'Extended maceration period', style:'Amber/orange, tannic for a white, dried fruit, honey, nutty, oxidative, complex', notes:'Oslavia sub-zone (within Collio) pioneers: Gravner (reintroduced Georgian qvevri/amphora) and Radikon. Italy\'s most famous orange wines. Part of broader natural wine movement.' },
   ],
   'Abruzzo': [
     { name:'Montepulciano d\'Abruzzo DOC', classification:'DOC', grapes:['Montepulciano (min 85%)'], method:'Stainless steel or oak', aging:'No minimum (Riserva varies)', style:'Medium-full body, dark cherry, plum, herbal, moderate tannin, soft and fruity', notes:'Not related to Vino Nobile di Montepulciano (which uses Sangiovese). Montepulciano is the grape here. Good value Italian red.' },
+    { name:'Trebbiano d\'Abruzzo DOC', classification:'DOC', grapes:['Trebbiano d\'Abruzzo (min 85%)'], method:'Stainless steel. TRAINING: traditional pergola abruzzese (flat overhead canopy), increasingly replaced by Guyot.', aging:'No minimum', style:'Light-medium body, citrus, green apple, delicate, neutral to complex', notes:'Trebbiano d\'Abruzzo is a distinct clone from Trebbiano Toscano. Valentini produces legendary, extraordinarily age-worthy versions (considered one of Italy\'s greatest whites). Generally light and fresh everyday white from most producers.' },
+    { name:'Cerasuolo d\'Abruzzo DOC', classification:'DOC', grapes:['Montepulciano (min 85%)'], method:'Short skin-contact maceration', aging:'No minimum', style:'Deep cherry-pink rosé, strawberry, cherry, herbal, full-flavored, structured', notes:'Italy\'s most structured rosé style. Deep color from Montepulciano. Food-friendly, not a light summer sipper.' },
   ],
   'Puglia': [
-    { name:'Primitivo di Manduria DOC', classification:'DOC', grapes:['Primitivo (same as Zinfandel)'], method:'Often dried-grape concentration', aging:'No minimum (Riserva: 2 years)', abv:'14-17%', style:'Full body, jammy, ripe dark fruit, prune, spice, high alcohol, sweet impression', notes:'Genetically identical to Zinfandel. Warm climate = ripe, concentrated wines. Also Dolce Naturale (sweet) version.' },
+    { name:'Primitivo di Manduria DOC', classification:'DOC', grapes:['Primitivo (genetically = Zinfandel)'], method:'Often dried-grape concentration. TRAINING: traditional alberello (bush vines) — labor-intensive, low yields, 2-3m spacing, suited to hot dry climate.', aging:'No minimum (Riserva: 2 years)', abv:'14-17%', style:'Full body, jammy, ripe dark fruit, prune, spice, high alcohol, sweet impression', notes:'Genetically identical to Zinfandel (and Croatian Crljenak Kastelanski). Warm climate = ripe, concentrated wines. Old-vine alberello produces finest quality. Also Dolce Naturale (sweet) version.' },
+    { name:'Salice Salentino DOC', classification:'DOC', grapes:['Negroamaro (min 75%)','Malvasia Nera (up to 25%)'], method:'Oak aging', aging:'Riserva: 2 years (8 months in oak)', style:'Medium-full body, baked red fruit, plum, fig, earthy, moderate tannin', notes:'Salento peninsula (heel of Italy). Good value southern red. Notable rosato (rosé) version also important.' },
+    { name:'Negroamaro del Salento IGT', classification:'IGT', grapes:['Negroamaro (100% or dominant)'], method:'Stainless steel or oak', aging:'No minimum', abv:'13-15%', style:'Full body, high alcohol, dark fruit, tobacco, dried herbs, chocolate, earthy', notes:'Name means "black bitter." Warm climate produces rich, ripe wines. Improving quality from top estates. Also used for rosato.' },
+    { name:'Gioia del Colle DOC', classification:'DOC', grapes:['Primitivo (min 50-65%)','Negroamaro','Montepulciano','Malvasia Nera'], method:'Stainless steel or oak aging', aging:'Riserva: 2 years', style:'Medium-full body, structured, fresher than low-elevation Primitivo, red and dark fruit, herbal notes', notes:'Higher altitude DOC (300-500m) on the Murge plateau in central Puglia. Cooler nights preserve acidity — more structured Primitivo than coastal Manduria. Rising quality reputation. Also produces Aleatico sweet red.' },
+  ],
+  // ===== ITALY — ALTO ADIGE =====
+  'Alto Adige DOC': [
+    { name:'Alto Adige Pinot Grigio DOC', classification:'DOC', grapes:['Pinot Grigio (100% or dominant)'], method:'Stainless steel, protective winemaking', aging:'No minimum', style:'Dry, light-medium body, high acid, pear, citrus, green apple, almond, mineral', notes:'Italy\'s premier Pinot Grigio expression. Cool alpine valleys at 200-1000m. More structured and mineral than Veneto versions.' },
+    { name:'Alto Adige Gewurztraminer DOC', classification:'DOC', grapes:['Gewurztraminer (100%)'], method:'Stainless steel or light oak', aging:'No minimum', style:'Medium-full body, low acid, lychee, rose, ginger, Turkish delight, aromatic', notes:'Grape originated in village of Tramin (Termeno). Italy\'s finest Gewurztraminer. Intensely aromatic.' },
+    { name:'Alto Adige Lagrein DOC', classification:'DOC', grapes:['Lagrein (min 85%)'], method:'Oak aging common', aging:'Riserva: min 2 years', style:'Medium-full body, dark berry, chocolate, violet, moderate tannin, smoky', notes:'Indigenous grape. Dunkel (dark red) and Kretzer (rosé) styles. Best from Bolzano/Gries area. Gaining international recognition.' },
+    { name:'Alto Adige Schiava/Vernatsch DOC', classification:'DOC', grapes:['Schiava (Vernatsch, min 85%)'], method:'Stainless steel. TRAINING: primarily pergola-trained (traditional canopy suits warmth avoidance).', aging:'No minimum', style:'Light body, low tannin, red cherry, almond, cotton candy, fresh', notes:'Everyday local red. Also known as Trollinger in Germany. Light, easy-drinking, served slightly chilled. St. Magdalener/Santa Maddalena is premium zone near Bolzano.' },
+  ],
+  // ===== ITALY — TRENTINO =====
+  'Trentino DOC': [
+    { name:'Teroldego Rotaliano DOC', classification:'DOC', grapes:['Teroldego (100%)'], method:'Oak aging common. TRAINING: pergola on valley floor (Ora wind from Lake Garda aids ventilation).', aging:'Riserva: min 2 years', style:'Medium-full body, deep color, high acid, blackberry, plum, bitter chocolate, earthy', notes:'Indigenous to Campo Rotaliano alluvial plain — formed by ancient river deposits from the Noce. DNA parent of Lagrein. Ora wind (warm afternoon breeze from Lake Garda) aids pergola ventilation.' },
+    { name:'Trentodoc (Trento DOC)', classification:'DOC', grapes:['Chardonnay','Pinot Nero (Pinot Noir)','Pinot Bianco'], method:'Traditional method (metodo classico) — secondary fermentation in bottle', aging:'Min 15 months on lees. Millesimato: 24 months. Riserva: 36 months', abv:'12-12.5%', style:'Citrus, apple, brioche, fine mousse, elegant, complex with age', notes:'Italy\'s premier traditional-method sparkling. Ferrari (est. 1902 by Giulio Ferrari) is benchmark producer. High-altitude mountain vineyards (200-800m) give freshness, acidity, and finesse. TRAINING: Guyot at higher elevations for Pinot Noir/Chardonnay.' },
+    { name:'Trentino Pinot Grigio DOC', classification:'DOC', grapes:['Pinot Grigio (min 85%)'], method:'Stainless steel', aging:'No minimum', style:'Light-medium body, pear, apple, citrus, fresh, slightly rounder than Alto Adige', notes:'Warmer valley floor than Alto Adige = slightly rounder, fruitier style. Large production volume.' },
+  ],
+  // ===== ITALY — MARCHE =====
+  'Marche': [
+    { name:'Verdicchio dei Castelli di Jesi DOC', classification:'DOC', grapes:['Verdicchio (min 85%)'], method:'Stainless steel or light oak', aging:'No minimum (Riserva: 18 months)', style:'Light-medium body, high acid, green apple, lemon, fennel, almond, mineral, bitter finish', notes:'Adriatic coast whites. Ages surprisingly well (5-10+ years) — develops honeyed, nutty complexity. Traditional amphora-shaped bottle designed 1953 by Antonio Maiocchi. Classico Superiore is premium. Matelica DOC: more inland/continental, higher acid.' },
+    { name:'Rosso Conero DOC', classification:'DOC', grapes:['Montepulciano (min 85%)'], method:'Oak aging', aging:'Riserva: 2 years', style:'Medium-full body, deep ruby, plum, cherry, spice, moderate tannin, firm structure', notes:'Monte Conero promontory on Adriatic coast. Serious, age-worthy reds from Montepulciano. Often overlooked — excellent value.' },
+  ],
+  // ===== ITALY — LAZIO =====
+  'Lazio': [
+    { name:'Frascati DOC', classification:'DOC', grapes:['Malvasia Bianca di Candia and/or Malvasia del Lazio/Puntinata (min 70%)','Trebbiano Toscano, Bellone, Bombino Bianco'], method:'Stainless steel, protective winemaking', aging:'No minimum (Superiore: stricter yield)', style:'Light body, crisp, citrus, white peach, almond, delicate, easy-drinking', notes:'Rome\'s house white from volcanic Colli Albani (Alban Hills). SOILS: volcanic tuff, rich in potassium. Since 2011 reforms, Malvasia del Lazio (Puntinata) can be up to 70% — higher quality clone. Modern improvements in yield control producing more serious wines. Superiore DOCG: higher quality tier.' },
   ],
   // ===== SPAIN — RIOJA =====
   'Rioja': [
@@ -2738,6 +3430,12 @@ var WINE_DATA = {
     { name:'Champagne Vintage/Prestige', classification:'AOC', grapes:['Chardonnay, Pinot Noir (often)'], method:'Traditional method, extended aging', aging:'Vintage: min 36 months on lees. Often 5-10+ years', style:'Complex, toasty, biscuity, brioche, hazelnut, honey, long, fine mousse', notes:'Only declared in exceptional years. Prestige Cuvées (Dom Pérignon, Krug, Cristal) are top tier.' },
     { name:'Blanc de Blancs', classification:'AOC', grapes:['Chardonnay (100%)'], method:'Traditional method', aging:'Extended lees aging', style:'Elegant, citrus, mineral, chalky, precise, light and refined', notes:'Côte des Blancs is heartland. More delicate and linear than blends.' },
   ],
+  'Jura': [
+    { name:'Vin Jaune AOC', classification:'AOC', grapes:['Savagnin (100%)'], method:'Oxidative aging under flor yeast (voile) in old oak barrels, not topped up', aging:'Min 6 years 3 months in barrel', abv:'14-15%', style:'Deep gold, dry, intense walnut, curry spice, dried apple, mushroom, hay, oxidative complexity, very long finish', notes:'Unique wine aged like Fino Sherry but much longer. Sold in 62cl clavelin bottle. Château-Chalon is the finest AOC for Vin Jaune. Can age decades. One of the world\'s most distinctive wines.' },
+    { name:'Crémant du Jura AOC', classification:'AOC', grapes:['Chardonnay (dominant), Pinot Noir, Savagnin, Poulsard, Trousseau'], method:'Traditional method — secondary fermentation in bottle', aging:'Min 9 months on lees', style:'Crisp, citrus, apple, brioche, fine bubbles, elegant', notes:'Growing in reputation. Mostly Chardonnay-based whites and rosés. Excellent value alternative to Champagne. Good acid and mineral character from limestone soils.' },
+    { name:'Côtes du Jura AOC (Rouge)', classification:'AOC', grapes:['Poulsard, Trousseau, Pinot Noir'], method:'Light extraction, some oxidative styles', aging:'Variable', style:'Pale to medium ruby, delicate red fruit, earthy, spicy, light tannin', notes:'Poulsard: extremely pale, almost rosé-like, delicate cherry/strawberry. Trousseau: deeper color, more tannic, spicy. Pinot Noir also permitted. Unique, light-bodied reds.' },
+    { name:'Vin de Paille (Straw Wine)', classification:'AOC', grapes:['Savagnin, Chardonnay, Poulsard, Trousseau (blend)'], method:'Grapes dried on straw mats for min 6 weeks, then pressed and barrel-aged', aging:'Min 3 years (inc. 18 months in wood)', abv:'14-17%', style:'Deep gold/amber, sweet, concentrated dried fruit, honey, caramel, apricot, fig, unctuous', notes:'Ancient technique of drying grapes to concentrate sugars. Tiny yields, expensive. Half-bottles (37.5cl) common. Rich and complex dessert wine.' },
+  ],
   'Northern Rhône (Côte Rôtie, Hermitage, Condrieu)': [
     { name:'Condrieu AOC', classification:'AOC', grapes:['Viognier (100%)'], method:'Oak fermented and aged (often new oak)', aging:'No minimum', style:'Full body, low acid, apricot, peach, honeysuckle, ginger, oily texture, perfumed', notes:'Tiny AOC. Viognier\'s finest expression. Expensive. Best drunk young (1-4 years). Château-Grillet is single-estate AOC within.' },
   ],
@@ -2771,6 +3469,31 @@ var WINE_DATA = {
     { name:'Central Otago Pinot Noir', classification:'GI', grapes:['Pinot Noir (100%)'], method:'French oak aging', aging:'No minimum', style:'Medium-full body, dark cherry, plum, spice, thyme, silky tannins, concentrated', notes:'World\'s southernmost wine region. Continental climate (unlike rest of NZ). Intense fruit, ripe but fresh. Bannockburn, Gibbston top sub-regions.' },
   ],
 };
+
+// Wines added by Claude to supplement Wang Haitian's original study notes.
+// Any wine NOT in this set is from Wang's original WSET L3 Excel workbook.
+var ADDED_WINE_NAMES = new Set([
+  // Piemonte — expanded beyond Wang's Barolo, Barbaresco, Barbera, Gavi, Dolcetto
+  'Moscato d\'Asti DOCG', 'Asti Spumante DOCG', 'Roero DOCG',
+  // Tuscany — expanded beyond Wang's Chianti, Brunello, Vino Nobile, Bolgheri, Maremma
+  'Vernaccia di San Gimignano DOCG', 'Vin Santo DOC',
+  // Sicily — expanded beyond Wang's Etna DOC coverage
+  'Marsala DOC', 'Cerasuolo di Vittoria DOCG', 'Moscato di Pantelleria DOC (Passito)',
+  // Friuli — expanded beyond Wang's Collio, Colli Orientali, Grave
+  'Ramandolo DOCG', 'Ribolla Gialla (Orange Wine)',
+  // Abruzzo — expanded beyond Wang's Montepulciano d'Abruzzo
+  'Trebbiano d\'Abruzzo DOC', 'Cerasuolo d\'Abruzzo DOC',
+  // Puglia — expanded beyond Wang's Primitivo, Salice Salentino, Negroamaro
+  'Gioia del Colle DOC',
+  // Alto Adige — expanded beyond Wang's Pinot Grigio, Gewurztraminer, Schiava
+  'Alto Adige Lagrein DOC',
+  // Trentino — expanded beyond Wang's Teroldego, Pinot Grigio
+  'Trentodoc (Trento DOC)',
+  // Champagne — entire region added by Claude
+  'Champagne NV (Non-Vintage)', 'Champagne Vintage/Prestige', 'Blanc de Blancs',
+  // Jura — entire region added by Claude
+  'Vin Jaune AOC', 'Crémant du Jura AOC', 'Côtes du Jura AOC (Rouge)', 'Vin de Paille (Straw Wine)',
+]);
 
 // Helper: get all wines for a region (includes subregion wines)
 function getWinesForRegion(regionName) {
@@ -2819,7 +3542,7 @@ function buildSubCards(regionName) {
     const card = document.createElement('div');
     card.className = 'sub-card';
     card.innerHTML = `
-      <div class="sub-card-name">${sr.name}</div>
+      <div class="sub-card-name">${sr.name}${buildClimateBadge(sr.parentRegion)}</div>
       <div class="sub-card-grapes">${formatSidebarGrapes(sr.grapes, sr.name, sr.parentRegion)}</div>
       <div class="sub-card-note">${sr.notes.slice(0, 120)}${sr.notes.length > 120 ? '…' : ''}</div>`;
     // grape tag click handler (toggle note panels within this card)
@@ -2879,11 +3602,15 @@ function buildRegionList(filtered) {
     const div = document.createElement('div');
     div.className = 'region-item';
     div.id = `item_${r.name.replace(/\s/g,'_')}`;
+    const wines = getWinesForRegion(r.name);
+    const wineNames = wines.slice(0,3).map(w => w.name.replace(/ DOC$| DOCG$| IGT$/,'')).join(', ');
+    const wineExtra = wines.length > 3 ? ` +${wines.length - 3}` : '';
     div.innerHTML = `
       <div class="r-dot" style="background:${color}"></div>
       <div class="r-info">
         <div class="r-name" title="${r.name}">${r.name}${subs.length ? ` <span style="font-size:0.6rem;opacity:0.5">(${subs.length})</span>` : ''}</div>
         <div class="r-grapes">${r.grapes.slice(0,3).join(' · ')}</div>
+        ${wines.length ? `<div class="r-wines" title="${wines.map(w=>w.name).join(', ')}">🍷 ${wineNames}${wineExtra}</div>` : ''}
       </div>`;
     const wrapper = document.createElement('div');
     wrapper.appendChild(div);
@@ -3088,7 +3815,9 @@ function openInfoPanel(regionName) {
       const regionHint = getRegionalContext(g, r.name, groupLabel);
       const wineHints = getGrapeWineHints(g, regionName);
       html += `<span class="grape-tag-btn info-grape-tag ${wc}" onclick="toggleInfoGrapeNote(this)">▸ ${g}</span>`;
-      html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}`;
+      html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>`;
+      html += buildGrapeInfoHtml(g);
+      html += `<div class="grape-tasting-header">Tasting Profile</div>${grapeTastingNotes[g]}`;
       if (regionHint) html += `<div class="grape-note-region">⬦ In ${r.name}: ${regionHint}</div>`;
       if (wineHints) html += `<div class="grape-note-region">⬦ Wines: ${wineHints}</div>`;
       html += `</div>`;
@@ -3104,14 +3833,22 @@ function openInfoPanel(regionName) {
     html += `<div class="info-section"><div class="info-section-label"><span>Wines & Appellations (${wines.length})</span><span class="info-section-chevron">▼</span></div><div class="info-section-content">`;
     wines.forEach(w => {
       const bc = w.classification.toLowerCase().replace(/[^a-z]/g,'');
-      html += `<div class="info-wine-card">`;
-      html += `<div class="info-wine-name">${w.name} <span class="info-wine-badge ${bc}">${w.classification}</span></div>`;
+      const wineType = getWineColorType(w);
+      const appearance = getWsetAppearance(w);
+      const appClass = 'app-' + appearance.toLowerCase().replace(/\s+/g, '-');
+      const isAdded = ADDED_WINE_NAMES.has(w.name);
+      const sourceBadge = isAdded
+        ? '<span class="source-added">✚ Added</span>'
+        : '<span class="source-wang">📖 Wang</span>';
+      html += `<div class="info-wine-card wtype-${wineType}${isAdded ? ' added-wine' : ''}">`;
+      html += `<div class="info-wine-name">${w.name} <span class="info-wine-badge ${bc}">${w.classification}</span> <span class="info-wine-appearance ${appClass}">${appearance}</span> ${sourceBadge}</div>`;
       html += `<div class="info-wine-detail"><strong>Grapes:</strong> ${w.grapes.join(', ')}</div>`;
       if (w.aging) html += `<div class="info-wine-detail"><strong>Aging:</strong> ${w.aging}</div>`;
       if (w.method) html += `<div class="info-wine-detail"><strong>Method:</strong> ${w.method}</div>`;
       if (w.abv) html += `<div class="info-wine-detail"><strong>ABV:</strong> ${w.abv}</div>`;
       html += `<div class="info-wine-detail"><strong>Style:</strong> ${w.style}</div>`;
       if (w.notes) html += `<div class="info-wine-detail" style="margin-top:3px;color:#888;font-style:italic">${w.notes}</div>`;
+      if (w.addedNotes) html += `<div class="info-wine-added">${w.addedNotes}</div>`;
       html += `</div>`;
     });
     html += '</div></div>';
@@ -3119,7 +3856,7 @@ function openInfoPanel(regionName) {
 
   // Section 4: Climate & Terroir
   if (r.climate) {
-    html += `<div class="info-section"><div class="info-section-label"><span>Climate & Terroir</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${r.climate}</div></div></div>`;
+    html += `<div class="info-section"><div class="info-section-label"><span>Climate & Terroir ${buildClimateBadge(r.name)}</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${r.climate}</div></div></div>`;
   }
 
   // Section 5: Winemaking & Style
@@ -3138,7 +3875,9 @@ function openInfoPanel(regionName) {
       if (hasNote) {
         const wineHints = getGrapeWineHints(g, regionName);
         html += `<span class="grape-tag-btn info-grape-tag ${wc}" onclick="toggleInfoGrapeNote(this)">▸ ${g}</span>`;
-        html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>${grapeTastingNotes[g]}`;
+        html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>`;
+        html += buildGrapeInfoHtml(g);
+        html += `<div class="grape-tasting-header">Tasting Profile</div>${grapeTastingNotes[g]}`;
         if (wineHints) html += `<div class="grape-note-region">⬦ Wines: ${wineHints}</div>`;
         html += `</div>`;
       } else {
