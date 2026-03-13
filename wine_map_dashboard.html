@@ -21,6 +21,8 @@
   #header h1 { font-size: 1.3rem; color: #e8c97a; letter-spacing: 1px; }
   #header p { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
   #region-count { background: #7b2d8b; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+  #bmc-btn { display:inline-flex; align-items:center; gap:5px; background:#FFDD00; color:#000; padding:5px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; text-decoration:none; letter-spacing:0.3px; transition:background 0.15s, transform 0.1s; white-space:nowrap; }
+  #bmc-btn:hover { background:#ffd000; transform:scale(1.04); }
 
   #app { display: flex; flex: 1; overflow: hidden; }
 
@@ -341,6 +343,11 @@
   .info-wine-card.wtype-fortified { background: rgba(140,90,30,0.3); border-color: rgba(190,140,60,0.4); }
   .info-wine-card.wtype-fortified .info-wine-name { color: #e8c070; }
 
+  /* Key Varietals & Producers collapsible card */
+  .varietals-notes-card { border-color: rgba(200,168,74,0.3) !important; background: rgba(50,40,10,0.3) !important; }
+  .varietals-notes-body { display: none; }
+  .varietals-notes-body.expanded { display: block; }
+
   /* WSET appearance badge */
   .info-wine-appearance { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 0.58rem; font-weight: 600; margin-left: 4px; vertical-align: middle; letter-spacing: 0.3px; }
   /* Red wines - intensity levels */
@@ -437,7 +444,10 @@
     <h1>🍷 WSET Level 3 — Wine Regions World Map</h1>
     <p>Interactive study map · <small style="opacity:0.6;font-size:0.68rem">created by Jack Yeu, with the help of notes from Wang Haitian</small></p>
   </div>
-  <div id="region-count">Loading...</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a id="bmc-btn" href="https://buymeacoffee.com/itsyeu" target="_blank" rel="noopener noreferrer"><span style="opacity:0.65;font-weight:400;font-size:0.72rem">if this was helpful →</span> 🍷 buy me a glass of wine</a>
+    <div id="region-count">Loading...</div>
+  </div>
 </div>
 
 <div id="app">
@@ -546,9 +556,11 @@ const GROUP_COLORS = {
   'Andalucía':          '#d4ac0d',  // deep gold (sherry country)
   // Portugal — distinct pair
   'Northern Portugal':  '#8e44ad',  // purple (Douro, Vinho Verde)
-  'Central Portugal':   '#e67e22',  // warm orange (Dão, Bairrada, Alentejo)
+  'Central Portugal':   '#e67e22',  // warm orange (Dão, Bairrada, Lisboa)
+  'Southern Portugal':  '#d35400',  // deep orange (Alentejo)
   // USA
   'California':         '#c0392b',  // US red
+  'New York':           '#922b21',  // deep burgundy red
   'Pacific Northwest':  '#a93226',  // dark red
   // Canada
   'Canada':             '#d35400',
@@ -699,10 +711,12 @@ const REGION_GROUPS = {
   'Jerez (Sherry)': 'Andalucía',
   // Portugal
   'Vinho Verde': 'Northern Portugal', 'Douro Valley': 'Northern Portugal',
-  'Dão': 'Central Portugal', 'Bairrada': 'Central Portugal',
+  'Dão': 'Central Portugal', 'Bairrada': 'Central Portugal', 'Lisboa': 'Central Portugal',
+  'Alentejo': 'Southern Portugal',
   // USA
   'Napa Valley': 'California', 'Sonoma County': 'California',
   'Central Coast (Paso Robles, Santa Barbara)': 'California', 'Central Valley': 'California',
+  'New York State': 'New York',
   'Willamette Valley (Oregon)': 'Pacific Northwest', 'Columbia Valley & Walla Walla (Washington)': 'Pacific Northwest',
   // Canada
   'Niagara Peninsula (Canada)': 'Canada', 'Okanagan Valley (Canada)': 'Canada',
@@ -742,8 +756,8 @@ const GROUP_COUNTRY = {
   'North-East Italy': '🇮🇹', 'Piemonte': '🇮🇹', 'Tuscany': '🇮🇹', 'Central & Southern Italy': '🇮🇹',
   'Rioja & Navarra': '🇪🇸', 'Catalunya': '🇪🇸', 'Castilla y León': '🇪🇸',
   'Galicia': '🇪🇸', 'Eastern & Central Spain': '🇪🇸', 'Andalucía': '🇪🇸',
-  'Northern Portugal': '🇵🇹', 'Central Portugal': '🇵🇹',
-  'California': '🇺🇸', 'Pacific Northwest': '🇺🇸',
+  'Northern Portugal': '🇵🇹', 'Central Portugal': '🇵🇹', 'Southern Portugal': '🇵🇹',
+  'California': '🇺🇸', 'New York': '🇺🇸', 'Pacific Northwest': '🇺🇸',
   'Canada': '🇨🇦', 'Chile': '🇨🇱', 'Argentina': '🇦🇷',
   'South Africa': '🇿🇦',
   'South Australia': '🇦🇺', 'Victoria': '🇦🇺', 'New South Wales': '🇦🇺', 'Western Australia': '🇦🇺',
@@ -937,21 +951,21 @@ const regions = [
     subregions: 'Left Bank (Haut-Médoc), Right Bank (Saint-Émilion, Pomerol), Entre-Deux-Mers, Sauternes',
     climate: 'Moderate Maritime. Warm Gulf Stream, Landes Pine Forest protect from Atlantic. Challenges: rainfall disrupts flowering, mildew.',
     grapes: ['Cabernet Sauvignon', 'Merlot', 'Cabernet Franc', 'Petit Verdot', 'Sémillon', 'Sauvignon Blanc'],
-    notes: 'Blending key. Premium wines aged in 225L barriques 12–18 months. Left Bank: Cab Sauv dominant on gravel. Right Bank: Merlot dominant on clay. Sauternes: Noble Rot Sémillon.'
+    notes: 'VARIETALS: Cabernet Sauvignon — thick skin, late ripening, blackcurrant, cedar, high tannin, backbone of Left Bank blends; needs warmth of gravel banks to ripen. Merlot — earlier ripening, plummy, velvety, lower tannin, dominant on cool clay soils of Right Bank. Cabernet Franc — aromatic, red fruits, leafy herbs, lighter body; key in Pomerol and Saint-Émilion blends, adds perfume and freshness. Petit Verdot — very late ripening, used 1-5% for color, tannin, and violet perfume; rarely made varietally. Sémillon — thick skin prone to noble rot; dry versions full-bodied, honeyed, waxy; sweet Sauternes: honey, apricot, marmalade, extraordinary aging 20–50+ years. Sauvignon Blanc — aromatic, crisp, grassy; blended with Sémillon for Pessac-Léognan dry whites. STRUCTURE: blending moderates climate variation. 225L Bordeaux barriques (French oak): add cedary tannin, spice, structure. Classified growths age 12–18+ months in new oak.'
   },
   {
     name: 'Bergerac', country: 'France', lat: 44.855, lng: 0.482,
     subregions: 'Bergerac AOP, Monbazillac (sweet Sémillon)',
     climate: 'Similar to Bordeaux, slightly more continental inland.',
     grapes: ['Cabernet Sauvignon', 'Merlot', 'Sémillon', 'Sauvignon Blanc'],
-    notes: 'Monbazillac: Noble Rot sweet wine from Sémillon, Sauvignon Blanc, Muscadelle. Similar style to Sauternes.'
+    notes: 'Monbazillac AC: Noble Rot sweet wine — Sémillon (dominant, thick skin, botrytis-prone), Sauvignon Blanc (adds acidity and freshness), Muscadelle (adds floral aromatics). Honey, apricot, wax; best ages 10–20 years. Great value alternative to Sauternes. Pécharmant AC: small appellation east of Bergerac town; structured, age-worthy reds from Cab Sauv/Merlot/Cab Franc. Côtes de Bergerac: stricter yields than basic Bergerac. Bergerac Sec: dry Sauvignon Blanc, fresh and crisp, for early drinking.'
   },
   {
     name: 'SW France (Cahors, Madiran, Jurançon)', country: 'France', lat: 44.0, lng: 0.8,
     subregions: 'Cahors, Madiran, Jurançon, Côtes de Gascogne IGP',
     climate: 'Moderate Maritime to Continental. Atlantic influence decreasing eastward.',
     grapes: ['Malbec', 'Tannat', 'Petit Manseng', 'Gros Manseng', 'Colombard', 'Ugni Blanc'],
-    notes: 'Cahors: Malbec (dark, tannic). Madiran: Tannat (high tannin, needs long aging). Jurançon: Petit Manseng for both dry and sweet styles. Côtes de Gascogne: crisp dry whites from Colombard/Ugni Blanc.'
+    notes: 'MALBEC (Cahors — called Côt or Auxerrois locally): deep purple, high tannin, blackberry, plum, dark spice; min 70% in Cahors AC. Originally from here — gave Malbec to Bordeaux blends and then to Argentina in 19th century. TANNAT (Madiran): one of world\'s most tannic and polyphenol-rich grapes; deep color, dark fruit, violets, leather; min 40–60% required in Madiran; micro-oxygenation technique invented here 1991 (Patrick Ducournau) to tame tannins early. PETIT MANSENG (Jurançon): thick skin enables passerillage (natural drying on vine from warm Pyrenean foehn wind, not botrytis), intensely sweet, preserved apricot, candied peel, honey, ginger, exotic spice; extraordinary aging. GROS MANSENG: larger berry, primary in Jurançon Sec (dry): tropical and citrus, refreshing high acid. COLOMBARD and UGNI BLANC (Côtes de Gascogne IGP): fresh, crisp, aromatic dry whites; much of Armagnac brandy also distilled from these.'
   },
   {
     name: 'Chablis', country: 'France', lat: 47.817, lng: 3.8,
@@ -1056,21 +1070,21 @@ const regions = [
     subregions: 'Châteauneuf-du-Pape, Côtes du Rhône, Côtes du Rhône Villages, Gigondas, Vacqueyras, Tavel, Lirac, Beaumes de Venise',
     climate: 'Warm Mediterranean. Galets (large rounded stones) retain heat. Mistral wind. Low rainfall.',
     grapes: ['Grenache', 'Syrah', 'Mourvèdre', 'Cinsault', 'Clairette', 'Viognier'],
-    notes: 'GSM blend dominates. Grenache: high alcohol, red fruit, low color. Mourvèdre: only warmest sites, dark, tannic, gamey. Châteauneuf: up to 18 permitted varieties, 12.5% min alcohol. Tavel: famous dry rosé. Beaumes de Venise: VDN Muscat, sweet fortified.'
+    notes: 'GSM BLEND (Grenache-Syrah-Mourvèdre) dominates. GRENACHE: dominant variety; high sugar accumulation → high alcohol (often 14–16%), low natural color and tannin (thins quickly); ripe red fruit (strawberry, raspberry, dried fig), garrigue (lavender, rosemary, thyme) — the Southern Rhône character. Grenache prefers the oldest, free-draining galets (large rounded river stones on limestone) that absorb heat and radiate at night. SYRAH: adds color, tannin, structure, and spice to GSM blends; black pepper, violet, smoked meat; very low % in many Châteauneuf blends (except modern style estates). MOURVÈDRE: requires warmest, sunniest sites to fully ripen (last to ripen); contributes deep color, very firm tannin, dark fruit, gamey/meaty notes, tar; only small % in blends. CINSAULT: adds freshness and red fruit in lighter years. CLAIRETTE, BOURBOULENC, ROUSSANNE, MARSANNE: white varieties permitted. CHÂTEAUNEUF-DU-PAPE DOC: min 12.5% ABV; 18 permitted varieties historically (now effectively 13); Grenache-dominant; famous galets roulés (river stones). TAVEL: 100% dry rosé from Grenache/Cinsault/Clairette — deeper pink, fuller body, more structure than Provence rosé. BEAUMES DE VENISE VDN: fortified Muscat Blanc à Petits Grains — sweet, grapey, floral, apricot, fresh; distinct from Banyuls. GIGONDAS: powerful, often Grenache-heavy; Mourvèdre important.'
   },
   {
     name: 'Languedoc-Roussillon', country: 'France', lat: 43.6, lng: 3.9,
     subregions: 'Coteaux du Languedoc, Faugères, Saint-Chinian, Corbières, Minervois, Roussillon, Banyuls (VDN), Pays d\'Oc IGP',
     climate: 'Warm to Hot Mediterranean. Low rainfall, high sunshine. Garrigue scrubland influence.',
     grapes: ['Grenache', 'Syrah', 'Mourvèdre', 'Carignan', 'Cinsault', 'Viognier', 'Marsanne', 'Roussanne'],
-    notes: 'Largest wine region in France by volume (Pays d\'Oc). Improving quality. Carignan: high acid, tannin, color — best from old vines. Banyuls: fortified Grenache (VDN). Many international varieties also permitted in IGP.'
+    notes: 'PAYS D\'OC IGP: largest French wine region by volume; home to much of France\'s branded and varietal wine production; all international varieties planted. CARIGNAN: previously derided as bulk variety; old vine (80–100+ year) Carignan on schist in Corbières and Faugères produces remarkable wine — high acid, high tannin, deep color, rustic dark fruit and spice; Carignan Vieilles Vignes is the artisan star. GRENACHE NOIR: high-alcohol warm-site expression; ripe, generous. SYRAH: adds fresh black pepper, tannin and color to GSM blends; increasingly varietal. MOURVÈDRE: warmest coastal sites only. CINSAULT: light reds and rosé. FAUGÈRES AC: schist soils give mineral, structured reds; Carignan-based. SAINT-CHINIAN AC: schist and limestone; structured reds. MINERVOIS AC: on limestone plateau. CORBIÈRES AC: diverse — from sea-level vineyards to high schist. BANYULS VDN (Fortified Grenache): the only great fortified wine of France; Grenache min 75%, partially oxidised aging in glass bonbonnes in the sun (Rancio style) OR in barrel; dried fruit, caramel, chocolate, coffee — pair with chocolate. MAURY VDN: similar to Banyuls, inland Roussillon. PICPOUL DE PINET: crisp, high-acid white from Picpoul grape near Sète lagoon; briny, seafood wine.'
   },
   {
     name: 'Provence', country: 'France', lat: 43.5, lng: 5.5,
     subregions: 'Côtes de Provence, Coteaux d\'Aix-en-Provence, Bandol, Cassis, Les Baux-de-Provence',
     climate: 'Warm Mediterranean. Dry, sunny, Mistral wind moderates heat.',
     grapes: ['Grenache', 'Mourvèdre', 'Cinsault', 'Syrah', 'Rolle (Vermentino)', 'Clairette'],
-    notes: 'Famous for dry rosé (pale, delicate, very food-friendly). Bandol: Mourvèdre dominant — full body, dark fruit, leather, long aging. Pale "Provençal" rosé made by saignée or direct press.'
+    notes: 'ROSÉ (Provence flagship): pale salmon-pink "Provençal" style — the world\'s most imitated rosé. Direct press or very short saignée (bleeding) from Grenache/Cinsault/Syrah/Mourvèdre. Pale color, delicate strawberry and citrus, fresh, dry, low tannin — designed for easy drinking with food (especially seafood and salads). Rolle (= Vermentino) increasingly used for white rosé component. Consumption: primarily by young, quick; not an aging wine. GRENACHE: main rosé variety; high natural sugar, soft, round — provides body. CINSAULT: light color, fresh red fruit — the "freshness" grape in Provence rosé. MOURVÈDRE (BANDOL): the only variety that truly thrives in Bandol\'s warmest coastal micro-sites (near the sea); deeply pigmented, very high tannin, dark fruit (blackberry, plum), leather, thyme, olive — min 50% required in Bandol red; needs 5–15 years aging; produced in structured oak (large foudres). Bandol is the antithesis of Provence rosé — one of France\'s great age-worthy reds. SYRAH: adds color and spice to Côtes de Provence reds. ROLLE (Vermentino): aromatic white — herbal, citrus, textured; Cassis AC notable for dry whites. AIX-EN-PROVENCE: rosé center.'
   },
 
   // ========== GERMANY ==========
@@ -1271,63 +1285,63 @@ const regions = [
     subregions: 'Rioja Alavesa (lightest, Atlantic), Rioja Alta (Atlantic), Rioja Oriental/Baja (hottest, Mediterranean)',
     climate: 'Moderate Maritime (Alavesa/Alta) to Warm Continental (Oriental). Ebro river valley, Cantabrian Mountains shelter from Atlantic.',
     grapes: ['Tempranillo', 'Garnacha', 'Mazuelo (Carignan)', 'Graciano', 'Viura (Macabeo)'],
-    notes: 'Tempranillo dominant. Traditional American oak: vanilla, coconut, dill. Modern: French oak, less oxidative. Crianza (24m), Reserva (36m), Gran Reserva (60m). Early drinking: semi-carbonic maceration. Alavesa: lighter, most elegant. Alta: structured. Some excellent aged white Rioja (Viura, traditionally oxidative).'
+    notes: 'TEMPRANILLO: Spain\'s most important red; medium tannin, medium acidity, cherry, plum, leather, tobacco; low color fades with age; responds well to oak (vanilla, spice) — handles both American and French oak. GARNACHA (Grenache): high alcohol, ripe red fruit, low tannin and color; warm ripening sites in Rioja Oriental; important blending component. GRACIANO: rare, low yield, high acid, deep color, floral; adds freshness and aromatics to blends; very age-worthy. MAZUELO (Carignan): high acid, tannin, color; blending role. VIURA (Macabeo): dominant white; traditional oxidative aged whites (amber, nutty, waxy — iconic but declining); modern style: unoaked, fresh, citrus. AGING SYSTEM: Joven (no min oak), Crianza (24m total, 6m oak; reds), Reserva (36m total, 12m oak), Gran Reserva (60m total, 18m oak). American oak tradition (vanilla, coconut, dill from lactones) vs increasingly French oak (spice, cedar). Alavesa: youngest soils, most aromatic, most like Burgundy. Alta: structured. Oriental: biggest, warmest, more blending role.'
   },
   {
     name: 'Navarra', country: 'Spain', lat: 42.7, lng: -1.64,
     subregions: 'Navarra DO (from Pyrenees to Ebro)',
     climate: 'Similar to Rioja but cooler and wetter in the north (Pyrenees), warmer and drier south.',
     grapes: ['Tempranillo', 'Garnacha', 'Cabernet Sauvignon', 'Merlot', 'Viura', 'Chardonnay'],
-    notes: 'International varieties widely planted alongside Spanish. Good value. Famous for Garnacha rosé: picked early, protectively made, refreshing, medium alcohol. Reds from Joven to Gran Reserva.'
+    notes: 'TEMPRANILLO: backbone red; similar to Rioja but often lighter, more fruit-forward from cooler north. GARNACHA: most planted in south Navarra; early-picked for rosé (Spain\'s most important rosé AC historically) — pale to medium salmon, fresh strawberry, watermelon, very refreshing, moderate alcohol. CABERNET SAUVIGNON and MERLOT: international varieties widely planted since 1980s, giving richer, fuller reds; this progressive attitude set Navarra apart from traditional DOs. CHARDONNAY: planted for dry whites, unusual in this context. Navarra sits at a crossroads: Atlantic Pyrenees in the north (cool, high altitude) to hot Ebro valley in south — two very different growing conditions. Good value region, historically overshadowed by Rioja.'
   },
   {
     name: 'Cariñena & Calatayud', country: 'Spain', lat: 41.35, lng: -1.52,
     subregions: 'Cariñena DO, Calatayud DO, Campo de Borja DO',
     climate: 'Warm Continental. South of R. Ebro, low rainfall, high altitude in places.',
     grapes: ['Garnacha', 'Cariñena (Carignan)', 'Tempranillo'],
-    notes: 'Majority inexpensive wines. High quality from old vine Garnacha and Cariñena (can be 80–100 years). Campo de Borja: similar, "Empire of Garnacha." Garnacha: high alcohol, ripe red fruit, full body.'
+    notes: 'GARNACHA (Grenache): dominant grape; old vine bush vines in poor, dry soils on the plateau deliver remarkable concentration; high alcohol (14-16%+), ripe red and dark fruit, full body, soft tannin, low acidity; can develop garrigue and spice complexity. CARIÑENA (Carignan): originated here (the village, not just the DO); high acid, high tannin, deep color; from old vines produces serious, structured reds with dark fruit and earth; major blending component adding backbone to softer Garnacha. TEMPRANILLO: grown in Cariñena DO as secondary variety. CAMPO DE BORJA: immediately north of Cariñena; similarly warm, continental; old vine Garnacha producing full-bodied, inexpensive reds marketed as "Empire of Garnacha." All three DOs: high sunshine, low rainfall, extreme heat — old bush vine viticulture without irrigation produces low yields and concentration.'
   },
   {
     name: 'Penedès & Priorat (Catalunya)', country: 'Spain', lat: 41.28, lng: 1.26,
     subregions: 'Penedès DO, Priorat DOCa/DOQ, Montsant DO',
     climate: 'Warm Mediterranean. Penedès: coastal to inland mountains. Priorat: slate (llicorella) soils, extreme, low yield.',
     grapes: ['Parellada', 'Xarel-lo', 'Macabeo (Cava)', 'Garnacha', 'Cariñena', 'Chardonnay', 'Cabernet Sauvignon'],
-    notes: 'Penedès: Cava production capital (Parellada + Xarel-lo + Macabeo, traditional method). Also international varieties. Priorat: Garnacha + Cariñena blend, deep color, high tannin, medium to high alcohol, concentrated. Llicorella (slate) soils give mineral character. Very low yields = high prices.'
+    notes: 'CAVA (traditional method, Penedès): PARELLADA — aromatic, floral, high acid, delicate; contributes elegance and nose; best from high altitude. XAREL-LO — the structure grape, full-bodied, earthy, good acid; distinctive Catalan character. MACABEO (Viura) — neutral, fruity, most widely planted; contributes fruit and freshness. Minimum 15 months on lees (Non-Vintage Reserva, Vintage = 12m, Gran Reserva = 30m). PRIORAT/DOQ PRIORAT: GARNACHA PELUDA/TINTA — old vine on slate (llicorella) gives mineral, opaque, intensely concentrated wine at very low yields (often <1 kg/vine); high alcohol, dark fruit, dried herbs. CARIÑENA — adds structure, tannin, acidity to Priorat blends. Llicorella (black/grey slate with quartz mica) soils force roots 10m deep — extraordinary mineral quality but very challenging viticulture. MONTSANT DO: surrounds Priorat, similar varieties, less extreme — good value alternative. Penedès also produces excellent international varieties: Chardonnay, Cabernet Sauvignon, Merlot (pioneered by Torres estate since 1960s).'
   },
   {
     name: 'Ribera del Duero', country: 'Spain', lat: 41.65, lng: -3.9,
     subregions: 'Ribera del Duero DO, Toro DO, Rueda DO, Cigales DO',
     climate: 'Hot Continental. R. Duero plateau at 850m altitude, large diurnal range. Cold winters, hot summers.',
     grapes: ['Tempranillo (Tinto Fino/Tinta del País)', 'Cabernet Sauvignon', 'Merlot', 'Garnacha'],
-    notes: 'Tempranillo at altitude → more structure, freshness, acidity than Rioja. Best wines 100% Tempranillo. Iconic producers: Vega Sicilia, Pingus. Toro: big, powerful Tempranillo (Tinta de Toro). Rueda: Verdejo and Sauvignon Blanc (crisp whites). Altitude and cold nights key.'
+    notes: 'TEMPRANILLO (Tinto Fino / Tinta del País): at 850–900m altitude and large diurnal range, produces a fundamentally different character to Rioja — more color (cooler = slower oxidation of anthocyanins), more acid, more firm tannin, more structured; flavors: cherry, plum, blackcurrant, earthy, tobacco; ages beautifully 10–30+ years. VEGA SICILIA: the most iconic Spanish wine; Único is a Tempranillo/Cabernet Sauvignon/Merlot blend aged 7–10+ years in oak and bottle — priced like First Growths. PINGUS (Dominio de Pingus): Peter Sisseck; old vine single-vineyard Tempranillo, ~6,000 bottles/year, world-class. Cabernet Sauvignon and Merlot: international varieties planted 1990s; often blended with Tempranillo. TORO DO (west): Tempranillo clone "Tinta de Toro" — even bolder, more tannic, higher alcohol; ungrafted old vine bush vines survive because phylloxera never fully invaded the sandy soils. Matías Palacios, Bodegas Teso La Monja, Numanthia: key producers. RUEDA DO (north): premium dry white DO; VERDEJO — Spain\'s finest indigenous white for dry wines; tropical, herbal, slightly bitter finish, fresh acidity; must be min 50% in Rueda. CIGALES DO: Tempranillo + Garnacha blends and rosado. ALTITUDE EFFECT: 850–950m; 10–15°C diurnal range; short but intense growing season; dormant winters with frost risk; slow ripening = complexity.'
   },
   {
     name: 'Rías Baixas', country: 'Spain', lat: 42.5, lng: -8.75,
     subregions: 'Rías Baixas DO (5 sub-zones incl. Val do Salnés)',
     climate: 'Moderate Maritime. NW Spain, Atlantic coast, high rainfall. Pergola training for air circulation.',
     grapes: ['Albariño'],
-    notes: 'Albariño: thick skin resists fungal disease, high acid, refreshing citrus and stone fruit, floral, low to medium body. Most wines unoaked, some see oak. Pairs perfectly with seafood. Galicia\'s flagship white.'
+    notes: 'ALBARIÑO: medium-sized berry, thick, waxy skin (resists fungal pressure from Atlantic rain); high natural acidity (low pH), medium to high alcohol (12.5–13.5%); aromatic — white peach, apricot, grapefruit, lemon blossom, jasmine; fresh, bracing, sometimes slightly saline (marine influence); medium body, dry, crisp finish. Most wines unoaked for freshness — meant to drink young within 1–3 years. A few producers age in oak (rounder, more textured, less primary fruit). BARREL FERMENTED ALBARIÑO: emerging style — more weight and complexity but loses the purity. GRAN SELEZIONE / PREMIUM ALBARIÑO: from single parcels on granitic soils, estate bottled; more concentration and aging potential (5–8 years). TRAINING: Pergola (ramada) training — high canopy allows air circulation, reducing humidity and fungal disease in the wet Atlantic climate. VAL DO SALNÉS (central, main sub-zone): most characteristic, on granitic soils near Atlantic coast; aromatic, fine, highest acid. RÍAS BAIXAS = "Lower Rías" — the drowned river valleys (rías) create a complex coastline moderating temperature. VINHÃO (red): also grown, gives dark tannic wines. Food pairing: one of the world\'s great seafood wines, classic with Galician percebes (barnacles) and empanada.'
   },
   {
     name: 'Bierzo', country: 'Spain', lat: 42.59, lng: -6.78,
     subregions: 'Bierzo DO',
     climate: 'Moderate Maritime-Continental transition. NW Spain, sheltered valley, Atlantic moisture, moderate temperatures.',
     grapes: ['Mencía', 'Godello'],
-    notes: 'Mencía: suits moderate climates, high acid, fresh red fruit, elegant, sometimes herbaceous. Many old vines on steep stony schist slopes. Godello: high quality white, medium to full body, stone fruit, nutty. Gaining international attention.'
+    notes: 'MENCÍA: medium-dark ruby, medium-high acidity (fresh), medium tannin (silky when ripe), medium alcohol; red cherry, raspberry, graphite, violet, sometimes bell pepper or herbs if underripe. Best from old vines (60–100+ years) on steep schist slopes at 500–800m altitude. Recent DNA work suggests Mencía may be related to Cabernet Franc — the flavor profiles share traits (cassis, herbs, violet, graphite). Raúl Pérez (Bodegas Castro Candaz, Muti, etc.) elevated Bierzo to international attention. A Corgo: key village; steep slate terraces. GODELLO: Bierzo\'s best white variety (also important in neighboring Valdeorras DO); medium to full body, stone fruit (peach, apricot), hazelnuts, slight oiliness, high acidity — can be oaked for a Burgundian style; wines age 5–10 years. Considered one of Iberia\'s finest white grapes. VALDEORRAS DO (nearby): Godello center (esp. Rafael Palacios "As Sortes"). SCHIST SOILS: key to Bierzo character — thin, rocky, excellent drainage, forces deep roots, gives mineral freshness. Steep slopes prevent mechanization — labor-intensive viticulture. "Bierzo Bebers": local term for the distinctive terroir wines of the upper valley slopes.'
   },
   {
     name: 'Valencia & Levante', country: 'Spain', lat: 39.47, lng: -0.38,
     subregions: 'Valencia DO, Jumilla DO, Yecla DO, Utiel-Requena DO, Alicante DO',
     climate: 'Warm Mediterranean coast, getting hotter/drier inland. Drought can be issue.',
     grapes: ['Monastrell (Mourvèdre)', 'Merseguera', 'Muscat of Alexandria', 'Bobal'],
-    notes: 'Monastrell: drought tolerant, need hot and sunny to ripen. Deep color, full body, medium acid, high tannin, blackfruit. Jumilla/Yecla: concentrated old-vine Monastrell. Moscatel de Valencia: sweet fortified Muscat.'
+    notes: 'MONASTRELL (= Mourvèdre in France, Mataro in Australia): drought tolerant, thick skin; needs very hot, sunny conditions to fully ripen (high altitude + inland heat = perfect); deep color, full body, medium acid, high tannin, blackberry, plum, herbs, leather, gamey; most important grape of Jumilla and Yecla. Old vine alberello (bush vines) in limestone and clay — very low yields, extraordinary concentration. BOBAL: Valencia\'s indigenous white-wine grape region Utiel-Requena; dark-skinned, high acid and tannin, deep color, blackberry; also used for rosé; at 900m altitude produces surprisingly fresh, elegant wines. MERSEGUERA: light-skinned white grape from Valencia DO; neutral, fresh whites for local consumption. MUSCAT OF ALEXANDRIA (Moscatel Romano): aromatic, rich, sweet; Moscatel de Valencia is a sweet, fortified/not-fortified wine of grapey aroma, popular export. JUMILLA DO: very high altitude (400–800m) and semi-arid creates unique terroir — phylloxera never reached here, many ungrafted old vines over 50 years; some of Spain\'s most compelling value Monastrell.'
   },
   {
     name: 'La Mancha & Castilla-La Mancha', country: 'Spain', lat: 39.17, lng: -3.5,
     subregions: 'La Mancha DO (largest DO in Spain), Valdepeñas DO, Manchuela DO',
     climate: 'Hot Continental. Meseta plateau, extreme heat in summer, cold winters. Drought endemic.',
     grapes: ['Airén', 'Tempranillo (Cencibel)', 'Cabernet Sauvignon', 'Merlot'],
-    notes: 'La Mancha: almost half of Spain\'s total production. Airén: world\'s most widely planted variety by area. Neutral fresh white, used for Brandy de Jerez. Bush vine to survive drought. Valdepeñas: inexpensive Tempranillo/Airén blends. Volume production.'
+    notes: 'AIRÉN: world\'s most widely planted variety by area (3rd globally) — surprisingly given how unknown it is. Low quality when over-cropped but perfectly adapted to extreme drought via deep roots and low-slung bush vines. Neutral, fresh, low-acid white; used for volume wine and as base for Brandy de Jerez (brandy distillation). Modern winemaking (cold fermentation) can produce surprisingly fresh, aromatic styles. TEMPRANILLO (called Cencibel in La Mancha): the quality red grape here; medium body, cherry and plum, moderate tannin; at lower altitude ripens more fully than in Ribera del Duero — gives ripe, accessible, early-drinking style. VALDEPEÑAS DO: historically made "claretes" (blended red from Tempranillo + Airén for color dilution); modernizing with varietal Cencibel at proper concentration. CABERNET SAUVIGNON and MERLOT: widely planted across La Mancha since 1990s for export markets. La Mancha DO: Spain\'s largest single DO by area — mostly bulk wine but some quality producers using low yields from old vines on limestone plateau at 600–700m, producing more structure than expected from the hot, dry climate.'
   },
 
   // ========== PORTUGAL ==========
@@ -1336,28 +1350,42 @@ const regions = [
     subregions: 'Vinho Verde DOC (9 sub-regions incl. Monção e Melgaço for Alvarinho)',
     climate: 'Moderate Maritime. NW Portugal, Atlantic, high rainfall. Traditional pergola training or modern VSP.',
     grapes: ['Loureiro', 'Arinto', 'Trajadura', 'Alvarinho (Albariño)', 'Vinhão (red)'],
-    notes: 'Classic Vinho Verde: blend of local varieties, pale lemon, high acidity, low alcohol 8–11.5%, often off-dry, slight sparkle (CO2 added or natural). Vinho Verde Alvarinho: 100% Alvarinho, higher alcohol, riper, more tropical, premium price. "Verde" = green (young) not color.'
+    notes: 'LOUREIRO: dominant white variety in southern sub-zones (Lima, Braga, Ave, Basto); floral (laurel blossom), fresh citrus, light body; aromatic and fragrant. ARINTO (Pedernã): high natural acidity; citrus and mineral; structure variety in blends; also a standalone fresh white. TRAJADURA (Treixadura): low acid, broader; adds roundness and tropical fruit to blends. ALVARINHO (= Albariño in Spain): premium variety concentrated in Monção e Melgaço sub-region (northernmost, granite soils, on Minho river — "Alvarinho Country"); thick skin, tropical fruit, peach, grapefruit, high alcohol (12.5–13.5%+), low CO2, fuller body; commands premium prices, made as single varietal. VINHÃO: the dominant red Vinho Verde grape; deep inky purple, high tannin and acid, dark berry; unusual and distinctive. CLASSIC VINHO VERDE BLEND: multi-variety blend from high-yielding pergolas (ramada) creating shade, preventing over-ripening; natural slight CO2 from malolactic arrested or added; 8–11.5% ABV; designed to pair with local seafood, especially bacalhau. "Verde" refers to youth/freshness of the wine, NOT the color.'
   },
   {
     name: 'Douro Valley', country: 'Portugal', lat: 41.13, lng: -7.67,
     subregions: 'Douro DOC (still wine), Port DOC (Cima Corgo, Baixo Corgo, Douro Superior)',
     climate: 'Warm Continental. R. Douro from Marão Mountains to Spanish border. Western side cooler and wetter. Schist soil.',
     grapes: ['Touriga Nacional', 'Touriga Franca', 'Tinta Roriz (Tempranillo)', 'Tinta Barroca', 'Tinta Cão'],
-    notes: 'Touriga Nacional: low yield, deep color, high tannin, intense dark fruit, floral violet. Backbone of best Port and Douro reds. Still Douro reds: deep color, full body, high ripe tannin, black fruit, toasty oak. White Douro: fresh whites at higher altitude. Port styles: Ruby, Tawny (oxidative, nutty), Vintage, LBV, Colheita.'
+    notes: 'PORT AND DOURO VARIETIES — TOURIGA NACIONAL: low yield, small berry, thick skin, intense purple, high tannin, powerful dark fruit, violet floral notes, complex; the most prestigious Douro variety and backbone of the finest Vintage Ports and Douro reds. TOURIGA FRANCA (Touriga Francesa): most widely planted; fragrant floral and herbal, medium body, smoother tannin than TN — brings perfume to blends. TINTA RORIZ (= Tempranillo): gives structure, red fruit, spice; ripens earlier. TINTA BARROCA: low tannin, high sugar, soft fruit; essential in Tawny Port blends for sweetness and roundness. TINTA CÃO: very low yield, complex, fine tannin, dark berry, highly valued but rarely bottled alone. PORT STYLES: Ruby (young, fruity, brief wood aging); Tawny (oxidative aging in small 550L pipes, goes amber-tawny, develops dried fruit, nut, caramel); Vintage Port (declared years only, best quintas, unfiltered, bottle-aged 20–50 years); LBV (Late-Bottled Vintage, single year, filtered, early drinking); Colheita (single vintage Tawny, min 7yr wood aging); White Port (from white grapes — Malvasia, Verdelho, Rabigato — dry to sweet). SCHIST SOILS: thin, friable, drain well, force roots 15m+ deep — key to concentration.'
   },
   {
     name: 'Dão', country: 'Portugal', lat: 40.52, lng: -7.9,
     subregions: 'Dão DOC, Lafões DOC',
     climate: 'Moderate Continental. Mountainous, 200–400m altitude. Cold wet winters, hot dry summers. Large diurnal range.',
     grapes: ['Touriga Nacional', 'Tinta Roriz (Tempranillo)', 'Alfrocheiro', 'Jaen (Mencía)', 'Encruzado'],
-    notes: 'Reds: delicate red fruit, soft tannin, high acid — elegant style compared to Douro. Excellent aging potential. Encruzado: best white — fresh, medium to full body, stone fruit, nutty, can be oaked. Serra da Estrela mountains protect and create favorable conditions.'
+    notes: 'TOURIGA NACIONAL: performs here with more restraint and elegance than in the Douro; lower temperatures (mountains, 200–400m) preserve freshness; deep color, firm tannin, violet and dark fruit, long aging. TINTA RORIZ (Tempranillo): adds red fruit, structure, spice. ALFROCHEIRO: indigenous variety, deep color, high acid, fresh red fruit; important in Dão blends and gaining recognition as a varietal. JAEN (= Mencía in Spain): aromatic, red fruit, medium body, relatively lower tannin; adds drinkability to blends. ENCRUZADO: Dão\'s flagship white; indigenous, medium to full body, peach, almond, some floral; with oak aging develops nutty complexity and excellent aging potential (5–10+ years); considered one of Portugal\'s finest white varieties. STYLE: Dão reds are often described as Portugal\'s most Burgundian-style reds — red fruit, silky tannin, freshness, elegance over power. Serra da Estrela and Serra do Caramulo mountains shelter the region, creating a cooler, drier microclimate than surrounding areas. Historically dominated by large co-operatives making mediocre wine; privatisation of Sogrape\'s Quinta dos Carvalhais (1990s) led quality revolution.'
   },
   {
     name: 'Bairrada', country: 'Portugal', lat: 40.37, lng: -8.52,
     subregions: 'Bairrada DOC',
     climate: 'Maritime. West of Dão, Atlantic Ocean influence. Rainy winters, warm summers. Harvest rain risk.',
     grapes: ['Baga', 'Touriga Nacional', 'Alfrocheiro', 'Bical', 'Maria Gomes'],
-    notes: 'Baga: late ripening, small fruit, thick skin, deep color, very high tannin, rich black fruit — needs long aging. Traditional style: picked late, can be austere and tannic. Modern: blending with other varieties, earlier picking to soften. Espumante (traditional method) from Bical.'
+    notes: 'BAGA: Bairrada\'s defining and most challenging variety; very thick skin → very high tannin and deep color; small berries → high concentration and acidity; late ripening — struggles to fully ripen, giving raw-tasting tannin in poor years; best wines: intense blackberry, dark plum, earthy, tar, extraordinary aging potential (20–40+ years). Traditional style: rustic, very tannic, needs 10–15 years minimum. Modern approach (Luís Pato and others): earlier harvesting, less extraction, French oak → elegant, fruit-forward but still structured. MARIA GOMES (Fernão Pires): most widely planted white; aromatic, floral, soft; for early drinking whites and as base for Espumante (traditional method sparkling). BICAL: high acid, neutral; ideal sparkling base; also dry still whites. TOURIGA NACIONAL and ALFROCHEIRO: blended with Baga in modern Bairrada to add fruity depth and soften harsh tannins. ESPUMANTE: Bairrada produces Portugal\'s finest traditional method sparkling; predominantly Bical and Maria Gomes, with Chardonnay and Pinot Noir in premium cuvées. Harvest rain is a persistent risk given Atlantic proximity — vintage variation is significant.'
+  },
+  {
+    name: 'Alentejo', country: 'Portugal', lat: 38.55, lng: -7.90,
+    subregions: 'Alentejo DOC (8 sub-regions: Évora, Reguengos, Vidigueira, Borba, Redondo, Portalegre, Moura, Granja-Amareleja)',
+    climate: 'Warm to Hot Continental. Southern Portugal, largest wine region by area. Very hot, dry summers (400–600mm rainfall). Granite, schist, and clay soils. Mediterranean shrubland landscape.',
+    grapes: ['Aragonez (Tempranillo)', 'Trincadeira', 'Alicante Bouschet', 'Touriga Nacional', 'Antão Vaz', 'Arinto', 'Roupeiro'],
+    notes: 'Portugal\'s most dynamic wine region — a 1990s revolution transformed it from bulk to quality. Aragonez (= Tempranillo): ripe, plummy, soft tannin, full body. Trincadeira: dark fruit, spice, pepper, higher tannin. Alicante Bouschet: rare teinturier (red-fleshed) grape, gives extraordinary deep color and body. Antão Vaz: flagship white — full body, tropical fruit, stone fruit, great in warm vintages. Modern refrigeration technology essential in extreme heat. Portalegre (NE): highest altitude (400–800m), freshest and most elegant wines. Granja-Amareleja (SE): hottest, most extreme, near Spanish border. Vidigueira: known for whites. Reguengos: most planted sub-region. José de Sousa winery (Reguengos): historic producer using Roman clay amphoras (talhas) for fermentation — traditional method seeing a revival. Alentejo wines are generous, fruit-forward, and food-friendly.'
+  },
+  {
+    name: 'Lisboa', country: 'Portugal', lat: 39.05, lng: -9.15,
+    subregions: 'Bucelas DOC, Colares DOC, Carcavelos DOC, Alenquer DOC, Torres Vedras DOC, Arruda DOC, Óbidos DOC',
+    climate: 'Moderate Maritime. West-central Portugal, strong Atlantic Ocean influence. Mild winters, warm summers with cooling sea breeze. Coastal fog moderates temperatures. Clay-limestone, sandy soils (Colares).',
+    grapes: ['Arinto', 'Fernão Pires (Maria Gomes)', 'Ramisco', 'Castelão', 'Touriga Nacional', 'Tinta Roriz'],
+    notes: 'Lisboa (formerly Estremadura) is one of Portugal\'s largest and most diverse wine regions, spanning coastal and inland terroirs just north of Lisbon. BUCELAS DOC: one of Portugal\'s most historic DOCs (known since the 17th century); Arinto (Pedernã) grape exclusively; lean, very high natural acidity, citrus, green apple, mineral, saline freshness — often compared to Chablis; can age 5–10+ years; tiny production. COLARES DOC: extraordinarily rare historic DOC on coastal sand dunes; Ramisco red grape — the vines are ungrafted (phylloxera cannot survive in sand), making them among the oldest vine material in Europe; Ramisco produces very tannic, deeply colored, searingly acidic wine with dark berry and earthy character; ages for 20+ years; production almost extinct (<50ha). CARCAVELOS DOC: near-extinct fortified wine appellation near Cascais; Galego Dourado and other grapes; amber, nutty, toffee character; curiosity only. ALENQUER, TORRES VEDRAS, ARRUDA, ÓBIDOS: more commercial Lisboa DOCs producing fresh Atlantic-influenced whites from Fernão Pires (floral, soft, aromatic) and Arinto; reds from Castelão and TN. FERNÃO PIRES (Maria Gomes): aromatic, floral (geranium, camomile), low acid, soft; very widely planted across central Portugal. CASTELÃO: mid-body red, red cherry, earthy, medium tannin; adapts to sandy and clay soils.'
   },
 
   // ========== USA ==========
@@ -1366,21 +1394,21 @@ const regions = [
     subregions: 'Los Carneros, Stags Leap, Yountville, Oakville, Rutherford, St Helena, Calistoga, Howell Mountain, Atlas Peak, Diamond Mountain',
     climate: 'Mediterranean. Cold California Current creates morning fog and cool evenings from San Pablo Bay (south). North end warmer.',
     grapes: ['Cabernet Sauvignon', 'Merlot', 'Cabernet Franc', 'Sauvignon Blanc', 'Chardonnay', 'Zinfandel'],
-    notes: 'Los Carneros: Pinot Noir & Chardonnay (cool). Stags Leap/Oakville/Rutherford: structured Cab Sauv. St Helena/Calistoga (north): Cab Sauv + Zinfandel, warmer. Mountain AVAs (Howell Mountain, Spring Mountain, Diamond): more tannin, less ripe. Hallmark: full body, concentrated, spice from new oak, blackcurrant and cassis.'
+    notes: 'CABERNET SAUVIGNON (Napa\'s defining variety): deep ruby-black, full body, concentrated blackcurrant/cassis, plum, cedar, pencil lead, tobacco, often vanilla/spice from new French oak; high alcohol (14–15%+); Napa often bottled 100% varietal unlike Bordeaux blending tradition. THE "JUDGMENT OF PARIS" (1976): Steven Spurrier blind tasting — Stag\'s Leap Wine Cellars 1973 Cab beat top Bordeaux First Growths; catapulted Napa to global fame overnight. AVA STYLES: LOS CARNEROS (south, coolest — San Pablo Bay fog): Pinot Noir and Chardonnay, lighter, more elegant, more acid. STAGS LEAP DISTRICT: silty soils on alluvial fan, soft iron fist in velvet glove, the most elegant Napa Cab — Stag\'s Leap Wine Cellars SLV and Cask 23, Shafer, Silverado. OAKVILLE: volcanic and alluvial bench, gravelly deep soils — power and structure, Robert Mondavi Winery home, also Harlan Estate, Opus One (Mondavi+Mouton partnership). RUTHERFORD: famous "Rutherford Dust" from silty, decomposed sediment soils — soft, round tannin structure, layered Cab; Inglenook, Beaulieu Vineyard. ST HELENA: alluvial fan, gravel benchland, classic structure. CALISTOGA (warmest, north): biggest, most opulent reds; also old-vine Zinfandel. MOUNTAIN AVAs (Howell Mountain, Spring Mountain, Diamond Mountain, Atlas Peak, Veeder): elevated (300–600m), thinner volcanic soils, harder tannin, smaller berry, more structure and concentration, lower yields — needs longer aging than floor Cabs. SOILS: volcanic (mountain) and alluvial/gravel (benchland) are premium; clay floor soils for Merlot. Robert Mondavi (1966): the founder of modern Napa — pioneered French techniques, oak aging, varietal labeling; opened the template for fine wine here.'
   },
   {
     name: 'Sonoma County', country: 'USA', lat: 38.5, lng: -122.85,
     subregions: 'Russian River Valley (cool), Dry Creek Valley, Alexander Valley, Sonoma Coast, Carneros',
-    climate: 'Varied: cool coastal (Russian River Valley, Sonoma Coast) to warm inland (Alexander Valley). Pacific Ocean and fog crucial.',
+    climate: 'Varied: cool coastal (Russian River Valley, Sonoma Coast) to warm inland (Alexander Valley). California Current drives Pacific fog inland — Russian River Valley and Sonoma Coast directly impacted.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Zinfandel', 'Cabernet Sauvignon', 'Sauvignon Blanc'],
-    notes: 'Russian River Valley: benchmark California Pinot Noir (rich layers, red fruit, earth, spice from oak). Also excellent Chardonnay. Dry Creek Valley: old vine Zinfandel (hillside), Sauvignon Blanc (valley floor). Alexander Valley: Cabernet Sauvignon. Sonoma Coast: coolest, Pinot and Chardonnay.'
+    notes: 'RUSSIAN RIVER VALLEY (Sonoma\'s premier sub-AVA): the daily Pacific fog bank burns off by late morning but critically caps temperatures — creates the longest, coolest hang time in Sonoma. GOLDRIDGE SANDY LOAM: well-draining pale soils of ancient sand dunes — excellent Pinot drainage. PINOT NOIR: rich, layered, red and dark cherry, raspberry, pomegranate, dried herbs, silky tannin, spice from French oak; Williams Selyem, Rochioli, Merry Edwards, Papapietro Perry the benchmark producers. CHARDONNAY: rich but with fine acidity — apple, pear, toasted hazelnut, beautifully balanced. DRY CREEK VALLEY: old vine ZINFANDEL on hillside volcanic/benchland soils (80–100yr old vines): deeply concentrated, jammy blackberry, black pepper, brambly, full body, high alcohol (15–16%); valley floor: Sauvignon Blanc and Rhône varieties. ALEXANDER VALLEY: warmest Sonoma valley, protected from Pacific; full-bodied CABERNET SAUVIGNON and MERLOT; some Bordeaux blends; Cyrus (Jordan): benchmark. SONOMA COAST: extreme coastal, marine, windswept, often sub-12°C growing season averages → among California\'s coolest; "extreme Sonoma Coast" from steep hillsides near Fort Ross: Pinot Noir and Chardonnay of remarkable elegance and mineral precision; Hirsch, Peay, Williams Selyem Fort Ross-Seaview. CARNEROS: shared with Napa County, San Pablo Bay cooling — benchmark Pinot and Chardonnay. ZINFANDEL (California specialty): DNA-linked to Primitivo (Italy) and Crljenak (Croatia), but Sonoma/Napa are its spiritual home — thrives on old vines with deep roots in rocky hillside soils.'
   },
   {
     name: 'Central Coast (Paso Robles, Santa Barbara)', country: 'USA', lat: 35.2, lng: -120.65,
     subregions: 'Paso Robles, Santa Barbara County, Santa Maria Valley, Sta. Rita Hills, Santa Ynez Valley',
-    climate: 'Mediterranean, influenced by marine layer/fog. Transverse Valleys (Santa Barbara) channel cool ocean air east–west → very cool for latitude.',
+    climate: 'Mediterranean, moderated by California Current. Transverse Valleys (Santa Barbara) channel cold Pacific air east–west → remarkably cool for latitude (34°N). Marine fog layer critical.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Syrah', 'Cabernet Sauvignon', 'Grenache', 'Viognier'],
-    notes: 'Santa Maria Valley & Sta. Rita Hills: Pinot Noir and Chardonnay from cool climate. Paso Robles (east): warm, Cabernet Sauvignon, Merlot, Zinfandel, Rhône varieties. Santa Ynez (less affected): Syrah, Merlot, Cabernet.'
+    notes: 'THE TRANSVERSE VALLEYS KEY: uniquely in California, Santa Barbara County\'s valleys run east-west (rather than north-south), creating a funnel that channels cold Pacific air and morning fog deep inland — makes this region surprisingly cool despite southern latitude (34°N). STA. RITA HILLS AVA: Santa Barbara\'s premier cool-climate zone; PINOT NOIR: intense, complex, structured, dark cherry, iron-mineral note; diatomaceous earth soils (unique — high silica, very poor) force deep rooting — BREWER-CLIFTON, SEA SMOKE benchmark producers. SANTA MARIA VALLEY: even cooler (Central Coast Jetstream), very flat, extreme fog; PINOT NOIR and CHARDONNAY dominant; BIEN NACIDO vineyard — one of California\'s most important single vineyard sources for dozens of wineries. PASO ROBLES (east of Highway 101, warm): calcareous soils, warm, dry Continental — the opposite of Santa Barbara; CABERNET SAUVIGNON (rich, ripe, Bordeaux-style), ZINFANDEL (old vine, concentrated), RHÔNE VARIETIES (Syrah, Grenache, Mourvèdre — warm site mastery); TURLEY WINE CELLARS, SAXUM, LINNE CALODO: Paso benchmark. SANTA YNEZ VALLEY: valley floor warmer, hillsides cooler; SYRAH (Northern Rhône-inspired), MERLOT, CABERNET; HAPPY CANYON: warmest Santa Barbara sub-AVA for Bordeaux varieties. VIOGNIER (throughout Central Coast): aromatic, peach and apricot, can co-ferment with Syrah. PINOT GRIS/GRIGIO: lighter styles for coastal regions. Movie Sideways (2004) filmed here — dramatically boosted Santa Barbara wine tourism and Pinot Noir sales.'
   },
   {
     name: 'Central Valley', country: 'USA', lat: 37.0, lng: -120.7,
@@ -1390,32 +1418,39 @@ const regions = [
     notes: 'Majority of California volume production. Inexpensive wines. Lodi: sub-region with old-vine Zinfandel, slightly cooler. Colombard/Chenin Blanc: inexpensive crisp whites. Modern bulk production for branded wines.'
   },
   {
+    name: 'New York State', country: 'USA', lat: 42.7, lng: -76.8,
+    subregions: 'Finger Lakes, Long Island (North Fork, The Hamptons), Hudson Valley, Lake Erie',
+    climate: 'Cool Continental (Finger Lakes, Hudson Valley); Maritime (Long Island, moderated by Atlantic Ocean). Deep glacial lakes (Finger Lakes) store heat — extend growing season and protect from spring/autumn frosts. Long Island benefits from Atlantic & Long Island Sound surrounds.',
+    grapes: ['Riesling', 'Chardonnay', 'Cabernet Franc', 'Merlot', 'Pinot Noir', 'Gewurztraminer'],
+    notes: 'FINGER LAKES (benchmark New York AVA): America\'s finest Riesling region — dry, off-dry, and late harvest styles of remarkable quality and tension. Long, cool growing season produces naturally high acid and precise varietal expression. Seneca and Cayuga Lakes are deepest (>180m), creating the strongest thermal moderation. Slate, shale, and limestone soils. DR. KONSTANTIN FRANK (1962): pioneer who proved European vinifera could survive NY winters — Riesling and Chardonnay benchmark. Hermann J. Wiemer, Ravines, Red Newt, Bloomer Creek: other top producers. RIESLING STYLES: bone dry (Germany-inspired) through TBA-equivalent botrytis dessert wines; sparkling also produced. CABERNET FRANC: Finger Lakes\' best red — lighter body, herbal/pepper, red fruit, higher acid than warmer climates. LONG ISLAND (North Fork): maritime climate (Atlantic to south, Long Island Sound to north), warm summers, mild autumns; MERLOT, CABERNET FRANC, CABERNET SAUVIGNON in Bordeaux-blended style; sandy, well-drained soils. Bedell Cellars, Wolffer Estate, Shinn Estate: key producers. HUDSON VALLEY: America\'s oldest wine region (1677); BACO NOIR (French-American hybrid), Cabernet Franc, Riesling; Hudson-Chatham, Brotherhood Winery. LAKE ERIE AVA (shared NY/PA/OH): largest grape-growing area by acreage in eastern US; Concord (native grape, mostly juice/jelly), some Riesling and Chardonnay. HYBRID GRAPES: Vidal Blanc, Seyval Blanc, Traminette widely used by smaller producers for winter hardiness.'
+  },
+  {
     name: 'Willamette Valley (Oregon)', country: 'USA', lat: 45.3, lng: -123.0,
     subregions: 'Dundee Hills, Chehalem Mountains, Ribbon Ridge, Eola-Amity Hills, McMinnville',
     climate: 'Cool Maritime. Marine influence from Pacific. Volcanoes (Dundee Hills: Jory soil = red volcanic), Coast Range protection. Vintage variation.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Pinot Gris', 'Riesling'],
-    notes: 'Best US Pinot Noir outside California. Cool climate → more elegant, lower alcohol, higher acid than Napa. Red fruit, earth, spice. Chardonnay: Burgundian style, restrained, minerally. Pinot Gris: broad, spicy, round. Dundee Hills (volcanic Jory soil): most structured and complex Pinot.'
+    notes: 'PINOT NOIR (Willamette Valley flagship): Oregon embraces Burgundy as its reference point — earthy, savoury, red cherry, raspberry, dried rose, forest floor, often without the sweetness or body of California Pinot; lower alcohol (12.5–13.5%), higher acid, more structural tension. VINTAGE VARIATION: unlike California\'s consistent sunshine, Oregon accepts vintage variation as integral — cold, wet vintages exist and are prized by sommeliers. EYRIE VINEYARDS (David Lett, 1965): the pioneer who proved Oregon could make world-class Pinot; his 1975 Reserve came 2nd in a 1979 Paris tasting against top Burgundies — the "Oregon Miracle." DUNDEE HILLS: volcanic JORY SOIL (ancient marine basalt, high iron, red-colored) — structured, concentrated, complex Pinot Noir; Domaine Drouhin Oregon (Burgundy family investment since 1988), Adelsheim, Sokol Blosser benchmark. RIBBON RIDGE: ancient marine sedimentary soils, very different character — softer, more aromatic Pinot. EOLA-AMITY HILLS: VAN DUZER CORRIDOR (Pacific wind gap through Coast Range) dramatically cools afternoon temperatures — produces some of Oregon\'s most mineral, savoury, lower-alcohol Pinots. CHARDONNAY: Burgundian style, lean, citrus-led, white peach, restrained — improving rapidly. PINOT GRIS: Oregon specialty — broader, more textured, richer and spicier than Italian Pinot Grigio; stone fruit, moderate acidity; popular as a food wine. RIESLING: dry to off-dry, excellent precision, underrated. GAMAY NOIR: growing trend; light, fresh, carbonic styles. 100% Pinot Noir required for "Willamette Valley Pinot Noir" — pure varietal focus.'
   },
   {
     name: 'Columbia Valley & Walla Walla (Washington)', country: 'USA', lat: 46.5, lng: -119.5,
     subregions: 'Columbia Valley, Walla Walla Valley, Yakima Valley, Red Mountain, Horse Heaven Hills',
     climate: 'Cool to Warm Continental. Semi-arid, irrigated. Cascade Range rain shadow. Long sunny days, cool nights (large diurnal range). Cold winters.',
     grapes: ['Merlot', 'Cabernet Sauvignon', 'Syrah', 'Riesling (dry)', 'Chardonnay', 'Viognier'],
-    notes: 'Merlot most planted. Cabernet Sauvignon most prestigious. Riesling: dry and off-dry, excellent quality. Walla Walla: premium reds, more clay and sandy soils. Red Mountain: small, warmest AVA, concentrated Cab Sauv and Merlot. Diurnal range key to retaining acidity.'
+    notes: 'WASHINGTON\'S UNIQUE TERROIR: east of Cascade Range rain shadow — ultra-dry (< 200mm annual rainfall), irrigation essential from Columbia and Snake Rivers; 17 hours of summer sunlight (northern latitude 46-47°N) → exceptional ripeness; cold nights → high natural acidity retained despite ripe fruit. SOILS: deep loess (wind-blown silt, 50–100m deep) over volcanic basalt — excellent water retention in roots; deep, well-drained soils allow precise irrigation control. MERLOT (most planted): soft, plummy, red fruit, medium tannin, full body — Washington Merlot is often more structured and age-worthy than California examples. CABERNET SAUVIGNON (most prestigious): full body, dark fruit, cassis, firm tannin, high acidity (retained via cold nights) — rivals Napa in best sites. SYRAH: Washington\'s rising star — dark, peppery, violet, powerful, yet retains freshness; some of the finest Syrah produced outside France. RED MOUNTAIN AVA: Washington\'s smallest, warmest, most southerly facing slopes; concentrated tannin, red basalt soils — QUILCEDA CREEK, KIONA, HEDGES top producers. WALLA WALLA VALLEY: bi-state AVA (WA and OR); cobblestone alluvial and basalt soils; medium-sized boutique wineries; premium Merlot, Syrah, Cab Sauv; LEONETTI CELLAR (the pioneer), L\'ECOLE 41. YAKIMA VALLEY: most planted; diverse varieties including Riesling. RIESLING (Columbia Valley): Chateau Ste Michelle produces massive volumes of quality dry and off-dry Riesling — Washington is the USA\'s largest Riesling producer. CHATEAU STE MICHELLE: Washington\'s largest and most historically important winery — German partnership (Ernst Loosen) produces Eroica Riesling, a benchmark.'
   },
   {
     name: 'Niagara Peninsula (Canada)', country: 'Canada', lat: 43.15, lng: -79.2,
     subregions: 'Niagara Peninsula VQA, Niagara Escarpment, Niagara-on-the-Lake',
     climate: 'Cool Continental. Lake Ontario and Lake Erie moderate temperatures, extend growing season. Cold winters enable Icewine.',
     grapes: ['Riesling', 'Chardonnay', 'Cabernet Franc', 'Pinot Noir', 'Vidal (hybrid)'],
-    notes: 'VQA (Vintners Quality Alliance) labelling system. Quality Riesling (dry to off-dry) and Chardonnay. Cabernet Franc and Pinot Noir for reds. Vidal and Riesling for Icewine: grapes frozen on vine, pressed while frozen, intensely sweet. One of world\'s leading Icewine producers.'
+    notes: 'VQA (VINTNERS QUALITY ALLIANCE): Canada\'s appellation and quality labelling system — specifies region, minimum Brix, grape varieties. LAKE MODERATION: Lake Ontario to north and Lake Erie to south create a thermal buffer — preventing extreme cold from Arctic air masses that would kill vinifera vines; extends growing season significantly vs inland continental. RIESLING: Niagara\'s finest dry wine — off-dry to dry styles; steely, lime, slate mineral, high acid, restrained fruit; ages beautifully 5–15 years becoming petrol, toast. CHARDONNAY: two styles — unoaked (crisp, apple, mineral) and oaked (fuller, peach, buttery); good quality. CABERNET FRANC: Niagara red star — aromatic, red cherry, raspberry, leafy herbs, light-medium body; handles Niagara\'s marginal red climate better than Cabernet Sauvignon. PINOT NOIR: improving; lighter, red fruit, earthy. VIDAL BLANC (hybrid grape): key for Icewine — thick skin, high natural acidity, resists freeze-thaw cycles better than vinifera; the workhorse hybrid. ICEWINE (specialty): grapes left on vine until deep winter freeze (must be naturally -8°C or colder at harvest, no artificial freezing permitted under VQA); when pressed, only the concentrated unfrozen juice flows — extremely small yield (roughly 10% of normal); intensely sweet, honeyed, apricot, peach, lychee, preserved citrus; 180–220 g/L residual sugar; extraordinary acidity balances sweetness; world-famous style. NIAGARA ESCARPMENT SUB-APPELLATION: elevated bench above lake plain, more drainage, more temperature extremes, better for structured reds and dry whites. TWENTY MILE BENCH: premium terroir on escarpment edge.'
   },
   {
     name: 'Okanagan Valley (Canada)', country: 'Canada', lat: 49.9, lng: -119.5,
     subregions: 'Okanagan Valley VQA, Oliver/Osoyoos (south, warmest), Kelowna (central)',
     climate: 'Semi-arid Continental. Okanagan Lake moderates temperature. South end very hot and dry (Canada\'s only desert region). Cold winters for Icewine.',
     grapes: ['Merlot', 'Pinot Gris', 'Pinot Noir', 'Chardonnay', 'Riesling', 'Gewurztraminer'],
-    notes: 'South (Osoyoos): warmest, Merlot, Cabernet Sauvignon, Syrah dominant. North: cooler, Pinot Noir, Chardonnay. Pinot Gris: broad and ripe. Icewine from Riesling and Vidal. Growing international reputation. BC produces 90% of Canadian wine.'
+    notes: 'OKANAGAN LAKE MODERATION: 120km long, deep lake creates moderate microclimate in extreme continental interior (Southern BC would otherwise be too cold); steep hillside vineyards on east and west shores benefit from different aspect and altitude. CANADA\'S MOST DIVERSE WINE VALLEY: extreme gradient from south (desert) to north (cool): SOUTH OKANAGAN (Osoyoos/Oliver): Canada\'s only true desert — minimal rainfall (250mm), hot summers, warm winters relative to rest; Merlot, Cabernet Sauvignon, Syrah dominant; BLACK HILLS ESTATE, BURROWING OWL benchmark. CENTRAL OKANAGAN (Kelowna): medium temperatures, Pinot Noir, Chardonnay, Merlot; MISSION HILL (BC\'s showcase winery). NORTH OKANAGAN: coolest, Riesling, Gewurztraminer, Pinot Noir finest expressions. PINOT GRIS: arguably BC\'s best white variety — fuller and more textured than Italian Pinot Grigio, stone fruit, warm, spicy, generous. MERLOT: most planted variety; soft, plummy, accessible — quality improving. GEWURZTRAMINER: aromatic, lychee, rose petal, ginger — thrives in cool north. ICEWINE: from Riesling (most prestigious) and Vidal; deep-freeze winters make this reliable. SYRAH: south Okanagan shows real promise — dark, peppery, full-bodied; some resemblance to Northern Rhône in best sites. GAMAY NOIR: increasingly planted, fresh, carbonic or whole-bunch styles. SOILS: volcanic, sandy, gravel, clay — diverse. BC WINE: 90% of Canadian production; rapidly improving international profile since 1990s VQA establishment.'
   },
 
   // ========== CHILE ==========
@@ -1424,42 +1459,42 @@ const regions = [
     subregions: 'Elqui Valley, Limarí Valley, Choapa Valley',
     climate: 'Warm Mediterranean. Northernmost wine zone. Humboldt Current cooling, altitude 1500–2000m in Elqui. Low rainfall, expensive irrigation.',
     grapes: ['Sauvignon Blanc', 'Syrah', 'Chardonnay'],
-    notes: 'Elqui: Syrah lighter body and peppery — cooler style from altitude. Sauvignon Blanc reputation. Limarí: Chile\'s best Chardonnay — structured, elegant, restrained, ocean influence. Choapa: south of Limarí, gaining attention.'
+    notes: 'EXTREME ALTITUDE VITICULTURE: Elqui Valley reaches 1500–3000m — among the highest vineyards in the world; dramatic diurnal range (25–30°C daily swing), intense UV radiation, very low rainfall; completely dependent on Andean snowmelt irrigation. ELQUI VALLEY: best known for Pisco (aromatic Muscat-based brandy — national spirit of Chile and Peru), but table wine quality rapidly increasing; SYRAH: cool-climate peppery style (black pepper, violet, medium-full body, blue fruit) from altitude — dramatically different from hot-climate Australian Syrah; fresh and elegant. SAUVIGNON BLANC: high-altitude, high-acid, crisp tropical/citrus character. LIMARÍ VALLEY: closer to Pacific coast (60km), heavily influenced by Humboldt Current fog mornings (camanchaca); limestone soils (unusual for Chile — mostly alluvial soils dominate elsewhere); CHARDONNAY: Chile\'s most elegant and structured — fine acidity, mineral, restrained stone fruit, not overripe; White Burgundy-like. EMILIANA ORGANICO and CONCHA Y TORO Terrunyo source from Limarí. CHOAPA VALLEY: transitional zone between Coquimbo and Aconcagua macro-regions; emerging; Syrah and Cabernet Sauvignon. CHALLENGE: extreme dryness and UV require careful canopy management; frost risk at altitude.'
   },
   {
     name: 'Aconcagua Valley', country: 'Chile', lat: -32.85, lng: -70.6,
     subregions: 'Aconcagua Valley, Casablanca Valley, San Antonio Valley (Leyda)',
     climate: 'Warm (Aconcagua valley floor) to Cool Maritime (Casablanca, San Antonio coast). Andes cooling overnight. Humboldt Current coastal fog.',
     grapes: ['Cabernet Sauvignon', 'Syrah', 'Carmenère', 'Sauvignon Blanc', 'Chardonnay', 'Pinot Noir'],
-    notes: 'Aconcagua Valley: traditionally rich and ripe Cab Sauv/Syrah — moving towards more freshness. Casablanca: pioneering cool-climate Sauvignon Blanc (high acid, ripe apple, citrus, tropical) and Chardonnay. Leyda/San Antonio: Chile\'s coolest, finest Sauvignon Blanc, Pinot Noir, Syrah.'
+    notes: 'ACONCAGUA VALLEY (proper): classic "warm-to-hot" Chile — red wines territory; Viña Errázuriz (the dominant estate, over 140 years history) pioneered quality Cabernet Sauvignon and Syrah in this valley; moving towards fresher styles at higher elevations and cooler slopes. CASABLANCA VALLEY: Chile\'s cool-climate REVOLUTION (first planted 1982 by Pablo Morandé): previously thought too cold and foggy, now a benchmark; morning Pacific fog (camanchaca) from Pacific 20km away makes this very cool for latitude 33°S; SAUVIGNON BLANC: high acid, green apple, lime, gooseberry, citrus — cleaner and more aromatic than traditional Maipo Sauvignon; CHARDONNAY: elegant, restrained, citrus-led, less tropical than California; PINOT NOIR: good quality lighter style. Frost risk from cold Pacific winds requires complex vineyard management. SAN ANTONIO / LEYDA VALLEY: even cooler than Casablanca, narrower valley, more Pacific exposure; Chile\'s most exciting maritime zone; SAUVIGNON BLANC: intense, mineral, green herbs, citrus, remarkable acidity — rivals New Zealand\'s best; PINOT NOIR: complex, earthy, red cherry, elegant structure; SYRAH (Lo Abarca sub-zone): remarkable — black pepper, violet, cool and precise, compared to Northern Rhône by critics; VIÑA MATETIC (biodynamic) producing benchmark Leyda wines. CARMENÈRE (cool-climate coastal approach): some producers fermenting Carmenère in cooler coastal sites for freshness — reducing the "green pepper" character associated with under-ripe inland versions.'
   },
   {
     name: 'Maipo & Cachapoal (Central Valley)', country: 'Chile', lat: -33.6, lng: -70.85,
     subregions: 'Maipo Valley, Cachapoal Valley (upper: Peumo, lower: Requínoa)',
     climate: 'Warm Mediterranean. Santiago proximity, Andes cooling overnight. Maipo: gravel soils similar to Médoc.',
     grapes: ['Cabernet Sauvignon', 'Carmenère', 'Merlot', 'Syrah', 'Chardonnay'],
-    notes: 'Maipo: Chile\'s most prestigious Cabernet Sauvignon — minty, eucalyptus character, structured, long aging. Alto Maipo (higher altitude): finest terroir. Cachapoal: Carmenère on valley floor, Cab Sauv/Syrah on cooler hillsides. Carmenère: signature Chile grape, plum, green pepper, dark spices.'
+    notes: 'MAIPO VALLEY (Chile\'s "Bordeaux"): adjacent to Santiago, Chile\'s oldest and most prestigious wine zone; CABERNET SAUVIGNON flagship — blackcurrant, cassis, distinctive EUCALYPTUS/MINT aroma (from eucalyptus trees planted as windbreaks near vineyards, terpenes in air), cedar, medium-full tannin, good acid, elegant structure; often cited as the "Bordeaux of Chile." ALTO MAIPO (southern hillside zone, 600–700m+): finest Maipo terroir — lower yields from rocky, alluvial-granite soils, more complex structure, more herbaceous freshness vs valley floor richness; CONCHA Y TORO Don Melchor, ALMAVIVA (Rothschild-Concha y Toro), CHADWICK (Eduardo Chadwick\'s Viñedo Chadwick): Chile\'s most prestigious, expensive wines — benchmark "Terramater" generation. CARMENÈRE (Chile\'s signature grape): the "lost Bordeaux grape" — brought to Chile in 1850s as Merlot cuttings, DNA-matched only in 1994 by Jean-Michel Boursiquot; had disappeared from France (not replanted after phylloxera); PLUM, DARK SPICE (black pepper, dark chocolate, smoked tobacco), green bell pepper (pyrazines) if under-ripe, silky tannin, medium body; in warm sites and low yields, green character disappears revealing lush dark fruit complexity — the key is full ripeness. CACHAPOAL VALLEY: extends from Rancagua south; warmer, more continental than coastal valleys; CARMENÈRE on valley floor clay; CABERNET SAUVIGNON and SYRAH on cooler hillside terraces; VIÑA SANTA RITA Medalla Real, CASA REAL from here.'
   },
   {
     name: 'Colchagua Valley (Central Valley)', country: 'Chile', lat: -34.5, lng: -71.1,
     subregions: 'Colchagua Valley, Santa Cruz, Apalta',
     climate: 'Warm Mediterranean. Pacific cooling through valleys.',
     grapes: ['Cabernet Sauvignon', 'Syrah', 'Carmenère', 'Merlot', 'Malbec'],
-    notes: 'Red wine heartland. Fuller body, intense fruit. Apalta (sub-zone): top terroir, home to Lapostolle/Montes. Syrah does well here. Carmenère: full expression. Premium tier wines competing internationally.'
+    notes: 'COLCHAGUA: Chile\'s "Napa Valley" for big red wines — warm, sun-drenched valley with Pacific breezes reaching through gaps; the heartland for full-bodied structured reds competing internationally. CABERNET SAUVIGNON: rich, ripe, blackcurrant, plum, full tannin, often more tropical than Maipo; ages well in French oak. SYRAH: growing success — dark, structured, peppery, full body; MONTES FOLLY (hillside, 50° slope): iconic Chilean Syrah on steep schist soils, proving Syrah\'s potential. CARMENÈRE: full ripeness expression here without green notes — concentrated, plum, dark chocolate, tobacco, silky tannin. MERLOT: soft, plummy, accessible at lower price points. APALTA SUB-ZONE (western Colchagua): Chile\'s single most prestigious terroir; dramatic, rocky amphitheatre bowl facing north catching maximum sun; rocky, poor soils; CASA LAPOSTOLLE Clos Apalta (Carmenère-led blend, consistently one of Chile\'s top 1–2 wines); MONTES Alpha M, VIK (new premium single estate). MALBEC: grown successfully as secondary variety. PEUMO SUB-ZONE (Cachapoal/Colchagua border): Carmenère specialist zone on red clay soils — CONCHA Y TORO Carmin de Peumo, a world-reference Carmenère. EXPORT SUCCESS: Colchagua branded wines (Santa Rita, Casa Lapostolle, Montes) were Chile\'s global export drivers in 1990s–2000s.'
   },
   {
     name: 'Curicó & Maule Valleys', country: 'Chile', lat: -35.5, lng: -71.5,
     subregions: 'Curicó Valley, Maule Valley (Talca, Linares, Cauquenes)',
     climate: 'Warm Mediterranean transitioning to cooler, more rainfall south.',
     grapes: ['Cabernet Sauvignon', 'Merlot', 'Carignan (old vine)', 'Sauvignon Blanc', 'Chardonnay'],
-    notes: 'Cauquenes (dryland Maule): old vine Carignan on granite — gaining international attention for elegance. Large volume production of Cab Sauv and Merlot from bulk. Growing fine wine reputation in specific terroirs.'
+    notes: 'MAULE VALLEY: Chile\'s largest wine-producing valley by area — historically a bulk wine zone for cheap Cabernet and Merlot, but now attracting artisan producers for its OLD VINES and GRANITE SOILS. CAUQUENES (dryland Maule, western): the most exciting Maule zone; unirrigated old vines (80–150 years) of CARIGNAN and PAÍS on decomposed granite; no irrigation possible → stress-grown, low yield, extraordinary concentration; CARIGNAN here: mineral, dark cherry, earthy, refined tannin, bright acidity — challenging the idea that Carignan is only a blending grape; VIGNO movement (Vignadores de Carignan) — association of quality producers promoting old-vine dryland Carignan as world-class wine; UNDURRAGA TH, DE MARTINO, LOUIS-ANTOINE LUYT. CURICÓ VALLEY (north of Maule): transitional zone between Central Valley warmth and Southern Chile coolness; produces large volumes of reliable Sauvignon Blanc and Chardonnay for export brands; MIGUEL TORRES Chile (Catalan family, established 1979): pioneered cold-fermented whites, modern winemaking techniques in Chile — transformed Chilean wine quality. LARGE VOLUME PRODUCTION: most Chilean export branded wine uses Maule as primary source for affordable Cab Sauv, Merlot, Sauvignon Blanc. COASTAL MAULE SUB-ZONES: emerging coastal areas (Empedrado) showing fresh, mineral styles of Carignan and País from windswept hillsides.'
   },
   {
     name: 'Southern Chile (Itata, Bío-Bío, Malleco)', country: 'Chile', lat: -37.5, lng: -72.4,
     subregions: 'Itata Valley, Bío-Bío Valley, Malleco Valley',
     climate: 'Cool Maritime-Mediterranean. More rainfall, cooler temperatures. Granite soils.',
     grapes: ['País (Mission)', 'Muscat of Alexandria', 'Viognier', 'Riesling', 'Gewurztraminer', 'Pinot Noir', 'Chardonnay'],
-    notes: 'Old vines of País and Muscat on granite — "new wave" artisan wines gaining attention. Bío-Bío and Malleco showing potential for Pinot Noir and Chardonnay. Malleco: southernmost and coolest. Natural wine focus.'
+    notes: 'SOUTHERN FRONTIER: Chile\'s coolest, most southerly wine regions — traditionally ignored as "too cool and wet" but now the frontier for artisan and natural winemakers. PAÍS (Mission): the first grape planted by Spanish missionaries (1550s) — same as California\'s Mission and Argentina\'s Criolla; forgotten in favor of international varieties until 2000s; very old vines (100–200 years), unirrigated bush vines on granite; light-medium body, pale ruby, red cherry, earthy, high acid, low alcohol (10–11%); beautiful when made carefully for early drinking — "pink" País (rosé) gaining global attention. MUSCAT OF ALEXANDRIA: old vine Muscat on granite (Itata Valley) — semi-dry or sweet aromatic whites of grapey, floral character; an unusual style unique to this zone. CARIGNAN (Itata): some old-vine Carignan alongside País. ITATA VALLEY: drier than Bío-Bío, first southern zone — longest relationship with wine (oldest established); granite soils; OLD-VINE RENAISSANCE led by outside winemakers (León-García, Clos des Fous, Garage Wine Co). BÍO-BÍO VALLEY: cooler, wetter, more clay soils; RIESLING and GEWURZTRAMINER surprisingly good from German immigrant community heritage; PINOT NOIR: emerging. MALLECO VALLEY: southernmost established zone (38°S); Araucanía region; PINOT NOIR and CHARDONNAY showing genuine cool-climate quality — compact, mineral, Burgundy-like precision; CLOS DE FOUS, VIÑEDOS DE ALCOHUAZ pushing quality. THE "NEW WAVE" MOVEMENT: low-intervention, natural, dry-farmed winemaking from old-vine País and Muscat gaining international wine press attention since 2010.'
   },
 
   // ========== ARGENTINA ==========
@@ -1468,21 +1503,21 @@ const regions = [
     subregions: 'Cafayate (Salta Province), Calchaquí Valleys',
     climate: 'Hot Continental but altitude 1700–3100m = cool nights and UV. Very dry, irrigated. Andean microclimate.',
     grapes: ['Torrontés', 'Malbec', 'Cabernet Sauvignon', 'Tannat'],
-    notes: 'Torrontés Riojano: Argentina\'s signature white — intensely aromatic, Muscat-like floral perfume (rose, peach), but DRY and refreshing. Malbec at altitude: finesse and freshness vs power. Large producers (Lurton, etc.) invested here.'
+    notes: 'TORRONTÉS RIOJANO (Argentina\'s signature white, primary variety here): DNA cross of Muscat of Alexandria × Criolla Chica; genetically distinct from Spanish Torrontés; intensely AROMATIC — rose petal, peach, apricot, Muscat-like floral perfume; but crucially the palate is DRY, crisp, refreshing with high acidity (mismatched expectation from aroma to palate is the varietal signature); medium-light body, 12–13.5% ABV; best from 1700–3100m elevation where the cool nights preserve acidity and aromatics. Three Torrontés varieties: Riojano (finest, Cafayate), Sanjuanino, Mendocino. CALCHAQUÍ VALLEY: the most spectacular vineyards — dramatic Andean canyon landscape at 1700–3111m (Dávalos, the world\'s highest commercial vineyard at 3111m); UV radiation extreme, skin thickness develops for protection — phenolic concentration unusual. MALBEC AT ALTITUDE (Cafayate Salta): 1700–2500m altitude creates a fundamentally different Malbec from Mendoza — lighter, fresher, more vibrant purple, floral, elegant violet notes, black cherry rather than blackberry, lower alcohol (13–13.5% vs Mendoza\'s 14.5%+); remarkable finesse and freshness. TANNAT: some planted; very high polyphenols. CABERNET SAUVIGNON: ripe, dark, structured at altitude. LA ROSA DE CAFAYATE, EL ESTECO, CLOS DE LOS SIETE (Michel Rolland), CUMA (José Zuccardi): key producers. BODEGA COLOMÉ: oldest winery in Argentina (1831), at 2300m. The Calchaquí landscape — ancient Andean rock formations, dry river valleys — is among South America\'s most dramatic wine scenery.'
   },
   {
     name: 'Mendoza (Luján de Cuyo, Maipú, Uco Valley)', country: 'Argentina', lat: -33.0, lng: -68.9,
     subregions: 'Luján de Cuyo, Maipú, Uco Valley (Tupungato, Tunuyán, San Carlos), San Rafael',
     climate: 'Hot Continental. Andes rain shadow, very dry, snowmelt irrigation (acequias). Large diurnal range. Altitude 600–1200m.',
     grapes: ['Malbec', 'Cabernet Sauvignon', 'Bonarda', 'Syrah', 'Chardonnay', 'Torrontés', 'Viognier'],
-    notes: 'Malbec: Argentina\'s flagship. Luján de Cuyo: old vine Malbec, alluvial soils, 900m. Maipú: Cab Sauv/Bonarda, lower altitude. Uco Valley (higher: 1000–1200m): finest terroir — elegant, fresh Malbec, also Cab Franc and Chardonnay. Dark fruit, violets, full tannin, often oaked.'
+    notes: 'MALBEC (Argentina\'s flagship): brought from Bordeaux in 1852 by Michel Pouget; abandoned in France after 1956 frost (never widely replanted); thrives in Mendoza\'s high-altitude desert climate — Andes protect from Atlantic moisture, UV and diurnal range maximize phenolic development. Mendoza Malbec: deep purple-black, full body, concentrated blackberry, plum, dark cherry, violets, dark chocolate, tobacco; medium-high tannin (silkier than Cahors), full alcohol (13.5–15%); often 12–18 months in French/American oak. LUJÁN DE CUYO (oldest, most prestigious sub-zone): Mendoza\'s "Médoc" — alluvial gravelly soils, 850–1050m; old vine Malbec (80–100+ years, pre-phylloxera vines, ungrafted); structured, complex, long-aging; ACHAVAL FERRER, CLOS DE LOS SIETE, ZUCCARDI VALLE DE UCO, CATENA ZAPATA (pioneer of Mendoza quality). MAIPÚ: lower altitude (600–750m), sandy loam soils, warmer; BONARDA and CABERNET SAUVIGNON dominant; more accessible, rounder styles. UCO VALLEY (Tupungato, Tunuyán, San Carlos — 1000–1400m): Mendoza\'s most exciting frontier; high altitude, cool climate, dramatic diurnal range; Malbec: finest, most elegant, more fresh-acid, violet-driven; CABERNET FRANC: superb here — leafy, herbal, fine-grained; CHARDONNAY: best in Argentina; PINOT NOIR: promising. BONARDA: Argentina\'s 2nd most planted red; soft, plummy, fresh acidity, lower tannin than Malbec — underrated quality grape. ACEQUIAS (irrigation channels): essential desert farming; snowmelt from Andes distributed via complex canal system built by colonial Spanish. PHYLLOXERA: largely absent — hot, dry, sandy conditions hostile; many old ungrafted vines. SAN RAFAEL: southernmost Mendoza sub-region; good Cabernet Sauvignon and Malbec at lower altitude. ALTITUDE IS EVERYTHING: every 100m altitude = ~0.6°C cooling — critical for maintaining freshness in otherwise very hot conditions.'
   },
   {
     name: 'Patagonia (Río Negro & Neuquén)', country: 'Argentina', lat: -39.1, lng: -67.0,
     subregions: 'Río Negro, Neuquén, Chubut (extreme south)',
     climate: 'Cool Continental. Southernmost wine region in world (some). Desert climate, cold winds, cold winters. Irrigation essential.',
     grapes: ['Malbec', 'Pinot Noir', 'Merlot', 'Sauvignon Blanc', 'Chardonnay', 'Torrontés'],
-    notes: 'Cool climate → elegant, fresh style wines. Pinot Noir shows real promise. Sauvignon Blanc: high acid, pungent. Patagonia brand increasingly known internationally. Challenging but rewarding winemaking conditions.'
+    notes: 'PATAGONIA — THE LAST FRONTIER: among the southernmost commercial wine regions in the world (37–44°S), with wild Patagonian winds, extreme cold, and dramatic landscape. RÍO NEGRO VALLEY: semi-arid desert at 38–39°S; snowmelt from Andes irrigates; large diurnal range (up to 30°C daily); cooling Patagonian winds from Atlantic force vines to struggle. MALBEC: Patagonian Malbec dramatically different from Mendoza — lower alcohol (12–13.5%), lighter body, more fresh acidity, violet-rose petal, refined dark cherry, elegant tannin — "Patagonian finesse" vs Mendoza\'s power. PINOT NOIR: Patagonia\'s most interesting prospect; red cherry, earthy, fine silky tannin, lighter body, more Burgundian character than most Argentine Pinot; CHACRA (Hans Vinding-Diers): world-class pre-phylloxera old vine Pinot Noir discovered in Río Negro, planted 1932 — has achieved cult status. SAUVIGNON BLANC: high acid, green herbs, citrus, sharp and pungent — the cold conditions extract natural aromatic intensity. CHARDONNAY: lean, citrus, crisp — needs careful management in the cold. MERLOT: soft, accessible. NEUQUÉN PROVINCE: produces some Torrontés, but also surprising Malbec and Pinot Noir at 700m+. CHUBUT: extreme south (45°S), experimental viticulture only. PATAGONIA WIND: the dominant viticultural challenge — constant Patagonian westerlies; wind machines, windbreaks essential; budburst and flowering timing critical. HUMBERTO CANALE (1909): oldest operating winery in Patagonia; Bodegas Del Fin del Mundo (winery at "the end of the world"): key producers.'
   },
 
   // ========== SOUTH AFRICA ==========
@@ -1491,35 +1526,35 @@ const regions = [
     subregions: 'Stellenbosch Ward, Jonkershoek Valley, Simonsberg-Stellenbosch, Helderberg',
     climate: 'Moderate to Warm Mediterranean. Cool winds from False Bay, varied altitude and aspect, diverse soils (decomposed granite, sandstone).',
     grapes: ['Cabernet Sauvignon', 'Merlot', 'Cabernet Franc', 'Syrah', 'Pinotage', 'Sauvignon Blanc', 'Chardonnay'],
-    notes: 'Premier wine region of SA. Bordeaux blend: benchmark. Cape Blend (Pinotage + other reds). Syrah: peppery, full-bodied. Sauvignon Blanc: grassy, citrus. Chenin Blanc: both oaked and unoaked. Most complex and prestigious wines of SA made here.'
+    notes: 'CABERNET SAUVIGNON: Stellenbosch flagship; blackcurrant, cassis, pencil lead, herbaceous hint from cool sea-breeze evenings; medium-full to full body, firm tannin — Stellenbosch Cab is SA\'s closest equivalent to Napa or Bordeaux. BORDEAUX BLEND: Cabernet + Merlot + Cab Franc blends from Simonsberg and Jonkershoek = premier SA wines. PINOTAGE: South Africa\'s unique variety (Pinot Noir × Cinsault, bred 1925); deeply controversial — traditional style can be rubbery, burnt rubber (acetaldehyde/acetate), jammy; modern style from low yields and careful winemaking: rich dark fruit, dark chocolate, earthy, surprisingly complex. CAPE BLEND: Pinotage must be 30–70% with other varieties. SYRAH: increasingly impressive; peppery, full-bodied, violet, dark olive, meaty; False Bay influence adds freshness vs hot-climate examples; Syrah + Grenache + Mourvèdre (Rhône-inspired) from Voor Paardeberg and Helderberg. SAUVIGNON BLANC: high acidity, green herbs, gooseberry, grapefruit — False Bay cool wind essential. CHENIN BLANC: Stellenbosch produces both unoaked fresh styles and barrel-fermented serious styles — increasingly SA\'s most important quality white grape. Decomposed granite (best for Cab) and Tukulu (sandstone) soils. Helderberg and Simonsberg are the premium terroir zones.'
   },
   {
     name: 'Paarl', country: 'South Africa', lat: -33.73, lng: 18.97,
     subregions: 'Paarl, Franschhoek Ward (Huguenot settlement), Voor Paardeberg',
     climate: 'North of Stellenbosch, less marine cooling. Mountain aspects offer variety. Cool nights still.',
     grapes: ['Cabernet Sauvignon', 'Syrah', 'Pinotage', 'Chenin Blanc', 'Chardonnay'],
-    notes: 'KWV historically based here. Franschhoek: Huguenot heritage, elegant Bordeaux blends, Chardonnay. Voor Paardeberg: old vine Chenin Blanc, Syrah, Grenache — new wave artisan wines. Pinotage (Pinot Noir × Cinsault): South Africa\'s unique grape.'
+    notes: 'PAARL — SOUTH AFRICA\'S MOST HISTORIC WINE HUB: inland from Cape Town, warmer and drier than Stellenbosch, less marine cooling; diverse aspects and altitudes create multiple microclimates. KWV (Ko-operatieve Wijnbouwers Vereniging): the co-operative that controlled ALL South African wine exports from 1924–1992 (apartheid-era monopoly); headquartered in Paarl; post-apartheid deregulation in 1992 opened the industry to competition and investment. FRANSCHHOEK VALLEY: "French Corner" — 200 Huguenot (French Protestant) refugees settled 1688, bringing wine expertise; narrow mountain valley, diverse soils (decomposed granite and shale); CHARDONNAY: one of SA\'s finest — elegant, buttery-nutty with good acid; BORDEAUX BLENDS: structured, Médoc-inspired; also excellent SÉMILLON (old vine: waxy, honeyed, complex — SA\'s original white variety for over 300 years); BOEKENHOUTSKLOOF, GLENELLY, PLAISIR DE MERLE: key producers. VOOR PAARDEBERG (northwest Paarl): the "new wave" artisan zone; unirrigated CHENIN BLANC bush vines (50–80 years) on ancient granite hills produce some of SA\'s most compelling whites; old vine SYRAH and GRENACHE for powerful yet fresh reds; MULLINEUX & LEEU (Andrea Mullineux: SA White Wine Winemaker multiple years), SADIE FAMILY extends here. PINOTAGE: bred 1925 at Stellenbosch University by Abraham Perold (Pinot Noir × Cinsault/Hermitage); SA\'s unique contribution; planted throughout Paarl; modern styles from low yields: dark red-purple, plum, dark chocolate, coffee, smoke. CHENIN BLANC: both modern (unoaked, fresh, green apple) and traditional (oxidative, waxy, honeyed) styles produced in Paarl.'
   },
   {
     name: 'Constantia', country: 'South Africa', lat: -34.05, lng: 18.43,
     subregions: 'Constantia Ward, Cape Peninsula',
     climate: 'Very cool. Cape Doctor (SE wind) very strong, east side of Table Mountain. High rainfall for Cape.',
     grapes: ['Sauvignon Blanc', 'Sémillon', 'Muscat de Frontignan', 'Cabernet Sauvignon', 'Syrah'],
-    notes: 'Oldest vineyard area in South Africa (1685). Vin de Constance: historic legendary sweet wine (Muscat de Frontignan), favored by Napoleon in exile. Now revived by Klein Constantia. Sauvignon Blanc: one of SA\'s best, very fresh and mineral. Cool climate classic.'
+    notes: 'CONSTANTIA — SOUTH AFRICA\'S ORIGINAL WINE REGION (est. 1685): Simon van der Stel planted the first vines at Groot Constantia; the Cape\'s oldest, most historically significant wine area; now a suburban/semi-rural peninsula behind Table Mountain. VIN DE CONSTANCE (Klein Constantia): the legend that put Constantia on the world map; originally 18th–19th century "Constantia wine" — a natural sweet wine from Muscat de Frontignan (Muscat Blanc à Petits Grains); mentioned in Napoleon\'s final requests from St Helena exile; beloved by European royalty; Jane Austen referenced it in Sense and Sensibility; production ceased in 1860s; revived in 1986 by Klein Constantia; the modern revival uses late-harvest Muscat de Frontignan (not fortified), slowly dried/over-ripe berries; style: amber-golden, honey, apricot jam, orange marmalade, rose water, caramel, extraordinary length; ages 20–30+ years magnificently. SAUVIGNON BLANC: arguably SA\'s finest — the Cape Doctor (strong SE wind) and maritime Cape Peninsula position creates very cool conditions for the latitude; intense green herbs, lime, gooseberry, flint/flinty mineral; GROOT CONSTANTIA, BUITENVERWACHTING, KLEIN CONSTANTIA, STEENBERG: benchmark estates. SÉMILLON: old-vine dry whites of waxy, honeyed, lanolin character — Steenberg Sémillon one of SA\'s best. MUSCAT DE FRONTIGNAN: still grown for the sweet Vin de Constance and dry/off-dry aromatic whites. COOL CLIMATE: False Bay on one side, Atlantic on the other; Cape Doctor wind channels cool air — despite latitude 34°S, can feel more like 40°S in growing season thermal terms.'
   },
   {
     name: 'Swartland', country: 'South Africa', lat: -33.45, lng: 18.67,
     subregions: 'Swartland District, Malmesbury',
     climate: 'Hot and dry. Very little rainfall, unirrigated bush vine viticulture. Shale and granite soils.',
     grapes: ['Chenin Blanc (old vine)', 'Syrah', 'Grenache', 'Mourvèdre', 'Cinsault'],
-    notes: 'New wave revolution led by Eben Sadie and other boutique producers. Old vine (60–100+ year) Chenin Blanc: complex, concentrated, versatile. Rhône-style reds (Syrah/Grenache/Mourvèdre): peppery, earthy. Minimal intervention philosophy. "Swartland Revolution" put SA on global map.'
+    notes: 'CHENIN BLANC (old vine, Swartland flagship): 60–100+ year unirrigated bush vine Chenin in Swartland\'s schist and granite produces extraordinary wine — concentrated stone fruit (peach, quince, apricot), wax, nuts, mineral freshness from diurnal range; can be oaked (barrel fermented, complex), unoaked (pure, textured), or blended. One of the world\'s most compelling expressions of the variety. Dryland (unirrigated) viticulture forces deep roots — the key to complexity. SYRAH: Swartland Syrah — dark purple, full body, black pepper, violet, dark olive, meat, tobacco; combines power with a unique earthy savouriness. GRENACHE: old vine, silky, spicy, strawberry-herbal, high alcohol. MOURVÈDRE: warmest sites; gamey, tannic, dark, needs time. CINSAULT: the freshness variety; red fruit, low tannin, contributes elegance to blends. PALOMINO: old vine whites, sometimes used for non-sherry dry whites — unusual. EBEN SADIE (Sadie Family Wines): the revolutionary producer; "Columella" (Syrah-led) and "Palladius" (Chenin-led white blend) define the region\'s best. "SWARTLAND REVOLUTION" (2010–): annual event promoting natural, unirrigated, old-vine winemaking philosophy. SHALE, GRANITE, SCHIST soils on dry rolling hills — extreme viticultural conditions that demand the vine work hard.'
   },
   {
     name: 'Walker Bay & Elgin', country: 'South Africa', lat: -34.28, lng: 19.15,
     subregions: 'Walker Bay District (Hemel-en-Aarde Ward), Elgin District, Bot River, Elim Ward',
     climate: 'Cool Maritime. Atlantic/Southern Ocean cooling. Walker Bay funnels cool air. Elgin: altitude adds extra cooling.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Sauvignon Blanc', 'Syrah', 'Riesling'],
-    notes: 'Hemel-en-Aarde (Walker Bay): South Africa\'s best Chardonnay and Pinot Noir — Burgundian style. Hamilton Russell: pioneering estate. Elgin: high altitude (250–360m), SA\'s best Sauvignon Blanc and Chardonnay from some sites, also Pinot Noir, Syrah. Cool climate elegant wines.'
+    notes: 'HEMEL-EN-AARDE ("Heaven and Earth") VALLEY (Walker Bay): SA\'s most Burgundian terroir; narrow sheltered valley 5km from Walker Bay; deep, iron-rich, decomposed Bokkeveld shale soils (ancient marine sediment); Walker Bay funnels cold Atlantic air in most afternoons. PINOT NOIR: SA\'s finest and most Burgundy-like — complex, earthy, red cherry, dried rose, forest floor, silky tannin, genuine structure; HAMILTON RUSSELL VINEYARDS (est. 1975 by Tim Hamilton Russell, declared Burgundy as target): the pioneer that proved SA could produce world-class Pinot Noir and Chardonnay; Upper Hemel-en-Aarde and Hemel-en-Aarde Ridge are higher, more structured sub-zones; BOUCHARD FINLAYSON, NEWTON JOHNSON, STORM also benchmark. CHARDONNAY: among SA\'s very best — taut, mineral, white peach, fig, subtle oak, long acid-driven finish; serious Burgundy comparisons valid. ELGIN VALLEY (high altitude ward): 200–450m elevation makes Elgin the coldest wine district in SA; apple-farming country; SAUVIGNON BLANC: intense, mineral, cut grass, lime, rivalling New Zealand for crispness; CHARDONNAY: lean, citrus, apple-driven, very elegant; PINOT NOIR: lighter, aromatic, most Burgundian in SA; SYRAH: cool-climate peppery style — some resemblance to Crozes-Hermitage; PAUL CLUVER, IONA, NEWTON JOHNSON Highland Estate from Elgin. BOT RIVER WARD: transitional zone, warmer; SYRAH and CHENIN BLANC. ELIM WARD (southernmost SA vineyard area, Cape Agulhas, 34.5°S): extreme maritime, coldest; emerging for cool-climate whites and Syrah.'
   },
 
   // ========== AUSTRALIA ==========
@@ -1528,70 +1563,70 @@ const regions = [
     subregions: 'Barossa Valley, Lyndoch, Tanunda, Nuriootpa, Seppeltsfield',
     climate: 'Warm Mediterranean. Hot dry summers, mild winters. Old vine Shiraz (many 100+ years). Low yields.',
     grapes: ['Shiraz', 'Grenache', 'Mourvèdre', 'Cabernet Sauvignon', 'Semillon'],
-    notes: 'Shiraz: powerful, full body, dark fruit, chocolate, American oak influence (vanilla, coconut), high alcohol. Traditional style: big and bold. Barossa is the heartland of Australian Shiraz. Old vines (Langmeil, Penfolds Grange grapes). Some modern fresher style now. Grenache and GMC blends also excellent.'
+    notes: 'SHIRAZ: Australia\'s flagship red; in Barossa context — very powerful, full body, deep purple-black, blackberry jam, dried plum, dark chocolate, coffee, licorice; traditionally aged in American oak (vanilla, coconut, dill from oak lactones), now often French or mixed. Old vines (many 80–150+ years, some pre-phylloxera) produce extraordinary concentration at low yields. Penfolds Grange: Australia\'s most iconic wine — multi-regional Shiraz, aged in American hogsheads (300L), defined the global image of Australian Shiraz. GRENACHE: old vine Barossa Grenache is outstanding — strawberry, raspberry, white pepper, silky; at high alcohol (15%+) can be voluptuous and port-like from oldest bush vines. MOURVÈDRE (Mataro): deepest, most tannic component in GMC blends; dark berry, gamey, earthy. GSM BLEND: Grenache-Shiraz-Mourvèdre — a Barossa classic, balanced and complex. SEMILLON (dry): old vine Barossa Semillon; full-bodied, low acid, waxy, ages to honey-toast character. CABERNET SAUVIGNON: secondary importance; full-bodied, eucalyptus, cassis. High alcohol (typically 14.5–16%) is characteristic of the warm climate — "big wine" culture embraced here.'
   },
   {
     name: 'Eden Valley', country: 'Australia', lat: -34.7, lng: 139.07,
     subregions: 'Eden Valley, High Eden',
     climate: 'Cool Continental. Altitude above Barossa (400–550m), cooler, more diurnal range.',
     grapes: ['Riesling', 'Shiraz', 'Cabernet Sauvignon', 'Chardonnay'],
-    notes: 'Riesling: lime zest, mineral, high acidity. Develops toasty "kerosene/petrol" complexity with age. Henschke Hill of Grace: one of world\'s great Shiraz from here. More elegant, fresher style than Barossa. Top sub-zone: High Eden.'
+    notes: 'RIESLING (Eden Valley flagship): classic Australian dry Riesling — lime zest, lemon blossom, green apple, crisp acidity, 11–12.5% ABV; as it ages (5–20 years), develops distinctive "petrol/kerosene" character (TDN compound from carotenoid breakdown under UV); screwcap aging (since Clare Valley revolution, 2000) preserves freshness better than cork. Eden Valley Riesling: finer, more floral and mineral than Clare — considered Australia\'s most refined. SHIRAZ (Eden Valley): higher altitude (400–550m vs Barossa floor 260m) and cooler temperatures create a fundamentally different character — finer tannin, more elegance, black pepper, violets, smoky bacon; less jammy than Barossa. HENSCHKE HILL OF GRACE: single vineyard Eden Valley Shiraz, vines planted 1860, among world\'s most valuable old-vine wines; pure, complex, ethereal — often cited alongside Penfolds Grange. CHARDONNAY: cool altitude gives nervous, fine-grained style vs Barossa. CABERNET SAUVIGNON: firm, structured, cassis and eucalyptus from elevated sites.'
   },
   {
     name: 'Clare Valley', country: 'Australia', lat: -33.83, lng: 138.6,
     subregions: 'Clare Valley, Watervale, Polish Hill River',
     climate: 'Cool Continental. Altitude (400–500m), warm days, very cool nights (cooling breeze). Dry.',
     grapes: ['Riesling', 'Shiraz', 'Cabernet Sauvignon', 'Grenache'],
-    notes: 'Riesling: Clare\'s signature. Lime, citrus blossom, slate, ages beautifully. Screwcap revolution started here. Watervale vs Polish Hill: different styles (richer vs more austere). Shiraz: medium body, peppery, firm tannin. Cabernet: eucalyptus, cassis.'
+    notes: 'RIESLING (Clare Valley): the most distinctive Australian Riesling style — powerful, concentrated lime juice and zest, high acidity, slate mineral (especially Polish Hill River), 12–13% ABV; becomes toasty, buttered-lime-cordial, petrol/kerosene with 5–15 years aging. SCREWCAP REVOLUTION: in 2000, Clare Valley producers collectively switched entirely to screwcap (Stelvin) to eliminate TCA cork taint and preserve freshness during aging — sparked global adoption. WATERVALE sub-zone: warmer, more lush and round; POLISH HILL RIVER sub-zone: acidic slate soils, more austere, steely mineral, longest aging potential. SHIRAZ: Clare Shiraz is notably different from Barossa — medium-full body, medium tannin, firm acidity, black pepper (especially from cooler nights), blackberry; elegant rather than opulent. CABERNET SAUVIGNON: Clare grows excellent Cabernet — eucalyptus, blackcurrant, firm structure, good acidity; rivals Coonawarra in cooler vintages. GRENACHE: some excellent old-vine Grenache in warmer Clare sites. All viticulture unirrigated (or minimal irrigation) — low yields from water stress.'
   },
   {
     name: 'Adelaide Hills', country: 'Australia', lat: -35.07, lng: 138.7,
     subregions: 'Adelaide Hills, Lenswood, Piccadilly Valley',
     climate: 'Cool Continental. Altitude (300–700m) above Adelaide, cool and moist. Highest rainfall in SA.',
     grapes: ['Sauvignon Blanc', 'Chardonnay', 'Pinot Noir', 'Pinot Gris', 'Riesling'],
-    notes: 'Sauvignon Blanc: benchmark SA — fresh, grassy, tropical, high acid. Chardonnay: elegant, restrained. Pinot Noir: good quality, lighter style. Sparkling wine base. Home to Penfolds and Shaw + Smith, Grosset (Clare).'
+    notes: 'SAUVIGNON BLANC (Adelaide Hills flagship): altitude (300–700m) creates cool conditions unlike lower SA regions; benchmark South Australian Sauvignon Blanc — crisp, fresh, grassy, tropical (passionfruit, guava), gooseberry, high natural acidity; made without oak for maximum aromatics; SHAW + SMITH, PETALUMA, ASHTON HILLS: defining producers. CHARDONNAY: cool-altitude style, lean, elegant, restrained — white peach, apple, citrus; response well to subtle French oak; PETALUMA: founding estate (Brian Croser, 1976), among Australia\'s most elegant Chardonnay. PINOT NOIR: developing serious quality, lighter body, red cherry, earthy complexity; some examples approaching Yarra Valley quality; ASHTON HILLS, LOBETHAL ROAD. SPARKLING WINE BASE: the cool climate and high natural acidity make Adelaide Hills ideal for traditional method sparkling base wine; Petaluma and Croser sparkling are benchmark. RIESLING: surprising quality from some sites — lime, dry, mineral. PINOT GRIS: fruity, medium body. ALTO ADIGE PARALLELS: the altitude shift from the hot Adelaide plains creates a dramatic temperature gradient — winemakers often split production between Barossa (power) and Adelaide Hills (freshness). GROSSET (Clare Valley/Adelaide Hills): Jeffrey Grosset\'s biodynamic estate bridges both regions; pioneer of screwcap closure for Riesling. PENFOLDS: headquartered at Magill Estate near Adelaide Hills — the most iconic winery in Australia; produces Grange, Bin 707, RWT — multi-regional blends but Hills fruit contributes to white wines. SOILS: clay, loam, ironstone — higher clay content than Barossa gravel; water retention important in drier years.'
   },
   {
     name: 'McLaren Vale', country: 'Australia', lat: -35.21, lng: 138.55,
     subregions: 'McLaren Vale, McLaren Flat',
     climate: 'Warm Mediterranean. South of Adelaide, Gulf St Vincent and Southern Ocean cool breezes. Diverse soils.',
     grapes: ['Shiraz', 'Grenache', 'Cabernet Sauvignon', 'Merlot', 'Mourvèdre'],
-    notes: 'Shiraz: intense, dark fruit, chocolate, full body — different from Barossa (more refined, coastal influence). GSM blend: Grenache-Shiraz-Mourvèdre. Old vine Grenache: silky, spicy. d\'Arenberg, Wirra Wirra, Clarendon Hills. Often described as "Southern Rhône meets Australia."'
+    notes: 'McLAREN VALE — "SOUTHERN RHÔNE OF AUSTRALIA": surrounded by Gulf St Vincent to the west and the Mt Lofty Ranges to the east; proximity to both cooling Southern Ocean breezes AND warm Fleurieu Peninsula sunshine creates a unique "Mediterranean-with-sea-breeze" climate. SHIRAZ (McLaren Vale flagship): different character from Barossa despite proximity — DARK CHOCOLATE, mocha, coffee, dark berry (blackberry, boysenberry), full body, velvety tannin, savoury meat note from the Southern Ocean influence; typically more REFINED and less jammy than Barossa, with better natural acidity due to sea breezes. OLD VINE BUSH VINE SHIRAZ: some vines 100+ years old (some among Australia\'s oldest), ungrafted; extraordinary concentration and complexity. GRENACHE: old vine McLaren Vale Grenache is spectacular — SILKY, spicy (white pepper, garrigue), strawberry, raspberry, high alcohol (15–16%) from old dryland vines but retains freshness; D\'ARENBERG The Dead Arm Grenache and Clarendon Hills Grenache: benchmark. GSM BLEND (Grenache-Shiraz-Mourvèdre): McLaren Vale\'s signature style — complex, layered, earthy, warm. MOURVÈDRE (Mataro): gamey, dark, tannic; important GSM component. CABERNET SAUVIGNON: full-bodied, cassis, dark plum, firm tannin. D\'ARENBERG (Chester Osborn): most iconoclastic producer — bizarre label names (Dead Arm Shiraz, Coppermine Road Cab) and extraordinary quality; Wirra Wirra: reliable quality; Clarendon Hills: cult old-vine producer; Kay Bros Amery: historic estate with vines from 1892. SOILS: diverse — sandy loam, red clay, ironstone, limestone (Blewitt Springs sub-zone from sandy loam: produces particularly elegant Grenache and Shiraz). BLEWITT SPRINGS: emerging premium sub-zone for sandy-loam old vine Grenache and Shiraz.'
   },
   {
     name: 'Coonawarra', country: 'Australia', lat: -37.29, lng: 140.83,
     subregions: 'Coonawarra GI',
     climate: 'Cool Maritime-Continental. SE of SA. Very flat, limestone country. Terra rossa (red soil over limestone) — most famous in Australia.',
     grapes: ['Cabernet Sauvignon', 'Shiraz', 'Merlot', 'Chardonnay', 'Riesling'],
-    notes: 'Terra rossa soil over limestone: signature of Coonawarra. Cabernet Sauvignon: structured, eucalyptus/mint character, elegant, good aging potential. More restrained than Barossa. Controversial GI boundary disputes historically. Wynns most iconic producer.'
+    notes: 'TERRA ROSSA OVER LIMESTONE — COONAWARRA\'S DEFINING TERROIR: a narrow cigar-shaped ridge (15km long, 2km wide) of intensely red-colored, iron-rich clay loam (TERRA ROSSA) sitting directly over pure limestone and a watertable of slow-draining groundwater; the combination is unique in Australia and produces the most structured, terroir-distinctive wines in the country. CABERNET SAUVIGNON (Coonawarra benchmark): blackcurrant, cassis, a distinctly MINTY/EUCALYPTUS character (from neighboring eucalyptus trees, not the vine), cedar, graphite, medium-full tannin, firm acid — more Médoc-like than any other Australian Cab zone; exceptional aging potential (10–20+ years). Lower alcohol (13–14%) vs Barossa standard — cooler climate retains natural acidity. WHY TERRA ROSSA WORKS: the shallow red layer (30–80cm) over porous limestone creates natural drainage yet water retention — vine roots penetrate limestone to reach the watertable → consistent moisture without waterlogging. SHIRAZ: secondary variety; more restrained than Barossa — dark berry, pepper, medium body, firm tannin. MERLOT and CHARDONNAY: good supporting varieties. WYNNS COONAWARRA ESTATE: the most iconic producer (1891 origin, since 1952); John Riddoch, Black Label, Michael (single vineyard): defining Coonawarra expressions. PENLEY ESTATE, PARKER COONAWARRA ESTATE, BALNAVES, KATNOOK: serious quality tier. GI BOUNDARY DISPUTE: long legal battle (1994–2004) about exactly which land qualified as "Coonawarra" GI — producers outside the terra rossa strip disputed exclusion; resolved to follow the terra rossa boundary strictly. EXTREME SOUTHERN LATITUDE for SA: 37.3°S gives very cool climate — longest harvest of any SA region.'
   },
   {
     name: 'Yarra Valley', country: 'Australia', lat: -37.67, lng: 145.53,
     subregions: 'Yarra Valley, Upper Yarra (cooler), Lower Yarra (warmer)',
     climate: 'Cool Maritime-Continental. Victoria, east of Melbourne, altitude (50–450m), rainfall year-round.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Shiraz', 'Cabernet Sauvignon', 'Pinot Gris'],
-    notes: 'Best Victorian Pinot Noir and Chardonnay. Also good sparkling base (for Domaine Chandon Australia). Upper Yarra: cooler, more elegant Pinot Noir. De Bortoli, Yering Station, Coldstream Hills (James Halliday). Benchmark for cool climate in Victoria.'
+    notes: 'YARRA VALLEY — VICTORIA\'S PREMIER COOL CLIMATE: just 50km east of Melbourne in the foothills of the Great Dividing Range; altitude (50–450m) critical — valley floor warmer, Upper Yarra hillsides dramatically cooler with volcanic soils. PINOT NOIR (Yarra flagship): complex, fine-grained, earthy red cherry, raspberry, violet, dried herb, savoury forest floor; good tannin structure for aging; among Australia\'s finest and most complex Pinot expressions. UPPER YARRA (higher, cooler, volcanic soils): more elegant, structured, longer-lived Pinot; CHARDONNAY: restrained, white peach, citrus, toasty hazelnut from French oak, mineral backbone; world-class examples. LOWER YARRA (valley floor, warmer): more accessible, ripe, fuller; CHARDONNAY: broader, richer. SPARKLING WINE: the high natural acidity and cool ripening make Yarra ideal; DOMAINE CHANDON AUSTRALIA (Louis Vuitton Moët Hennessy investment, 1986): making traditional method sparkling from Yarra fruit — among Australia\'s finest bubbly; Green Point label. COLDSTREAM HILLS (James Halliday, est. 1985): the most celebrated Yarra producer; now Accolade Wines-owned but still premium; Halliday pioneered Yarra quality in modern era. YERING STATION: Yarra\'s oldest winery (1838); DE BORTOLI YARRA VALLEY: quality tier separate from their Riverina brand; PUNT ROAD, HODDLES CREEK (Frank Boekhout): artisan excellence. SHIRAZ: Yarra\'s cool-climate Shiraz is Northern Rhône-inspired — peppery, smoky, dark, elegant; medium body; dramatically different from Barossa. PINOT GRIS: medium-full, spicy, stone fruit — good quality. VOLCANIC RED SOILS (Upper Yarra): basalt-derived, iron-rich, excellent drainage and heat retention.'
   },
   {
     name: 'Mornington Peninsula', country: 'Australia', lat: -38.37, lng: 145.07,
     subregions: 'Mornington Peninsula GI, Red Hill, Merricks',
     climate: 'Cool Maritime. Peninsula between Westernport Bay and Port Phillip Bay. Cool, wet, maritime. Very variable vintages.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Pinot Gris', 'Shiraz'],
-    notes: 'Pinot Noir and Chardonnay: complex, fine-grained, elegant. Similar to Yarra Valley but more maritime. Pinot Gris: fuller style. Small artisan producers dominant. Premium boutique region.'
+    notes: 'MORNINGTON PENINSULA — MARITIME COOL CLIMATE PAR EXCELLENCE: a narrow peninsula between Port Phillip Bay (warmer, western side) and Westernport Bay (cooler, eastern side); the bays create a unique double-maritime environment; some of the world\'s most southerly mainland vineyards (38.5°S). CLIMATE CHALLENGE: cool, wet, highly variable vintages (cold summers possible); harvest timing critical — spring/autumn frosts, rainfall at harvest a risk; very demanding for viticulture. PINOT NOIR: complex, fine-grained, elegant, earthy red cherry, plum, dried rose, silky tannin; often more structured and less fruity than Yarra Valley — a colder, more tightly wound style; STONIER, TEN MINUTES BY TRACTOR, MOOROODUC, MAIN RIDGE, PARINGA ESTATE: benchmark boutique producers. CHARDONNAY: lean, mineral, citrus and green apple, tight structure, excellent acidity — one of Australia\'s finest cool-climate styles; STONIER Reserve, KOOYONG, TEN MINUTES BY TRACTOR. PINOT GRIS: fuller, spicier and richer than Italian style — the region does this very well; stone fruit, texture, warm and generous. SHIRAZ: some cool-climate examples being made, peppery, medium-bodied. ENTIRELY BOUTIQUE SCALE: almost no large producers; mostly small family estates; no irrigation; entirely premium focused. SOILS: red duplex (clay over ironstone), sandy loam, volcanic origin — diverse. RED HILL sub-zone: highest, coolest, most structured wines; MERRICKS: mid-range; both produce excellent Pinot. MARITIME VS CONTINENTAL DEBATE: Mornington\'s maritime position gives different acid structure than Yarra\'s more continental aspect — wines often more mineral and less earthy.'
   },
   {
     name: 'Hunter Valley', country: 'Australia', lat: -32.73, lng: 151.13,
     subregions: 'Hunter Valley (Lower and Upper), Cessnock, Pokolbin',
     climate: 'Sub-tropical. NSW north of Sydney. Hot and humid with summer rain (harvest risk). Sea breeze moderates afternoon heat.',
     grapes: ['Semillon', 'Chardonnay', 'Shiraz'],
-    notes: 'Semillon: unique Australian style — light bodied, low alcohol (10–11%), high acidity, neutral when young. Ages magnificently over 10–20 years → toast, honey, lanolin, lemon curd. One of Australia\'s most distinctive wines. Shiraz: earthy, leathery, medium body (differs from Barossa).'
+    notes: 'SEMILLON (Hunter Valley flagship — unique world wine style): picked very early at low Brix → light body (10–11.5% ABV), very high natural acidity (low pH), neutral aromatics when young (just lemon and fresh grass). No botrytis, no oak. Then: bottle-aged 5–20 years → extraordinary transformation into toast, honey, beeswax, lemon curd, lanolin, aged Champagne-like complexity. The low alcohol and high acidity are the preservation mechanism for this slow evolution. Best from sub-zones around Pokolbin. TYRRELL\'S Vat 1, McWILLIAM\'S Mount Pleasant Lovedale: benchmark producers. CHARDONNAY: Hunter Chardonnay has improved dramatically; medium-full body, stone fruit, sometimes oaked. SHIRAZ (Hunter): very different from Barossa — medium body, earthy, leathery, savoury "sweaty saddle" character from the warm, humid conditions; medium tannin; not as concentrated as Barossa but unique terroir expression. THE CHALLENGE: Sub-tropical climate with summer (harvest) rain risk — timing crucial. Fertile red volcanic and clay soils require careful yield management.'
   },
   {
     name: 'Margaret River', country: 'Australia', lat: -33.95, lng: 115.07,
     subregions: 'Margaret River GI, Wilyabrup, Karridale',
     climate: 'Cool Maritime. SW corner of Western Australia. Indian Ocean and Southern Ocean. Mediterranean rain pattern (winter). Very consistent climate.',
     grapes: ['Cabernet Sauvignon', 'Merlot', 'Cabernet Franc', 'Chardonnay', 'Sauvignon Blanc', 'Sémillon'],
-    notes: 'Bordeaux Blend: WA flagship — restrained, cassis, pencil lead, fine tannin, aging potential. Chardonnay: one of Australia\'s best, Burgundian-influenced, nectarine, melon, spice. Sauvignon Blanc + Sémillon blend: classic regional white. Leeuwin Estate, Cullen, Vasse Felix, Cape Mentelle.'
+    notes: 'CABERNET SAUVIGNON (Margaret River signature): fine tannin, cassis, pencil shavings, mulberry, cedar, elegant — often cited as closest to Bordeaux Médoc outside Europe; the consistent, mild maritime climate (very small temperature range) creates naturally balanced ripeness without extremes. MERLOT: softening role in blends; plummy, floral. CABERNET FRANC: aromatic, leafy-herbal complexity added to blends. BORDEAUX BLEND: the definitive Margaret River style — needs 5–15 years to show best. CHARDONNAY: one of Australia\'s finest; nectarine, white peach, melon, creamy texture, spicy French oak; Leeuwin Estate Art Series Chardonnay regularly ranked among world\'s top 10. SAUVIGNON BLANC + SÉMILLON BLEND: classic regional white style — Sauvignon Blanc provides zesty citrus, green herbs; Sémillon adds weight, texture, waxy depth and aging potential. SÉMILLON: less neutral than Hunter Valley — riper, fuller, more textured here. CHARDONNAY and CABERNET separately: world-class single varietal expressions. Key producers: Leeuwin Estate (Art Series), Cullen (Diana Madeline Cab blend, biodynamic), Vasse Felix (oldest, founded 1967), Cape Mentelle (LVMH-owned), Moss Wood. MARITIME CONSISTENCY: one of Australia\'s most reliable vintages year-to-year — very consistent climate.'
   },
 
   // ========== NEW ZEALAND ==========
@@ -1600,56 +1635,56 @@ const regions = [
     subregions: 'Auckland, Waiheke Island, Matakana, Kumeu',
     climate: 'Warm Maritime. Subtropical, high rainfall. Waiheke Island: warmer and drier (Hauraki Gulf).',
     grapes: ['Chardonnay', 'Merlot', 'Syrah', 'Cabernet Sauvignon', 'Pinot Gris'],
-    notes: 'Waiheke Island: premium Bordeaux blends and Syrah (warmer, drier). Kumeu: top Chardonnay. Matakana: small artisan. Historically important but production declining as Marlborough dominates.'
+    notes: 'WAIHEKE ISLAND (Hauraki Gulf, 35 min ferry from Auckland): NZ\'s most prestigious red wine zone; the Gulf\'s warm microclimate (significantly warmer and drier than mainland) creates conditions for genuine BORDEAUX VARIETY ripeness; CABERNET SAUVIGNON, MERLOT, CABERNET FRANC blends: structured, cassis, herbal, fine tannin — among NZ\'s finest reds; SYRAH: peppery, full-bodied, dark; STONYRIDGE Larose (NZ\'s most expensive wine, Bordeaux blend), MAN O\'WAR, GOLDWATER, CABLE BAY: benchmark. KUMEU (northwest Auckland): NZ\'s most distinguished CHARDONNAY zone; KUMEU RIVER (Michael Brajkovich, MW): benchmark — Burgundian-inspired, oak-fermented, lees-aged; white peach, toasty hazelnut, minerally; consistently rated among Southern Hemisphere\'s finest Chardonnay. MATAKANA (north of Auckland): boutique, cool; Pinot Noir and aromatic whites. HISTORICAL SIGNIFICANCE: Auckland and its islands are NZ\'s original wine country (viticulture from 1840s); as Marlborough (Sauvignon Blanc) expanded post-1980s, Auckland\'s market share declined from 80%+ to under 10% of NZ production. HENDERSON VALLEY: once NZ\'s largest wine area, now mostly industrial development. CORBANS (founded 1902 by Lebanese immigrant): historically NZ\'s second largest producer, pivotal in NZ wine history. CLIMATE CHALLENGE: Auckland\'s warm, humid summers with harvest rain risk — fungal disease pressure significant.'
   },
   {
     name: 'Hawke\'s Bay', country: 'New Zealand', lat: -39.65, lng: 176.87,
     subregions: 'Hawke\'s Bay, Gimblett Gravels, Bridge Pa Triangle',
     climate: 'Warm Maritime. East coast North Island, rain shadow, sunniest region. Gimblett Gravels: free-draining shingle soils retain heat.',
     grapes: ['Merlot', 'Cabernet Sauvignon', 'Syrah', 'Chardonnay', 'Sauvignon Blanc'],
-    notes: 'Gimblett Gravels: NZ finest reds — Merlot, Cab Franc, Cab Sauv, Syrah. Good for riper, fuller styles. Chardonnay: NZ\'s richest. Syrah: peppery, Northern Rhône-inspired. Bridge Pa: aromatic whites, Viognier.'
+    notes: 'HAWKE\'S BAY — NZ\'S RED WINE CAPITAL: east coast of North Island; rain shadow from the Kaweka Ranges (absorbs most westerly rainfall) gives NZ\'s most sunshine hours and lowest rainfall after Marlborough; warm enough for full red wine variety ripeness. GIMBLETT GRAVELS (the most famous NZ sub-appellation): ancient river bed of the Ngaruroro River; free-draining shingle, sand and gravel soils (old river shingle) retain heat through the night; MERLOT: NZ\'s finest, full-bodied, plummy, velvety; CABERNET FRANC: leafy, perfumed, red cherry; CABERNET SAUVIGNON: impressive concentration; SYRAH: peppery, violet, spicy — Northern Rhône-inspired and arguably NZ\'s finest Syrah; MALBEC: occasionally. TRINITY HILL, CRAGGY RANGE (founded 2000, first Gimblett Gravels estate), VILLA MARIA, TE AWA, SACRED HILL: benchmark. CHARDONNAY: NZ\'s richest, fullest Chardonnay style — stone fruit, tropical, toasty oak; CLEARVIEW, CHURCH ROAD (NZ\'s oldest winery, est. 1897). BRIDGE PA TRIANGLE: distinctive sub-zone; clay and silt soils; AROMATIC WHITES excel — VIOGNIER (stone fruit, orange blossom, full body), GEWURZTRAMINER, PINOT GRIS; HAWKE\'S BAY COAST: SAUVIGNON BLANC (secondary to Marlborough but different style — more textured and tropical). SYRAH (Hawke\'s Bay specialty): the region\'s growing obsession; peppery, violet, dark fruit, medium-full body, genuine Northern Rhône parallels from the best Gimblett blocks; CRAGGY RANGE Le Sol Syrah and TE MATA Bullnose: benchmark NZ Syrah. The 2003 vintage is considered Hawke\'s Bay\'s greatest — perfect ripeness across all reds.'
   },
   {
     name: 'Gisborne', country: 'New Zealand', lat: -38.67, lng: 178.02,
     subregions: 'Gisborne, Poverty Bay',
     climate: 'Warm Maritime. East coast North Island, fertile alluvial soils, warm and humid.',
     grapes: ['Chardonnay', 'Gewurztraminer', 'Pinot Gris', 'Merlot'],
-    notes: 'Chardonnay dominant (more than half production). "Chardonnay capital of NZ." Also Gewurztraminer: one of NZ\'s best. Pinot Gris: aromatic and broad. Fertile soils → high yields, some premium boutique production.'
+    notes: 'GISBORNE — "CHARDONNAY CAPITAL OF NEW ZEALAND": east coast North Island, first land in NZ to receive the morning sun (easternmost city in the world at latitude 38.6°S); warm, maritime, fertile — fertile alluvial soils of the Poverty Bay flats produce naturally high yields; majority of production is CHARDONNAY for bulk supply to major NZ brands. CHARDONNAY: Gisborne provides the largest volume of quality Chardonnay in NZ — soft, ripe tropical fruit (pineapple, mango, peach), medium-full body, good acid; both unoaked (fresh, fruit-driven) and oaked (broader, buttery) styles; POVERTY BAY FLATS soils: fertile, deep alluvial — generous yields but can lack concentration without careful canopy management. GEWURZTRAMINER: one of NZ\'s best expressions — lychee, rose petal, ginger, full-bodied, moderate acid; Gisborne\'s warm climate suits this variety better than the cooler South Island. PINOT GRIS: aromatic, broader, spicier style; medium-full body, stone fruit. MERLOT: some red wine production; soft, ripe, accessible from the warmer climate. CHALLENGE: fertile alluvial soils require strict yield management for premium quality; high rainfall at harvest (cyclone/tropical low-pressure risk). THE SHIFT: as NZ wine evolved towards premium quality, Gisborne\'s "volume Chardonnay" reputation became both its strength and its ceiling — now boutique producers are showing what restrained yields can achieve. THE MILLTON VINEYARD (biodynamic): James Millton, NZ\'s first biodynamic winemaker; Viognier, Chenin Blanc, Pinot Gris of genuine distinction.'
   },
   {
     name: 'Wairarapa (Martinborough)', country: 'New Zealand', lat: -41.13, lng: 175.77,
     subregions: 'Wairarapa, Martinborough, Gladstone',
     climate: 'Cool Continental. East of Wellington, Remutaka Range rain shadow. Wind! Cold. Small production.',
     grapes: ['Pinot Noir', 'Sauvignon Blanc', 'Pinot Gris', 'Riesling'],
-    notes: 'Martinborough: NZ\'s original Pinot Noir pioneer region. Free-draining river terrace soils (limestone/clay). Pinot Noir: earthy, savory, complex, lower alcohol than Marlborough. Ata Rangi: iconic producer. Boutique scale.'
+    notes: 'MARTINBOROUGH (Wairarapa\'s premium sub-zone): NZ\'s original Pinot Noir pioneer region — Neil McCallum (Dry River) and Clive Paton (Ata Rangi) planted in 1979-80 after University of Canterbury research showed this as a top Pinot site. SOILS: ancient RIVER TERRACES of the Wairarapa Plains — free-draining alluvial silts, gravels, and sandy loam over clay; the terrace edge has deeper, more complex soils for finest Pinot. CLIMATE: rain shadow from the Remutaka Range (blocks western moisture) gives one of NZ\'s driest and most continental inland climates; warm days, cold nights — large diurnal range; cold spring and autumn; significant WIND from the Cook Strait. PINOT NOIR (Martinborough specialty): earthy, savoury, complex, red cherry, dried herbs, mushroom, game; LOWER ALCOHOL than Marlborough (typically 13–13.5%); more Burgundian structure and complexity; ATA RANGI Pinot Noir (consistently one of NZ\'s top 5), DRY RIVER (Neil McCallum: legendary precision, long-lived), MARTINBOROUGH VINEYARD, PALLISER ESTATE: benchmark producers. SAUVIGNON BLANC: secondary but very different from Marlborough — more rounded, tropical, less herbaceous, from the warmer and drier inland conditions. RIESLING: excellent, dry to off-dry, mineral, citrus, long-lived. PINOT GRIS: medium-full body, stone fruit, spice. BOUTIQUE SCALE: Wairarapa/Martinborough produces <1% of NZ wine by volume — entirely premium focused, no large commercial operations; cult status. GLADSTONE sub-zone: just north of Martinborough, slightly warmer; growing for Sauvignon Blanc and Pinot Noir.'
   },
   {
     name: 'Marlborough', country: 'New Zealand', lat: -41.51, lng: 173.96,
     subregions: 'Wairau Valley, Awatere Valley (cooler), Southern Valleys',
     climate: 'Cool Maritime. South Island top, rain shadow, long sunshine hours, cool nights (Awatere even cooler).',
     grapes: ['Sauvignon Blanc', 'Pinot Noir', 'Chardonnay', 'Riesling', 'Pinot Gris'],
-    notes: 'World benchmark Sauvignon Blanc: intense passion fruit, lime, cut grass, bell pepper, herbaceous. NZ\'s largest wine region (75% of all NZ wine). Pinot Noir: lighter, red fruit, earthy. Also quality Riesling and Pinot Gris. Cloudy Bay made Marlborough famous globally. Awatere: more herbaceous, cooler.'
+    notes: 'SAUVIGNON BLANC (world benchmark): the combination of intense sunshine, cold nights, and free-draining alluvial soils of the Wairau Valley creates the definitive style — intense passion fruit, gooseberry, lime zest, freshly cut grass, capsicum/bell pepper (methoxypyrazines from the cool climate), often grapefruit; high acidity; unoaked for freshness; harvested at peak aromatics. CLOUDY BAY (founded 1985): single-handedly created the global reputation; still the benchmark name. Wairau Valley: rounder, more tropical fruit. Awatere Valley: colder, wind-swept — more herbaceous, higher acidity, more mineral. PINOT NOIR: growing importance; lighter bodied than Burgundy, red cherry, red plum, dried rose petal, earthy spice; Wairau Valley Pinot: fruitier; Southern Valleys Pinot: more structured and complex; best blocks rival quality Otago. CHARDONNAY: lean, mineral, citrus-led, often unoaked or lightly oaked — restrained style. RIESLING and PINOT GRIS: quality aromatics with distinctive NZ precision. PRODUCTION SCALE: 75%+ of all NZ wine production from Marlborough — many enormous factory wineries but also excellent small growers. Organic/biodynamic viticulture well-suited to the dry conditions.'
   },
   {
     name: 'Nelson', country: 'New Zealand', lat: -41.27, lng: 173.28,
     subregions: 'Nelson GI, Waimea Plains',
     climate: 'Cool Maritime. NW tip South Island, sunny and warm for NZ. More rainfall than Marlborough.',
     grapes: ['Sauvignon Blanc', 'Pinot Noir', 'Chardonnay', 'Riesling', 'Pinot Gris'],
-    notes: 'Sunny, diverse soils (clay to sandy loam). Good Sauvignon Blanc (rounder than Marlborough), Pinot Noir, Riesling. Small scale, boutique. Organic/biodynamic farming prevalent. Near Abel Tasman National Park.'
+    notes: 'NELSON — NZ\'S SUNNIEST WINE REGION: northwest corner of South Island, sheltered from prevailing westerlies by the Richmond Range; one of NZ\'s highest sunshine hours (similar to Marlborough but more rainfall); diverse soils and aspects. SAUVIGNON BLANC: Nelson\'s most planted; ROUNDER and more TROPICAL than Marlborough — less aggressive herbaceousness, more stone fruit and citrus blossom; medium acidity; excellent quality but less internationally known. PINOT NOIR: developing real complexity; red cherry, earthy, silky tannin; NEUDORF VINEYARDS (Tim and Judy Finn): the flagship producer and Nelson pioneer; Moutere Pinot Noir is one of NZ\'s finest and most Burgundian-inspired. CHARDONNAY: elegant, refined, peach and white peach, subtle oak; NEUDORF Moutere Chardonnay consistently among NZ\'s top 5. RIESLING: dry to off-dry, lime, mineral, high acid; excellent quality. PINOT GRIS: medium-full, stone fruit, spice. SOILS: MOUTERE HILLS (western Nelson): old, clay-rich, free-draining gravelly Moutere clays — these ancient soils (different from coastal alluvial) give deeper, more complex wines with better structure; WAIMEA PLAINS (eastern Nelson): younger alluvial soils, more productive, fruitier styles. ORGANIC AND BIODYNAMIC: prevalence of certified organic/biodynamic estates is high for a small region. SEIFRIED ESTATE: largest Nelson producer; wide range including Riesling and Gewurztraminer. BOUTIQUE FOCUS: Nelson remains small (under 1% of NZ production) but with a high concentration of quality-focused family estates.'
   },
   {
     name: 'Canterbury & Waipara', country: 'New Zealand', lat: -43.53, lng: 172.63,
     subregions: 'Canterbury, Waipara Valley, North Canterbury',
     climate: 'Cool Continental. South Island east coast. Warm days, very cold nights (large diurnal). Waipara: limestone soils, sheltered from wind.',
     grapes: ['Sauvignon Blanc', 'Pinot Noir', 'Riesling', 'Pinot Gris', 'Chardonnay'],
-    notes: 'Waipara Valley: excellent Riesling (mineral, dry to off-dry), Pinot Noir, Pinot Gris. Limestone soils key. Pegasus Bay: most known producer. Canterbury plains: Sauvignon Blanc. Growing reputation for quality.'
+    notes: 'WAIPARA VALLEY (North Canterbury sub-region): the premium enclave within Canterbury; sheltered from prevailing easterly sea winds by the Teviotdale Hills — significantly warmer and drier than the exposed Canterbury Plains; LIMESTONE SOILS: the key terroir advantage; thin, well-draining, free-draining limestone-over-clay; RIESLING: Waipara\'s signature — dry to off-dry, lime zest, mineral, crisp chalk/limestone character, high natural acidity, excellent aging potential (5–20 years); among NZ\'s finest Riesling, with a distinct chalky-mineral note from the soils; PEGASUS BAY (Donaldson family): THE benchmark Waipara estate, consistently NZ\'s highest-rated Riesling; also excellent Pinot Noir, Chardonnay, Pinot Gris. PINOT NOIR (Waipara): gaining complexity — earthy, red cherry, medium tannin, good structure; BELL HILL VINEYARD: tiny, expensive, biodynamic, limestone-planted; compared to premier cru Burgundy by some critics. PINOT GRIS: rich, textured, stone fruit, spice — Waipara suits this variety. CANTERBURY PLAINS: much more exposed to cold southerly and easterly winds from Pacific; SAUVIGNON BLANC on valley floors; cooler sites for Chardonnay and Pinot Noir. NORTH CANTERBURY (broader zone): includes Waipara Valley as sub-zone; growing winery count; GREYSTONE, MOUNTFORD, DANIEL SCHUSTER: quality estates. CHRISTCHURCH proximity: NZ\'s second-largest city provides market support and wine tourism.'
   },
   {
     name: 'Central Otago', country: 'New Zealand', lat: -44.98, lng: 169.43,
     subregions: 'Bannockburn, Gibbston Valley, Bendigo, Cromwell, Wanaka',
     climate: 'Cool Semi-arid Continental. Most inland/southernmost wine region. Dramatic diurnal range. Cold winters, warm summers. Schist soils.',
     grapes: ['Pinot Noir', 'Pinot Gris', 'Riesling', 'Chardonnay'],
-    notes: 'World\'s southernmost significant wine region. Pinot Noir: full bodied, juicy, vibrant, ripe red fruit, earthy complexity, silky tannin — unique style, New World opulence with Old World depth. Bannockburn: most structured. Gibbston: most elegant. Felton Road, Mt Difficulty, Amisfield: benchmark producers.'
+    notes: 'PINOT NOIR: Central Otago\'s defining variety and reason for existence as a wine region. Unique combination of Continental semi-arid climate + extreme UV light (latitude + altitude) creates intensely pigmented, richly fruited, yet fresh wines. Style: full body for Pinot Noir, vibrant ruby-garnet color, ripe red and dark cherry, dried rose, violets, dark earth, silky yet gripping tannin, long finish — combines New World fruit intensity with Old World complexity. BANNOCKBURN (warmest, Central): deepest color, most tannic, most structured and age-worthy; schist and loess soils. GIBBSTON VALLEY (coldest, highest): most elegant, aromatic, lighter body, most Burgundian in style; schist soils. BENDIGO/CROMWELL BASIN (warmest overall): concentrated, bold. PINOT GRIS: important secondary variety — broader and more textured than Alsatian style, stone fruit, ginger, warm and generous. RIESLING: surprising quality in cool Gibbston sites — lime, slate, mineral, fine acid. CHARDONNAY: fine, restrained, apple and citrus, good acidity. NO IRRIGATION: most blocks rely entirely on natural moisture from snow/rain — genuine terroir expression. Schist soils: the key geological feature — rocky, excellent drainage, heat retention.'
   }
 ];
 
@@ -1669,6 +1704,12 @@ const subregionData = [
   { name:'Pessac-Léognan', country:'France', parentRegion:'Bordeaux', lat:44.73, lng:-0.62, grapes:['Cabernet Sauvignon','Merlot','Sauvignon Blanc','Sémillon'], notes:'Top Graves AC. Haut-Brion (1st Growth). Gravel soils. Outstanding reds and dry whites. Barrel-fermented Sauvignon/Sémillon blends.' },
   { name:'Graves', country:'France', parentRegion:'Bordeaux', lat:44.62, lng:-0.52, grapes:['Cabernet Sauvignon','Merlot','Sauvignon Blanc','Sémillon'], notes:'South of Pessac-Léognan. Named for gravel soils. Both red and white wines. More affordable Left Bank wines.' },
   { name:'Haut-Médoc', country:'France', parentRegion:'Bordeaux', lat:45.08, lng:-0.78, grapes:['Cabernet Sauvignon','Merlot'], notes:'AC surrounding village appellations. 5 Classified Growths. Gravel ridges. Cab Sauv dominant. Cassis, cedar, firm tannins.' },
+  { name:'Blaye Côtes de Bordeaux', country:'France', parentRegion:'Bordeaux', lat:45.128, lng:-0.660, grapes:['Merlot','Cabernet Sauvignon','Cabernet Franc'], notes:'Right bank north of Bourg, across Gironde from Médoc. Clay-limestone soils. Merlot-dominant reds (min 50%). Good value, fresh fruit style, approachable. Also dry whites (Sémillon, Sauvignon Blanc, Colombard). Small family producers dominate. Bourg: adjacent AC on Gironde with similar character.' },
+  { name:'Castillon Côtes de Bordeaux', country:'France', parentRegion:'Bordeaux', lat:44.855, lng:-0.040, grapes:['Merlot','Cabernet Franc'], notes:'East of Saint-Émilion on limestone plateau. Merlot-dominant, similar terroir to Saint-Émilion. Quality rising rapidly with ambitious small producers. More affordable than Émilion. Clay-limestone soils give freshness and structure. Château d\'Aiguilhe, Clos l\'Église: benchmark.' },
+  { name:'Cadillac Côtes de Bordeaux', country:'France', parentRegion:'Bordeaux', lat:44.638, lng:-0.312, grapes:['Merlot','Cabernet Sauvignon','Cabernet Franc'], notes:'Right bank of Garonne south of Bordeaux, on slopes above the river. Clay-limestone and gravel on hillsides. Medium to full body reds. Cadillac AC (sweet): botrytised Sémillon/Sauvignon Blanc/Muscadelle from same zone — great value noble rot wines. Première Côtes de Bordeaux: former name.' },
+  { name:'Francs Côtes de Bordeaux', country:'France', parentRegion:'Bordeaux', lat:44.898, lng:0.024, grapes:['Merlot','Cabernet Franc'], notes:'Smallest Côtes de Bordeaux. East of Castillon, limestone plateau. Boutique producers only. Age-worthy Merlot-based reds with notable mineral character. Château de Francs, Château Puygueraud: leading estates. Low profile = undervalued.' },
+  { name:'Lussac-Saint-Émilion', country:'France', parentRegion:'Bordeaux', lat:44.945, lng:-0.125, grapes:['Merlot','Cabernet Franc'], notes:'Satellite appellation north of Saint-Émilion. Limestone plateau with clay. Merlot-dominant, plummy, approachable. Access to the Émilion name gives prestige. Good value vs Saint-Émilion. Three other satellites: Montagne, Puisseguin, Saint-Georges.' },
+  { name:'Fronsac', country:'France', parentRegion:'Bordeaux', lat:44.975, lng:-0.225, grapes:['Merlot','Cabernet Franc','Cabernet Sauvignon'], notes:'Right bank west of Pomerol. Limestone and clay terraces (molasse) at altitude. Canon-Fronsac (inner zone): more structured and concentrated — finest expression. Fuller, richer style. Historically high quality but undervalued relative to Pomerol. Château Fontenil (Michel Rolland): notable.' },
 
   // === FRANCE — Champagne ===
   { name:'Montagne de Reims', country:'France', parentRegion:'Champagne', lat:49.15, lng:3.92, grapes:['Pinot Noir','Chardonnay'], notes:'Heart of Pinot Noir country. South-facing chalk slopes. Grand Cru villages: Verzenay, Verzy, Mailly, Ambonnay, Bouzy. Full-bodied, structured base wines. Bouzy Rouge: rare still Pinot Noir.' },
@@ -1859,6 +1900,13 @@ const subregionData = [
   { name:'Campo Rotaliano (Teroldego)', country:'Italy', parentRegion:'Trentino DOC', lat:46.19, lng:11.08, grapes:['Teroldego'], notes:'Alluvial plain near Mezzocorona. Teroldego Rotaliano DOC: 100% indigenous Teroldego (DNA parent of Lagrein). Deep color, high acid, blackberry, bitter chocolate. Traditional Pergola Trentina training. Ora wind from Lake Garda aids ventilation. Foradori: benchmark producer.' },
   { name:'Trentodoc (Sparkling)', country:'Italy', parentRegion:'Trentino DOC', lat:46.07, lng:11.12, grapes:['Chardonnay','Pinot Noir'], notes:'Italy\'s premier metodo classico sparkling wine. Min 15 months on lees (Millesimato 24mo, Riserva 36mo). Ferrari (est. 1902): benchmark, 5M+ bottles/yr. Mountain altitude (300-800m) preserves acidity. Elegant, citrus, apple, brioche, fine persistent mousse. Growing international recognition.' },
 
+  // === FRANCE — SW France ===
+  { name:'Cahors AC', country:'France', parentRegion:'SW France (Cahors, Madiran, Jurançon)', lat:44.448, lng:1.440, grapes:['Malbec (Côt/Auxerrois)','Merlot','Tannat'], notes:'Malbec homeland (called Côt or Auxerrois locally). Min 70% Malbec. Limestone plateau (Causses du Quercy) above the Lot river gorge. Gave Malbec to Argentina in 19th century. Deep, dark, tannic — historically called "Black Wine of Cahors." Traditional: very powerful, structured, austere. Modern: more approachable, fruit-forward, plum and blackberry. Clos de Gamot, Château du Cèdre, Clos Triguedina: benchmark producers.' },
+  { name:'Madiran AC', country:'France', parentRegion:'SW France (Cahors, Madiran, Jurançon)', lat:43.578, lng:0.040, grapes:['Tannat','Cabernet Franc','Cabernet Sauvignon'], notes:'Tannat homeland (min 40–60% Tannat required). One of world\'s most tannic grapes — rich in polyphenols. Foothills of the Pyrenees, clay-limestone soils. Deep purple, full body, dark fruit, violets, extraordinary aging potential (10–20+ years). Micro-oxygenation technique invented here by Patrick Ducournau (1991) to tame tannins early. Tannat\'s health benefits studied for the famous Gascon longevity. Château Montus, Domaine Berthoumieu, Château d\'Aydie: benchmark.' },
+  { name:'Jurançon AC', country:'France', parentRegion:'SW France (Cahors, Madiran, Jurançon)', lat:43.290, lng:-0.368, grapes:['Gros Manseng','Petit Manseng'], notes:'Pyrenean foothills south of Pau. Two distinct styles: Jurançon Sec (dry, primarily Gros Manseng) — aromatic, tropical fruit, grapefruit, spice, refreshing high acidity. Jurançon (sweet, primarily Petit Manseng) — passerillage (natural drying on the vine by warm Foehn winds from Pyrenees, not botrytis), intensely sweet, preserved apricot, candied orange, honey, ginger, exotic spice — extraordinary aging potential 20+ years. "In a flash of golden sweetness, it was a revelation" — Colette (at her baptism). Domaine Cauhapé, Clos Uroulat: benchmark.' },
+  { name:'Bergerac AC', country:'France', parentRegion:'SW France (Cahors, Madiran, Jurançon)', lat:44.851, lng:0.482, grapes:['Cabernet Sauvignon','Merlot','Sémillon','Sauvignon Blanc','Muscadelle'], notes:'Immediately east of Bordeaux on the Dordogne river. Same grapes as Bordeaux, similar terroir but separate AC. Reds: Pécharmant sub-zone produces structured, age-worthy wines. Whites: Bergerac Sec (dry Sauvignon Blanc). Monbazillac AC: botrytised Sémillon/Sauvignon/Muscadelle — great value alternative to Sauternes. Rosette and Saussignac: also sweet white sub-zones. Good value relative to Bordeaux.' },
+  { name:'Gaillac AC', country:'France', parentRegion:'SW France (Cahors, Madiran, Jurançon)', lat:43.900, lng:1.900, grapes:['Duras','Braucol (Fer Servadou)','Mauzac','Len de l\'El','Ondenc'], notes:'Ancient wine region east of Toulouse, one of France\'s oldest. Most diverse SW France region: still reds, whites, rosés, sparkling. Indigenous grapes: Duras and Braucol (Fer Servadou) for reds — high acid, fresh, rustic. Mauzac: base for Gaillac mousseux (ancestral/Charmat method) and dry/sweet whites. Len de l\'El: rare indigenous white, aromatic, rich. Gaillac is a treasure of obscure variety preservation.' },
+
   // === SPAIN ===
   { name:'Rioja Alavesa', country:'Spain', parentRegion:'Rioja', lat:42.555, lng:-2.650, grapes:['Tempranillo','Garnacha'], notes:'Basque Country (Álava). Atlantic climate, clay-limestone. Most elegant, lightest Rioja. Many single-estate finca wines.' },
   { name:'Rioja Alta', country:'Spain', parentRegion:'Rioja', lat:42.420, lng:-2.650, grapes:['Tempranillo'], notes:'Heart of Rioja. Haro the capital. Clay-limestone. Most traditional producers. CVNE, López de Heredia. Structured, classic style.' },
@@ -1868,6 +1916,34 @@ const subregionData = [
   { name:'Rueda DO', country:'Spain', parentRegion:'Ribera del Duero', lat:41.413, lng:-4.955, grapes:['Verdejo','Sauvignon Blanc'], notes:'Verdejo: fresh, crisp, herbal, tropical, high acid, slightly bitter finish. Chalky limestone plateau. Rueda Superior: min 50% Verdejo.' },
   { name:'Jerez (Sherry)', country:'Spain', parentRegion:'Valencia & Levante', lat:36.687, lng:-6.136, grapes:['Palomino Fino','Pedro Ximénez','Moscatel'], notes:'Fortified wine. Albariza soils. Flor yeast for Fino/Manzanilla (biologically aged, pale, dry). Oloroso: oxidatively aged, nutty, darker. PX: very sweet raisined.' },
   { name:'Val do Salnés', country:'Spain', parentRegion:'Rías Baixas', lat:42.530, lng:-8.770, grapes:['Albariño'], notes:'Largest Rías Baixas sub-zone. Most Albariño production. Granite soils. Pergola training. Classic fresh, citrus, stone fruit, briny style.' },
+
+  // === SPAIN — Valencia & Levante ===
+  { name:'Jumilla DO', country:'Spain', parentRegion:'Valencia & Levante', lat:38.472, lng:-1.328, grapes:['Monastrell','Airén'], notes:'High plateau (400–800m), northwest of Alicante. Almost exclusively Monastrell (Mourvèdre). Very old bush vines (50–100+ years) — phylloxera-free sandy soils. Low yields, deeply concentrated. Deep color, full body, high alcohol (14–16%), plum, dark fruit, spice, leather. Often unblended, showcasing Monastrell\'s power. Casa Castillo, Juan Gil, El Nido: benchmark producers. Increasingly fresh, modern styles emerging from altitude vineyards.' },
+  { name:'Yecla DO', country:'Spain', parentRegion:'Valencia & Levante', lat:38.613, lng:-1.114, grapes:['Monastrell','Garnacha Tintorera'], notes:'Small DO north of Jumilla. High plateau (600–800m), extreme continental climate. Monastrell-dominant. Bodegas Castaño: major producer (90%+ of DO output). Campo Arriba: hillside superior sub-zone with older vines and more elegant style. Phylloxera-free. More refined than Jumilla due to altitude.' },
+  { name:'Utiel-Requena DO', country:'Spain', parentRegion:'Valencia & Levante', lat:39.591, lng:-1.097, grapes:['Bobal','Tempranillo','Garnacha'], notes:'High plateau (700–900m), westernmost Valencia appellation. Bobal: the signature grape — thick skin, deep color, high natural acidity, red and black cherry fruit, earthy. Old vine Bobal rosé: excellent quality and value. Traditional clarete (pale red blend) from Bobal. Revolution in quality now showcasing old vine Bobal in single-vineyard wines. Also fresh whites from Macabeo and Merseguera.' },
+  { name:'Valencia DO', country:'Spain', parentRegion:'Valencia & Levante', lat:39.470, lng:-0.376, grapes:['Moscatel de Valencia','Merseguera','Monastrell','Macabeo'], notes:'Three sub-zones: Valencia (coastal), Valentino (inland), Alto Turia (high mountain, 700–900m). Moscatel de Valencia: lightly fortified sweet Muscat — aromatic, grapey, fresh, low alcohol — classic tapas wine. Merseguera: dry white, light, crisp. Reds from Monastrell and Tempranillo for large-volume market. Excellent value.' },
+  { name:'Alicante DO', country:'Spain', parentRegion:'Valencia & Levante', lat:38.345, lng:-0.490, grapes:['Monastrell','Garnacha Tintorera','Merseguera'], notes:'Two sub-zones: Alicante (coastal/valley, warmer) and Alto Vinalopó (higher altitude 800m+, more finesse). Fondillón: unique historic sweet wine from overripe Monastrell — 16%+ natural alcohol, oxidative aging in solera, rancio character, extraordinary complexity — protected designation, minimum 8yr aging. Garnacha Tintorera: teinturier grape (red flesh) giving deep color.' },
+
+  // === SPAIN — Ribera del Duero ===
+  { name:'Toro DO', country:'Spain', parentRegion:'Ribera del Duero', lat:41.517, lng:-5.397, grapes:['Tinta de Toro (Tempranillo)','Garnacha'], notes:'West of Ribera del Duero, near the Portuguese border. Tinta de Toro: local Tempranillo clone evolved to extreme heat. At 650m altitude, hot summers and cold winters. Spain\'s most powerful Tempranillo: deep color, very full body, very high tannin, concentrated plum and blackberry, often exceeds 15% ABV naturally. Phylloxera-free sandy loam soils with some clay. Numanthia (LVMH) and Pintia (Vega Sicilia subsidiary): iconic producers. Modern styles showing more elegance and freshness.' },
+  { name:'Cigales DO', country:'Spain', parentRegion:'Ribera del Duero', lat:41.773, lng:-4.538, grapes:['Tempranillo','Garnacha'], notes:'North of Valladolid, between Ribera del Duero and Rueda. Historically famous for clarete (pale red) and rosé wines. Now producing quality structured reds. Tempranillo dominant at 700–800m altitude. Limestone and sandstone soils. Small, rising DO.' },
+
+  // === SPAIN — La Mancha ===
+  { name:'La Mancha DO', country:'Spain', parentRegion:'La Mancha & Castilla-La Mancha', lat:39.100, lng:-3.500, grapes:['Airén','Tempranillo (Cencibel)','Cabernet Sauvignon','Merlot','Chardonnay'], notes:'Largest DO in Spain (and world by area). Flat Meseta plateau at 600–700m. Hot, dry continental climate with extreme frost risk in winter. Airén: world\'s most planted variety by area — neutral, high acid white, historically distilled for Brandy de Jerez. Modern Airén: fresh, clean whites with refrigeration technology. Cencibel (Tempranillo): improving dramatically — fruity unoaked jóvenes to structured Crianzas. Huge cooperative sector modernizing. Massive investment since 1990s.' },
+  { name:'Valdepeñas DO', country:'Spain', parentRegion:'La Mancha & Castilla-La Mancha', lat:38.762, lng:-3.383, grapes:['Tempranillo (Cencibel)','Airén'], notes:'Within La Mancha zone but separate premium DO. Tempranillo (called Cencibel) dominant for reds. Traditional clarete: Cencibel + Airén blend, pale red, refreshing. Clay-limestone soils, higher than surrounding La Mancha. More structured reds than La Mancha DO. Gran Reserva: min 5 years aging. Luis Megía, Bodegas Félix Solís (Viña Albali): main producers.' },
+  { name:'Manchuela DO', country:'Spain', parentRegion:'La Mancha & Castilla-La Mancha', lat:39.367, lng:-1.900, grapes:['Bobal','Tempranillo','Merlot','Syrah','Cabernet Sauvignon'], notes:'Eastern La Mancha DO, bordering Utiel-Requena. Higher altitude (700–900m) gives freshness and acidity. Bobal important here as in Utiel-Requena. International varieties succeed. Growing quality movement with small family producers. Wines often show more freshness and elegance than central La Mancha.' },
+
+  // === PORTUGAL — Douro Valley ===
+  { name:'Baixo Corgo', country:'Portugal', parentRegion:'Douro Valley', lat:41.250, lng:-7.900, grapes:['Touriga Franca','Tinta Roriz','Tinta Barroca','Vinhão'], notes:'Westernmost and coolest Douro sub-region, centered around Régua. Highest rainfall (over 1000mm in places). Most fragrant, lighter style Port and Douro table wines. Highest volume production — most Ruby and basic Tawny comes from here. Schist soils. Good everyday-drinking quality.' },
+  { name:'Cima Corgo', country:'Portugal', parentRegion:'Douro Valley', lat:41.175, lng:-7.500, grapes:['Touriga Nacional','Touriga Franca','Tinta Roriz','Tinta Barroca','Tinta Cão'], notes:'Heart of the Douro, centered around Pinhão. Most prestigious sub-region — the best Vintage Port comes from here. Quinta do Noval, Quinta do Crasto, Quinta da Romaneira, Taylor\'s Vargellas, Graham\'s Malvedos. Schist soils, dramatic south-facing terraces cut into gorge. Intense heat concentrated by sheltering mountains. Fine balance of power and elegance. Superb single-quinta Vintage Ports.' },
+  { name:'Douro Superior', country:'Portugal', parentRegion:'Douro Valley', lat:41.150, lng:-6.900, grapes:['Touriga Nacional','Tinta Roriz','Rabigato','Viosinho'], notes:'Easternmost and driest Douro sub-region, bordering Spain. Very low rainfall (300–400mm), extreme heat, flat terrain (wider valley). Lower yields, very concentrated wines. Quinta da Leda (Sogrape), Quinta Vale Meão (Ramos Pinto): remarkable table wines from far upstream. Largely undeveloped compared to Cima Corgo but with enormous potential. Mechanical harvesting possible on flatter land.' },
+
+  // === PORTUGAL — Alentejo ===
+  { name:'Évora', country:'Portugal', parentRegion:'Alentejo', lat:38.57, lng:-7.90, grapes:['Aragonez','Trincadeira','Antão Vaz','Roupeiro'], notes:'Central sub-region near the capital city. Granite soils with schist in some areas. Well-rounded reds and aromatic whites. Key producers: Cartuxa (Fundação Eugénio de Almeida), Herdade do Rocim, Esporão.' },
+  { name:'Reguengos', country:'Portugal', parentRegion:'Alentejo', lat:38.42, lng:-7.54, grapes:['Aragonez','Trincadeira','Alicante Bouschet','Antão Vaz'], notes:'South-central Alentejo, most planted sub-region. Granite and schist soils with some clay. Cooperative Reguengos de Monsaraz: one of Portugal\'s finest cooperatives. Herdade do Esporão: benchmark producer, pioneered modern quality Alentejo. Monsaraz fortress town area.' },
+  { name:'Vidigueira', country:'Portugal', parentRegion:'Alentejo', lat:38.21, lng:-7.80, grapes:['Antão Vaz','Roupeiro','Alicante Bouschet','Trincadeira'], notes:'Southernmost Alentejo sub-region (Baixo Alentejo). Known for whites — Antão Vaz thrives in the schist soils here. José de Sousa winery: historic producer using Roman clay amphoras (talhas de barro) for fermentation — revival of ancient tradition, UNESCO-recognized. Vasco da Gama was born in nearby Sines.' },
+  { name:'Borba', country:'Portugal', parentRegion:'Alentejo', lat:38.81, lng:-7.46, grapes:['Aragonez','Trincadeira','Roupeiro','Antão Vaz'], notes:'Central-east Alentejo, in the marble triangle (Estremoz-Borba-Vila Viçosa). Calcareous marble-limestone soils give mineral freshness. Dry reds of character and structure. Adega Cooperativa de Borba: one of Portugal\'s best cooperatives. Some of Alentejo\'s finest rosés.' },
+  { name:'Portalegre', country:'Portugal', parentRegion:'Alentejo', lat:39.30, lng:-7.43, grapes:['Aragonez','Trincadeira','Antão Vaz','Grand Noir'], notes:'Northernmost and highest altitude Alentejo sub-region (400–800m), Serra de São Mamede. Coolest climate — more finesse, freshness, and acidity than lower Alentejo. Granite soils. Often produces wines with a style closer to Dão in elegance and restraint. Underexplored quality potential.' },
 
   // === USA — Napa Valley ===
   { name:'Stags Leap District', country:'USA', parentRegion:'Napa Valley', lat:38.390, lng:-122.362, grapes:['Cabernet Sauvignon'], notes:'Won 1976 Paris Tasting (Stag\'s Leap Wine Cellars). Palisades rock moderates heat. Cab Sauv: supple tannin, red fruit, softer than other Napa AVAs.' },
@@ -1952,8 +2028,8 @@ const regionBounds = {
   'Loire Valley — Muscadet (Nantais)': [[47.02,-2.22],[47.05,-1.55],[47.15,-1.08],[47.28,-1.15],[47.25,-1.85],[47.15,-2.28]],
   'Northern Rhône (Côte Rôtie, Hermitage, Condrieu)': [[44.88,4.76],[44.90,4.90],[45.15,4.92],[45.45,4.88],[45.60,4.82],[45.55,4.72],[45.25,4.70],[44.95,4.72]],
   'Southern Rhône (Châteauneuf-du-Pape, Côtes du Rhône)': [[43.70,4.48],[43.72,5.15],[43.95,5.28],[44.30,5.22],[44.48,4.95],[44.40,4.52],[44.10,4.38],[43.85,4.40]],
-  'Languedoc-Roussillon': [[42.42,1.90],[42.38,2.42],[42.48,2.88],[42.65,3.22],[43.05,3.48],[43.25,3.85],[43.42,4.28],[43.62,4.72],[43.95,4.85],[44.02,4.22],[43.75,3.32],[43.38,2.55],[42.92,2.00],[42.68,1.88]],
-  'Provence': [[43.18,4.55],[43.18,5.22],[43.25,5.62],[43.22,6.08],[43.18,6.42],[43.38,7.02],[43.62,7.08],[43.82,6.92],[44.12,6.35],[44.12,5.72],[44.05,5.20],[43.88,4.55],[43.50,4.40],[43.25,4.50]],
+  'Languedoc-Roussillon': [[42.42,1.90],[42.38,2.42],[42.48,2.88],[42.68,3.18],[43.30,3.50],[43.42,3.88],[43.45,4.28],[43.62,4.72],[43.95,4.85],[44.02,4.22],[43.75,3.32],[43.38,2.55],[42.92,2.00],[42.68,1.88]],
+  'Provence': [[43.45,4.55],[43.32,5.08],[43.28,5.40],[43.18,5.72],[43.25,6.12],[43.42,6.52],[43.55,7.05],[43.62,7.08],[43.82,6.92],[44.12,6.35],[44.12,5.72],[44.05,5.20],[43.88,4.55],[43.50,4.40]],
   // ── GERMANY ─────────────────────────────────────────────────
   'Mosel': [[50.46,6.97],[50.36,7.58],[49.85,7.80],[49.50,7.28],[49.50,6.72],[49.85,6.47]],
   'Nahe': [[49.58,7.55],[49.60,7.90],[49.75,8.08],[49.98,8.05],[50.02,7.72],[49.88,7.48],[49.72,7.45]],
@@ -1973,17 +2049,17 @@ const regionBounds = {
   // ── ITALY ───────────────────────────────────────────────────
   'Alto Adige DOC': [[46.35,10.82],[46.38,11.35],[46.58,11.68],[46.90,11.65],[47.02,11.20],[46.85,10.80],[46.55,10.72]],
   'Trentino DOC': [[45.80,10.90],[45.82,11.30],[46.00,11.50],[46.25,11.45],[46.28,11.05],[46.12,10.82],[45.92,10.82]],
-  'Friuli-Venezia Giulia': [[45.82,12.58],[45.80,13.05],[45.78,13.48],[45.88,13.70],[46.05,13.78],[46.28,13.82],[46.60,13.55],[46.62,13.05],[46.52,12.58],[46.22,12.38],[45.92,12.42]],
+  'Friuli-Venezia Giulia': [[45.65,13.15],[45.65,13.38],[45.68,13.60],[45.72,13.80],[45.90,13.82],[46.08,13.80],[46.30,13.82],[46.60,13.55],[46.65,13.08],[46.55,12.58],[46.22,12.38],[45.92,12.42]],
   'Veneto': [[45.05,10.85],[45.08,11.60],[45.30,12.50],[45.70,12.75],[46.00,12.40],[45.90,11.35],[45.65,10.72],[45.30,10.68]],
   'Piemonte': [[44.05,7.25],[44.10,7.90],[44.40,8.55],[44.75,8.95],[45.08,8.85],[45.10,8.20],[44.85,7.50],[44.50,7.12]],
-  'Tuscany': [[42.45,10.50],[42.50,11.40],[42.85,12.20],[43.50,12.35],[44.15,12.15],[44.45,11.40],[44.30,10.55],[43.80,10.00],[43.10,10.10]],
-  'Umbria': [[42.42,11.85],[42.45,12.60],[42.72,13.15],[43.15,13.18],[43.55,12.80],[43.50,12.05],[43.20,11.78],[42.75,11.75]],
-  'Marche': [[42.82,12.68],[42.90,13.12],[43.08,13.52],[43.35,13.62],[43.58,13.55],[43.85,13.20],[43.88,13.00],[43.72,12.65],[43.40,12.48],[43.08,12.52],[42.95,12.60]],
-  'Abruzzo': [[41.85,13.38],[41.92,13.72],[42.08,14.30],[42.30,14.38],[42.50,14.18],[42.58,13.88],[42.55,13.52],[42.30,13.25],[42.05,13.22],[41.90,13.32]],
-  'Campania': [[41.42,13.85],[41.48,14.18],[41.45,14.62],[41.38,15.05],[41.12,15.42],[40.88,15.52],[40.62,15.38],[40.38,15.18],[40.18,15.35],[40.08,15.08],[40.25,14.62],[40.42,14.18],[40.62,13.88],[40.88,13.92],[41.22,14.02]],
-  'Puglia': [[41.62,15.08],[41.72,15.55],[41.88,16.12],[41.88,16.42],[41.55,16.22],[41.20,16.55],[40.88,17.28],[40.78,17.88],[40.55,17.92],[40.28,18.12],[39.85,18.22],[39.80,17.98],[40.08,17.52],[40.35,17.05],[40.52,16.80],[40.78,16.42],[41.05,15.98],[41.30,15.62],[41.45,15.22]],
-  'Sicily': [[38.12,13.32],[38.20,14.08],[38.10,14.75],[38.15,15.22],[38.18,15.52],[37.98,15.28],[37.78,15.22],[37.50,15.08],[37.25,14.98],[36.75,15.05],[36.80,14.48],[37.02,13.62],[37.22,13.05],[37.60,12.52],[37.92,12.68],[38.15,12.98]],
-  'Lazio': [[41.30,13.05],[41.38,13.22],[41.50,13.32],[41.80,13.92],[42.20,13.88],[42.50,13.22],[42.55,12.38],[42.50,12.05],[42.38,11.75],[42.08,11.78],[41.82,11.95],[41.65,12.25],[41.48,12.65],[41.35,12.98]],
+  'Tuscany': [[42.45,10.50],[42.48,11.05],[42.45,11.90],[42.85,12.15],[43.25,12.22],[43.55,12.20],[44.15,12.05],[44.45,11.40],[44.30,10.55],[43.80,10.00],[43.10,10.10]],
+  'Umbria': [[42.45,11.90],[42.55,12.55],[42.72,13.15],[43.15,13.18],[43.55,12.80],[43.55,12.20],[43.25,12.22],[42.85,12.15]],
+  'Marche': [[42.82,12.68],[42.90,13.12],[43.05,13.48],[43.35,13.65],[43.58,13.48],[43.72,13.20],[43.85,12.98],[43.88,12.78],[43.72,12.55],[43.40,12.45],[43.08,12.50],[42.95,12.58]],
+  'Abruzzo': [[42.82,12.68],[42.85,13.12],[42.82,13.88],[42.65,14.05],[42.45,14.20],[42.28,14.38],[42.10,14.65],[41.92,14.68],[41.80,14.48],[41.72,14.18],[41.85,13.78],[42.08,13.52],[42.28,13.35],[42.52,13.45]],
+  'Campania': [[41.42,13.88],[41.45,14.22],[41.42,14.65],[41.38,15.08],[41.12,15.45],[40.88,15.55],[40.62,15.40],[40.38,15.22],[40.15,15.38],[40.05,15.12],[40.02,14.72],[40.18,14.35],[40.38,14.08],[40.62,13.92],[40.85,13.95],[41.10,14.00],[41.28,13.92]],
+  'Puglia': [[41.45,15.08],[41.72,15.52],[41.85,16.08],[41.92,16.38],[41.68,16.22],[41.38,16.45],[41.10,16.65],[40.90,17.22],[40.80,17.85],[40.58,17.90],[40.38,18.05],[40.18,18.22],[39.95,18.32],[39.82,18.30],[39.84,18.08],[40.08,17.52],[40.28,17.12],[40.48,16.85],[40.62,16.52],[40.80,16.40],[41.05,15.95],[41.28,15.58]],
+  'Sicily': [[37.82,12.48],[38.00,12.52],[38.18,12.75],[38.15,13.35],[38.05,14.02],[38.15,14.75],[38.25,15.22],[38.27,15.62],[38.08,15.60],[37.88,15.42],[37.55,15.30],[37.22,15.25],[36.75,15.12],[36.78,14.88],[36.98,14.52],[37.10,14.25],[37.32,13.55],[37.52,13.10],[37.60,12.85]],
+  'Lazio': [[41.30,13.05],[41.38,13.22],[41.50,13.32],[41.82,13.92],[42.10,13.85],[42.08,13.52],[42.28,13.35],[42.52,13.45],[42.55,12.38],[42.50,12.05],[42.38,11.78],[42.08,11.80],[41.82,11.95],[41.65,12.10],[41.48,12.60],[41.35,12.98]],
   // ── SPAIN ───────────────────────────────────────────────────
   'Rioja': [[42.02,-3.15],[42.05,-2.40],[42.18,-1.72],[42.48,-1.68],[42.55,-2.30],[42.45,-3.05],[42.20,-3.22]],
   'Navarra': [[42.00,-2.18],[42.05,-1.40],[42.40,-0.72],[42.85,-0.68],[43.25,-1.10],[43.20,-1.85],[42.80,-2.18],[42.35,-2.25]],
@@ -2000,11 +2076,14 @@ const regionBounds = {
   'Douro Valley': [[40.72,-8.25],[40.75,-7.50],[40.90,-6.82],[41.12,-6.78],[41.18,-7.40],[41.10,-8.18],[40.88,-8.32]],
   'Dão': [[40.22,-8.25],[40.25,-7.75],[40.48,-7.48],[40.72,-7.52],[40.78,-7.95],[40.62,-8.28],[40.40,-8.35]],
   'Bairrada': [[40.12,-8.78],[40.15,-8.42],[40.35,-8.28],[40.58,-8.32],[40.68,-8.55],[40.55,-8.80],[40.30,-8.85]],
+  'Alentejo': [[39.12,-8.20],[39.08,-7.52],[38.92,-7.05],[38.68,-6.58],[38.22,-6.58],[37.68,-7.05],[37.28,-7.82],[37.32,-8.05],[37.58,-8.12],[38.02,-8.45],[38.58,-8.55],[39.00,-8.30]],
+  'Lisboa': [[39.82,-9.42],[39.85,-8.95],[39.78,-8.55],[39.58,-8.38],[39.32,-8.45],[39.18,-8.68],[38.92,-8.72],[38.80,-9.22],[38.88,-9.48],[39.28,-9.52],[39.62,-9.50]],
   // ── USA ─────────────────────────────────────────────────────
   'Napa Valley': [[38.17,-122.35],[38.15,-122.68],[38.50,-122.84],[38.95,-122.50],[38.93,-122.08],[38.50,-122.08]],
   'Sonoma County': [[38.15,-123.28],[38.18,-122.60],[38.40,-122.42],[38.75,-122.48],[38.90,-122.75],[38.88,-123.25],[38.55,-123.32]],
   'Central Coast (Paso Robles, Santa Barbara)': [[34.42,-121.25],[34.50,-120.30],[34.80,-119.82],[35.45,-119.78],[35.75,-120.40],[35.68,-121.20],[35.20,-121.32]],
   'Central Valley': [[35.55,-120.95],[35.60,-119.85],[36.50,-119.48],[38.00,-119.50],[39.40,-119.65],[39.45,-120.80],[38.40,-120.95],[36.80,-121.00]],
+  'New York State': [[40.95,-74.25],[40.98,-73.55],[41.30,-72.35],[42.08,-72.00],[42.72,-73.25],[43.60,-76.80],[43.92,-77.20],[42.80,-79.75],[42.05,-79.80],[42.00,-77.10],[41.90,-74.70],[41.25,-74.00]],
   'Willamette Valley (Oregon)': [[44.82,-123.50],[44.85,-122.90],[45.15,-122.78],[45.55,-122.85],[45.78,-123.15],[45.72,-123.52],[45.30,-123.58]],
   'Columbia Valley & Walla Walla (Washington)': [[45.55,-120.90],[45.60,-118.80],[46.10,-117.55],[47.00,-117.50],[47.45,-118.50],[47.40,-120.40],[46.70,-120.85]],
   // ── CANADA ──────────────────────────────────────────────────
@@ -2037,13 +2116,13 @@ const regionBounds = {
   'Yarra Valley': [[-37.85,145.28],[-37.82,145.62],[-37.65,145.75],[-37.45,145.68],[-37.42,145.35],[-37.55,145.22],[-37.72,145.22]],
   'Mornington Peninsula': [[-38.55,144.88],[-38.52,145.20],[-38.35,145.35],[-38.15,145.28],[-38.12,144.98],[-38.28,144.82],[-38.45,144.82]],
   'Hunter Valley': [[-33.05,150.85],[-33.02,151.25],[-32.75,151.38],[-32.38,151.30],[-32.35,150.95],[-32.60,150.78],[-32.88,150.80]],
-  'Margaret River': [[-34.38,115.08],[-34.22,114.92],[-34.00,114.88],[-33.78,114.85],[-33.55,115.00],[-33.52,115.20],[-33.65,115.35],[-33.90,115.32],[-34.18,115.22],[-34.38,115.15]],
+  'Margaret River': [[-34.38,115.10],[-34.22,115.00],[-34.00,114.96],[-33.80,115.02],[-33.58,115.08],[-33.52,115.22],[-33.65,115.38],[-33.90,115.35],[-34.18,115.25],[-34.38,115.18]],
   // ── NEW ZEALAND ─────────────────────────────────────────────
   'Auckland & Northland': [[-37.42,174.58],[-37.38,174.92],[-37.05,175.05],[-36.42,174.98],[-36.38,174.62],[-36.72,174.48],[-37.15,174.48]],
   "Hawke's Bay": [[-39.92,176.58],[-39.88,177.15],[-39.55,177.35],[-39.35,177.22],[-39.38,176.68],[-39.60,176.50]],
   'Gisborne': [[-38.85,177.85],[-38.82,178.28],[-38.62,178.38],[-38.42,178.28],[-38.45,177.88],[-38.62,177.78]],
   'Wairarapa (Martinborough)': [[-41.35,175.48],[-41.32,175.88],[-41.10,176.02],[-40.85,175.92],[-40.88,175.52],[-41.08,175.40]],
-  'Marlborough': [[-41.72,173.68],[-41.72,174.08],[-41.60,174.28],[-41.45,174.38],[-41.28,174.22],[-41.12,173.98],[-41.12,173.72],[-41.28,173.58],[-41.48,173.55],[-41.65,173.60]],
+  'Marlborough': [[-41.72,173.68],[-41.72,174.05],[-41.62,174.22],[-41.50,174.32],[-41.35,174.22],[-41.18,173.98],[-41.18,173.72],[-41.30,173.58],[-41.50,173.55],[-41.65,173.60]],
   'Nelson': [[-41.45,172.98],[-41.42,173.42],[-41.22,173.55],[-41.05,173.42],[-41.08,173.00],[-41.25,172.88]],
   'Canterbury & Waipara': [[-43.90,172.10],[-43.85,172.72],[-43.50,172.95],[-42.88,172.85],[-42.85,172.25],[-43.20,172.02],[-43.65,172.02]],
   'Central Otago': [[-45.42,168.62],[-45.38,169.50],[-45.05,170.35],[-44.50,170.38],[-44.45,169.40],[-44.80,168.58],[-45.15,168.52]],
@@ -2364,6 +2443,49 @@ const subregionBounds = {
 
   // ── CHILE ─────────────────────────────────────────────────
   // Chile sub-appellations would go here if in subregionData
+
+  // ── FRANCE — BORDEAUX Côtes ───────────────────────────────
+  'Blaye Côtes de Bordeaux': [[45.06,-0.72],[45.08,-0.62],[45.14,-0.58],[45.20,-0.62],[45.18,-0.72],[45.12,-0.76]],
+  'Castillon Côtes de Bordeaux': [[44.82,-0.06],[44.84,0.00],[44.88,0.04],[44.92,0.01],[44.90,-0.06],[44.86,-0.10]],
+  'Cadillac Côtes de Bordeaux': [[44.60,-0.38],[44.62,-0.28],[44.66,-0.24],[44.70,-0.28],[44.68,-0.38],[44.64,-0.42]],
+  'Francs Côtes de Bordeaux': [[44.86,0.00],[44.88,0.06],[44.92,0.08],[44.95,0.05],[44.93,0.00],[44.89,-0.04]],
+  'Lussac-Saint-Émilion': [[44.92,-0.14],[44.94,-0.08],[44.97,-0.05],[44.99,-0.08],[44.98,-0.14],[44.95,-0.17]],
+  'Fronsac': [[44.94,-0.28],[44.96,-0.20],[44.99,-0.17],[45.02,-0.20],[45.00,-0.28],[44.97,-0.32]],
+
+  // ── FRANCE — SW FRANCE ────────────────────────────────────
+  'Cahors AC': [[44.36,1.30],[44.38,1.52],[44.48,1.62],[44.56,1.58],[44.52,1.38],[44.44,1.26]],
+  'Madiran AC': [[43.50,-0.04],[43.52,0.08],[43.60,0.14],[43.68,0.10],[43.65,-0.02],[43.57,-0.08]],
+  'Jurançon AC': [[43.22,-0.45],[43.24,-0.34],[43.30,-0.28],[43.36,-0.32],[43.34,-0.44],[43.28,-0.50]],
+  'Bergerac AC': [[44.80,0.38],[44.82,0.52],[44.88,0.60],[44.96,0.56],[44.94,0.40],[44.86,0.34]],
+  'Gaillac AC': [[43.84,1.78],[43.86,1.94],[43.94,2.02],[44.00,1.98],[43.97,1.80],[43.90,1.74]],
+
+  // ── SPAIN — VALENCIA & LEVANTE ────────────────────────────
+  'Jumilla DO': [[38.40,-1.42],[38.42,-1.28],[38.50,-1.20],[38.56,-1.24],[38.54,-1.40],[38.46,-1.48]],
+  'Yecla DO': [[38.55,-1.16],[38.57,-1.06],[38.64,-1.00],[38.70,-1.05],[38.68,-1.16],[38.62,-1.22]],
+  'Utiel-Requena DO': [[39.50,-1.18],[39.52,-1.02],[39.62,-0.94],[39.70,-0.98],[39.68,-1.16],[39.58,-1.24]],
+  'Valencia DO': [[39.38,-0.60],[39.40,-0.40],[39.52,-0.28],[39.60,-0.36],[39.58,-0.58],[39.46,-0.66]],
+  'Alicante DO': [[38.24,-0.65],[38.26,-0.50],[38.38,-0.40],[38.46,-0.46],[38.44,-0.64],[38.34,-0.72]],
+
+  // ── SPAIN — TORO & CIGALES ────────────────────────────────
+  'Toro DO': [[41.44,-5.52],[41.46,-5.34],[41.54,-5.24],[41.60,-5.30],[41.58,-5.50],[41.50,-5.58]],
+  'Cigales DO': [[41.72,-4.62],[41.74,-4.50],[41.80,-4.44],[41.84,-4.50],[41.82,-4.62],[41.76,-4.68]],
+
+  // ── SPAIN — LA MANCHA ─────────────────────────────────────
+  'La Mancha DO': [[38.80,-4.80],[38.85,-3.60],[39.20,-2.60],[39.75,-2.20],[40.10,-2.80],[40.00,-4.00],[39.50,-4.80],[38.95,-5.10]],
+  'Valdepeñas DO': [[38.68,-3.52],[38.70,-3.38],[38.78,-3.28],[38.86,-3.34],[38.84,-3.52],[38.76,-3.60]],
+  'Manchuela DO': [[39.28,-2.12],[39.30,-1.92],[39.42,-1.80],[39.50,-1.86],[39.48,-2.10],[39.38,-2.20]],
+
+  // ── PORTUGAL — DOURO VALLEY sub-zones ─────────────────────
+  'Baixo Corgo': [[41.18,-8.12],[41.20,-7.82],[41.30,-7.68],[41.36,-7.72],[41.34,-8.08],[41.26,-8.18]],
+  'Cima Corgo': [[41.10,-7.78],[41.12,-7.42],[41.22,-7.22],[41.30,-7.28],[41.28,-7.62],[41.18,-7.82]],
+  'Douro Superior': [[41.04,-7.28],[41.06,-6.85],[41.22,-6.60],[41.30,-6.65],[41.28,-7.00],[41.16,-7.30]],
+
+  // ── PORTUGAL — ALENTEJO sub-zones ─────────────────────────
+  'Évora': [[38.48,-8.12],[38.50,-7.78],[38.62,-7.60],[38.70,-7.66],[38.68,-8.00],[38.58,-8.18]],
+  'Reguengos': [[38.34,-7.72],[38.36,-7.46],[38.48,-7.34],[38.56,-7.40],[38.54,-7.68],[38.44,-7.80]],
+  'Vidigueira': [[38.12,-7.98],[38.14,-7.68],[38.26,-7.54],[38.34,-7.60],[38.32,-7.88],[38.22,-8.05]],
+  'Borba': [[38.74,-7.58],[38.76,-7.44],[38.84,-7.36],[38.90,-7.40],[38.88,-7.56],[38.80,-7.64]],
+  'Portalegre': [[39.22,-7.62],[39.24,-7.32],[39.36,-7.18],[39.44,-7.24],[39.42,-7.58],[39.32,-7.70]],
 };
 
 // ============================================================
@@ -2431,6 +2553,7 @@ const GEO_FEATURES = {
     { name: 'Gulf Stream', path: [[43.50,-3.50],[44.50,-2.80],[45.50,-2.00],[46.50,-2.50],[47.50,-3.50]], tooltip: 'Gulf Stream — warm Atlantic current moderating W European climate; key to Bordeaux & Loire', arrow: true },
     { name: 'Humboldt Current', path: [[-36.00,-72.80],[-33.50,-72.00],[-31.00,-72.20],[-29.00,-72.50]], tooltip: 'Humboldt — cold Pacific current cooling Chilean coast; fog & low temperatures for coastal valleys', arrow: true },
     { name: 'Benguela Current', path: [[-35.50,17.50],[-34.00,17.20],[-32.50,17.00]], tooltip: 'Benguela — cold Atlantic current cooling South African west coast; maritime influence', arrow: true },
+    { name: 'California Current', path: [[48.00,-125.50],[45.00,-124.80],[42.00,-124.50],[38.50,-123.50],[36.00,-122.00],[34.00,-120.50],[32.00,-117.50]], tooltip: 'California Current — cold Pacific current flowing southward along the US West Coast; drives coastal fog and cool temperatures that moderate Napa, Sonoma, Central Coast, and Oregon viticulture; enables acidity retention in warm-climate grapes', arrow: true },
   ],
   ranges: [
     { name: 'Alps', path: [[43.75,7.20],[44.30,7.00],[45.00,6.80],[45.50,7.30],[45.85,7.80],[46.15,8.60],[46.50,9.50],[46.65,10.30],[46.80,11.00],[47.00,11.60],[47.20,12.30],[47.30,13.00],[47.40,13.70],[47.20,14.30],[46.80,14.60],[46.50,14.90]], tooltip: 'Alps — Europe\'s greatest mountain range; provides altitude cooling, large diurnal range, shelter from cold winds, and varied mesoclimates for Alpine viticulture (Alto Adige, Trentino, Savoie, Valais)' },
@@ -2438,6 +2561,8 @@ const GEO_FEATURES = {
     { name: 'Vosges', path: [[47.85,7.05],[47.95,7.08],[48.05,7.10],[48.15,7.10],[48.25,7.08],[48.35,7.07],[48.45,7.10],[48.55,7.12],[48.65,7.14],[48.75,7.15]], tooltip: 'Vosges Mountains — rain shadow makes Alsace one of driest French regions (500mm/yr vs 1000mm on western slopes); enables long dry autumns ideal for late-harvest and noble rot wines' },
     { name: 'Haardt', path: [[49.05,7.92],[49.12,7.95],[49.20,7.98],[49.28,8.00],[49.36,8.02],[49.42,8.04],[49.50,8.06]], tooltip: 'Haardt Mountains — eastern extension of Vosges into Germany; rain shadow gives Pfalz more sunshine and warmth than Mosel; enables fuller, spicier Rieslings and successful Pinot Noir' },
     { name: 'Taunus Hills', path: [[50.08,8.05],[50.12,8.12],[50.16,8.20],[50.20,8.28],[50.23,8.35],[50.26,8.42]], tooltip: 'Taunus Hills — north of Rheingau; protects south-facing vineyard slopes from cold northerly winds; creates humid microclimate ideal for botrytis (Trockenbeerenauslese)' },
+    { name: 'Sierra Nevada', path: [[40.50,-121.30],[40.00,-120.80],[39.50,-120.30],[39.00,-120.00],[38.50,-119.80],[38.00,-119.50],[37.50,-119.10],[37.00,-118.80],[36.50,-118.50],[36.00,-118.30],[35.50,-118.00]], tooltip: 'Sierra Nevada — major N–S mountain range forming CA/NV border; blocks maritime air from the Pacific, creating rain shadow over Central Valley; snowmelt provides critical summer irrigation for San Joaquin vineyards; altitude sites up to 1200m for cool-climate production' },
+    { name: 'Coast Ranges', path: [[40.50,-124.00],[39.80,-123.50],[39.20,-123.00],[38.50,-122.70],[37.80,-122.40],[37.00,-121.90],[36.30,-121.50],[35.50,-120.80],[34.80,-120.50],[34.20,-119.80]], tooltip: 'California Coast Ranges — coastal mountain barrier running 1000km N–S; channels California Current fog inland through transverse valleys and river gaps (Russian River, Petaluma Gap, Santa Ynez transverse valleys); gap openings are critical for cooling Sonoma, Carneros, and Santa Barbara wine regions' },
   ],
   features: [
     { name: 'Landes Pine Forest', lat: 44.30, lng: -1.00, tooltip: 'Landes — protects Bordeaux from Atlantic storms; combined with Gulf Stream warmth' },
@@ -2447,6 +2572,7 @@ const GEO_FEATURES = {
     { name: 'Lake Garda', lat: 45.65, lng: 10.65, tooltip: 'Lake Garda — large freshwater lake moderating Alpine climate for Trentino wines' },
     { name: 'San Pablo Bay', lat: 38.08, lng: -122.38, tooltip: 'San Pablo Bay — cool fog & wind for Los Carneros; balanced Pinot Noir & Chardonnay' },
     { name: 'False Bay', lat: -34.25, lng: 18.60, tooltip: 'False Bay — source of cooling SE winds (Cape Doctor) for Constantia & Stellenbosch' },
+    { name: 'Finger Lakes', lat: 42.72, lng: -76.90, tooltip: 'Finger Lakes — 11 long, deep glacial lakes in upstate New York; lakes store summer heat and release it in autumn, extending growing season and protecting against early frost; America\'s finest Riesling region; deep water prevents freezing, moderating extreme continental cold' },
   ]
 };
 
@@ -2739,6 +2865,126 @@ function showGrapeNote(btn) {
   }
 }
 
+const REGION_STYLE_NOTES = {
+  // France
+  'Bordeaux': 'Left Bank: Cab Sauv-dominant blends — structured, tannic, cedary, age-worthy. Right Bank: Merlot-dominant — plummy, velvety, earlier-drinking. Sauternes: luscious noble rot sweet whites (honey, apricot). Dry Sémillon/Sauvignon Blanc from Graves.',
+  'Bergerac': 'Red Bordeaux-style blends: everyday to structured Pécharmant. Monbazillac: noble rot Sémillon — rich honey and apricot, great-value Sauternes alternative. Bergerac Sec: fresh dry Sauvignon Blanc.',
+  'SW France (Cahors, Madiran, Jurançon)': 'Cahors Malbec: deep, tannic, dark berry. Madiran Tannat: one of the world\'s most tannic reds, powerful. Jurançon Moelleux: Petit Manseng passerillage — intense apricot, spice, high acid. Côtes de Gascogne: crisp aromatic whites.',
+  'Chablis': '100% unoaked Chardonnay. High acidity, citrus, green apple, distinctive flinty/steely mineral character. Premier Cru and Grand Cru: more complex, some see oak. Benchmark for pure, mineral-driven Chardonnay.',
+  'Côte de Nuits (Côte d\'Or)': 'Almost entirely Pinot Noir. Red fruits, earthy undertones, silky tannin, remarkable aging potential (10–20+ years). 4-tier hierarchy; Vosne-Romanée the apex. World\'s most prestigious Pinot Noir.',
+  'Côte de Beaune (Côte d\'Or)': 'World\'s finest Chardonnay (Montrachet, Meursault, Corton-Charlemagne): full body, toasty oak, honey, long aging. Pinot Noir reds from Pommard and Volnay: structured and elegant.',
+  'Côte Chalonnaise': 'Pinot Noir and Chardonnay in Burgundian style, no Grand Cru. Rully: elegant whites + Crémant sparkling. Mercurey: structured reds. Good-value Burgundy alternative.',
+  'Mâconnais': 'Chardonnay-dominated. Pouilly-Fuissé: ripe tropical and stone fruit, sometimes lightly oaked. Mâcon Villages: fresh, easy-drinking everyday whites. Large co-op production.',
+  'Beaujolais': 'Gamay via carbonic/semi-carbonic maceration: fresh, juicy, low tannin, raspberry and cherry aromas. Beaujolais Nouveau: vibrant and grapey. Crus (Moulin-à-Vent, Fleurie, Morgon): more structured, ageable.',
+  'Alsace': 'Rich, aromatic dry whites labelled by variety. Riesling: steely, mineral, develops petrol with age. Gewurztraminer: opulent, lychee, rose petal. Pinot Gris: full, smoky. VT/SGN: noble rot late-harvest versions.',
+  'Champagne': 'Traditional method sparkling: crisp, yeasty, complex — brioche, citrus, apple, toasty lees character. Brut NV: the global benchmark. Vintage Champagne: concentrated and age-worthy. Blanc de Blancs (Chardonnay): elegant; Blanc de Noirs: fuller.',
+  'Jura': 'Vin Jaune: aged under flor yeast 6+ years — intense walnut, curry, oxidative complexity. Vin de Paille: dried grape sweet wine. Light Poulsard and Trousseau reds. Crémant du Jura: traditional method sparkling.',
+  'Loire Valley — Central Vineyards': 'Benchmark Sauvignon Blanc (Sancerre, Pouilly-Fumé): crisp, grassy, citrus, flinty mineral character. High acid, dry, fresh. Sancerre Rouge: light, elegant Pinot Noir. Classic cool-climate whites.',
+  'Loire Valley — Touraine': 'Chenin Blanc in all styles: bone-dry to lusciously sweet (Vouvray). Cabernet Franc reds from Chinon and Bourgueil: herbaceous, raspberry, light-to-medium tannin, ageable top wines.',
+  'Loire Valley — Anjou-Saumur': 'Savennières: bone-dry Chenin Blanc, high acid, extraordinary aging. Coteaux du Layon/Bonnezeaux/Quarts de Chaume: noble rot sweet Chenin, remarkable complexity and longevity. Saumur-Champigny: fresh, vibrant Cabernet Franc.',
+  'Loire Valley — Muscadet (Nantais)': 'Light, crisp, briny whites from Melon de Bourgogne. Sur lie aging adds texture and subtle yeasty complexity. Low alcohol (~12%). Classic pairing with oysters and seafood.',
+  'Northern Rhône (Côte Rôtie, Hermitage, Condrieu)': 'Single-varietal Syrah reds: full body, black pepper, violets, smoked meat, great aging. Côte Rôtie: most elegant. Hermitage: most powerful. Condrieu: rare, opulent dry Viognier — peach, apricot, floral.',
+  'Southern Rhône (Châteauneuf-du-Pape, Côtes du Rhône)': 'GSM blends (Grenache-dominant): rich, full-bodied, high alcohol (14–16%), ripe red fruit and garrigue. Châteauneuf-du-Pape: complex, age-worthy. Tavel: full-bodied dry rosé. Muscat de Beaumes-de-Venise: sweet fortified.',
+  'Languedoc-Roussillon': 'Full-bodied GSM reds from garrigue landscapes. Old-vine Carignan on schist: mineral and structured. Banyuls/Maury: excellent fortified Grenache — chocolate and dried fruit. Pays d\'Oc IGP: France\'s largest varietal wine zone.',
+  'Provence': 'World benchmark pale, dry rosé: delicate salmon-pink, fresh strawberry, citrus, low tannin. Bandol: structured, tannic Mourvèdre reds — powerful, age 5–15+ years. Cassis: notable dry whites. Rosé is the flagship.',
+  // Germany
+  'Mosel': 'Lightest, most delicate German Riesling. Lowest alcohol, highest acidity, floral, green apple, citrus, distinctive slate mineral. Spätlese: stone fruit, honeyed. Botrytised BA/TBA: luscious, ages decades. Exceptional elegance and finesse.',
+  'Nahe': 'Intermediate style between Mosel and Rheingau: mineral complexity from volcanic and slate soils. Riesling ranges from light and floral to fuller and peachy. Less well-known and excellent value.',
+  'Rheingau': 'Fuller, drier Riesling than Mosel — peachy, rounder, powerful. Historic home of classic dry German Riesling. Assmannshausen: quality Spätburgunder. Hochheim gave English the word \'Hock\' for German wine.',
+  'Rheinhessen': 'Fullest-bodied German Riesling from Rheinterrasse slopes (Nierstein). Large volumes of easy-drinking Müller-Thurgau. Liebfrauenmilch originated here. Best single-vineyard Rieslings are excellent.',
+  'Pfalz': 'Warmer than Mosel — richer, spicier Riesling. Important for Pinot family: Grauburgunder (full, smoky), Weißburgunder (crisp), Spätburgunder (Burgundian-style reds). Versatile, food-friendly styles.',
+  'Baden': 'Germany\'s warmest region. Fullest-bodied Spätburgunder (Pinot Noir), often Burgundian in character. Kaiserstuhl volcanic soil: excellent Grauburgunder. Wines generally fuller and riper than other German regions.',
+  'Franken': 'Silvaner is the star — dry, earthy, herbal, good acidity, distinctive character. Predominantly dry styles. Bottled in the distinctive flat Bocksbeutel flagon. Stein vineyard in Würzburg is most celebrated.',
+  // Austria
+  'Wachau / Kremstal / Kamptal (Niederösterreich)': 'Grüner Veltliner: high acid, white pepper, citrus, stone fruit — from light Steinfeder to powerful Smaragd. Riesling: intense minerality and citrus. Predominantly dry, age-worthy whites from steep terraced vineyards.',
+  'Burgenland': 'Two worlds: Neusiedlersee — famous BA/TBA/Ausbruch sweet whites from lake-humidity botrytis. Mittelburgenland: powerful, spicy Blaufränkisch reds. Neusiedlersee also produces soft, fruity Zweigelt.',
+  // Hungary
+  'Tokaj': 'World\'s most historic noble rot wine. Tokaji Aszú: Furmint-based — honey, dried apricot, nut, extraordinary longevity. Dry Furmint: steely, high acid. Eszencia: ultra-rare, almost pure botrytised juice.',
+  // Greece
+  'Naoussa PDO': 'Xinomavro reds — Greece\'s Barolo. High acid, high tannin, complex: red tomato, dried herbs, leather. Demanding when young but remarkable aging potential. Dry red only. Food wine par excellence.',
+  'Nemea PDO': 'Agiorgitiko reds: deep ruby, velvety tannin, ripe plum and cherry, sometimes spiced with oak. More approachable than Xinomavro. Ranges from everyday to powerful Reserve wines.',
+  'Santorini PDO': 'Assyrtiko from volcanic ash soils — bone-dry, laser-sharp acidity, citrus, saline, volcanic mineral. One of the world\'s most distinctive whites. Vinsanto: sweet dried-grape wine, extraordinary concentration.',
+  // Italy
+  'Alto Adige DOC': 'Alpine character — crisp, aromatic whites (Pinot Grigio, Gewurztraminer, Riesling) with cool altitude freshness. Some elegant Pinot Nero and Lagrein reds. Very distinctive, high-quality, Tyrolean identity.',
+  'Trentino DOC': 'Alpine freshness. Local red varieties: Marzemino (soft, fragrant) and Teroldego (dark, structured). Good everyday whites and sparkling. Less prestigious than Alto Adige but approachable and reliable.',
+  'Friuli-Venezia Giulia': 'Italy\'s benchmark dry white wine region. Crisp, aromatic: Pinot Grigio, Friulano, Ribolla Gialla. Collio and Colli Orientali: finest crus. Some orange wine tradition from skin-contact whites.',
+  'Veneto': 'Soave: delicate crisp white (Garganega). Valpolicella: light Corvina; Ripasso: richer, velvety; Amarone: powerful dried-grape, 15–17%, very age-worthy. Prosecco DOC/DOCG: fresh, frothy sparkling. Very diverse.',
+  'Piemonte': 'Italy\'s most prestigious red region. Barolo and Barbaresco: 100% Nebbiolo — full body, very high acid and tannin, tar and roses, age 10–30+ years. Barbera: everyday fruity reds. Moscato d\'Asti: sweet, low-alcohol sparkling.',
+  'Tuscany': 'Sangiovese-dominated. Chianti Classico: medium body, cherry, herbal, food-wine. Brunello di Montalcino: powerful, structured, age 20+ years. Super Tuscans: Cab Sauv/Merlot/Sangiovese blends. Vernaccia: dry white.',
+  'Umbria': 'Sagrantino di Montefalco: exceptionally tannic, very full body, blackberry, dark chocolate, needs 10+ years. Orvieto Classico: crisp, dry white from Grechetto/Trebbiano. Small but distinctive appellation.',
+  'Marche': 'Verdicchio: crisp, high acid, almond finish — the signature white (Castelli di Jesi, Matelica). Rosso Conero and Rosso Piceno: Montepulciano-based medium-full reds. Clean, honest, food-friendly wines.',
+  'Abruzzo': 'Montepulciano d\'Abruzzo: full-bodied red, deep color, soft tannin, plum and spice — excellent value. Cerasuolo d\'Abruzzo: serious dry rosé. Trebbiano: fresh whites. High-volume, reliable everyday wine.',
+  'Campania': 'Greco di Tufo: structured, mineral white. Fiano di Avellino: aromatic, complex, honey and herb. Taurasi (Aglianico): full body, very high tannin, dark fruit — \'Barolo of the South\', needs 10+ years.',
+  'Puglia': 'Primitivo (= Zinfandel): high alcohol (14–17%), full body, dark berry, ripe and jammy. Negroamaro: earthy, rustic dark fruit. Important rosé production (Rosato). Generous, warm-climate Southern Italian style.',
+  'Sicily': 'Nero d\'Avola: full body, dark cherry, chocolate, warm spice. Mt Etna (Nerello Mascalese): elegant, high acid, mineral at 600–1000m — \'Burgundy of the South\'. Passito di Pantelleria: intensely sweet Zibibbo. Rapidly improving quality.',
+  'Lazio': 'Frascati and Est! Est!! Est!!!: crisp, neutral dry whites for easy drinking. Cesanese: soft, approachable local red. Rome\'s regional table wines — not world-class but reliable everyday drinking.',
+  // Spain
+  'Rioja': 'Spain\'s most classic red. Tempranillo-dominated blends: Crianza, Reserva, Gran Reserva hierarchy. Traditional: American oak, vanilla-coconut. Modern: French oak, fresher fruit. White Rioja (Viura): often barrel-fermented.',
+  'Navarra': 'Garnacha reds and rosés (clarete style). Improving Tempranillo and international varieties. Rosado: serious, structured, dry rosé. Diverse range from entry-level to premium.',
+  'Cariñena & Calatayud': 'High-altitude Aragón (600–900m). Old Garnacha vines: rich, concentrated, spicy. Old-vine Carignan: complex, mineral, tannic. Limestone soils. Traditional and improving quality.',
+  'Penedès & Priorat (Catalunya)': 'Cava DOC (Penedès): traditional method sparkling from Macabeo/Xarel·lo/Parellada — fresh, yeasty, excellent value. Priorat DOCQ: old-vine Garnacha/Cariñena on slate (llicorella) — powerful, mineral, very age-worthy.',
+  'Ribera del Duero': 'Tempranillo (Tinto Fino) reds at 700–900m altitude. Full body, dark fruit, firm structure, high acid. Top wines (Vega Sicilia, Pingus) rival Bordeaux in longevity and prestige.',
+  'Rías Baixas': 'Albariño: Spain\'s benchmark aromatic white. Peachy, citrus, floral, naturally high acidity, light spritz, saline. Val do Salnés: most classical sub-zone. Perfect pairing with Galician seafood.',
+  'Bierzo': 'Mencía: medium body, fresh red fruit, mineral slate character — often compared to Pinot Noir. Old vines on steep slate slopes. Palacios family elevated the region\'s reputation internationally.',
+  'Valencia & Levante': 'Bobal and Garnacha reds: warm, full-bodied, high alcohol. Moscatel de Valencia: sweet fortified Muscat. Utiel-Requena (Bobal): improving quality especially for rosé. Accessible, food-friendly wines.',
+  'La Mancha & Castilla-La Mancha': 'Spain\'s largest wine region. Airén: neutral dry whites. Tempranillo reds: improving, excellent value. Hot continental plateau (700m altitude). Historically high-volume; increasingly quality-focused.',
+  // Portugal
+  'Vinho Verde': 'Light, fresh whites; high acid, natural spritz, 8–11.5% ABV. Loureiro/Arinto/Trajadura blends for everyday drinking. Premium Alvarinho from Monção e Melgaço: richer, fuller, no spritz (12.5–14%). "Verde" means youth, not colour.',
+  'Douro Valley': 'Port: fortified wine in Tawny (barrel-aged, nutty-oxidative) and Ruby/Vintage (fruity, bottle-aged) styles. Douro DOC dry table wines: powerful, full-bodied red blends of Touriga Nacional and other indigenous varieties. Increasingly acclaimed.',
+  'Dão': 'Elegant, restrained reds from Touriga Nacional and Tinta Roriz on granite soils: fresh acidity, firm tannin, medium body — often called \'the Burgundy of Portugal\'. Encruzado: benchmark dry white, creamy and textured.',
+  'Bairrada': 'Baga-based reds: very high tannin, deep color, high acid — demanding but age-worthy (10–20+ years). Bairrada Espumante: traditional method sparkling, one of Portugal\'s best. Bical and Arinto for structured whites.',
+  'Alentejo': 'Warm, powerful, full-bodied reds from Aragonez, Alicante Bouschet, Trincadeira: ripe dark fruit, spice, often oak-aged. Rich, generous style. Increasingly important for premium Portuguese reds.',
+  'Lisboa': 'Diverse wines from multiple sub-regions. Colares (Ramisco on sand): extremely tannic, very rare. Setúbal: sweet fortified Moscatel. Generally fresh, fruit-forward reds and crisp whites for everyday.',
+  // USA
+  'Napa Valley': 'California Current drives coastal fog up the San Pablo Bay into Carneros, moderating the valley. Cabernet Sauvignon: full body, ripe black fruit, supple polished tannin — powerful yet refined. Cult wines among the world\'s most expensive. Age-worthy 10–25+ years.',
+  'Sonoma County': 'California Current and Pacific fog are central: Russian River Valley fog tunnel creates cool-climate Pinot Noir and Chardonnay (elegant, Burgundian). Dry Creek Valley sheltered from ocean: jammy Zinfandel. Sonoma Coast directly ocean-exposed: very cool Pinot Noir.',
+  'Central Coast (Paso Robles, Santa Barbara)': 'California Current and marine layer are critical. Santa Barbara\'s transverse valleys channel cold Pacific air inland → elegant Pinot Noir and Chardonnay. Paso Robles more inland and warm: full-bodied Rhône varieties (Syrah, Grenache) and Cabernet.',
+  'Central Valley': 'Isolated from California Current by Coast Ranges — hot, irrigated, high-volume production. Ripe, full-bodied Zinfandel, Cabernet, Chardonnay. White Zinfandel rosé largely from here. Bulk wine for blending. Lodi (near delta) slightly cooler.',
+  'New York State': 'Finger Lakes: America\'s finest Riesling — bone-dry to botrytis, high acid, cool-climate precision. Deep glacial lakes moderate frost risk. Long Island: maritime Bordeaux-style blends (Merlot, Cab Franc). Hudson Valley: America\'s oldest wine region. Dr. Konstantin Frank pioneered vinifera varieties.',
+  'Willamette Valley (Oregon)': 'Oregon\'s benchmark cool-climate Pinot Noir: earthy, red fruit, high acid, elegant — Burgundian character. Pinot Gris: structured, textured. Dijon clones planted since 1980s. Internationally acclaimed.',
+  'Columbia Valley & Walla Walla (Washington)': 'Washington\'s flagship appellation. Cabernet Sauvignon and Merlot: ripe fruit, firm tannin, high natural acidity due to cool nights. Walla Walla: premium sub-appellation. Riesling and Syrah also notable.',
+  // Canada
+  'Niagara Peninsula (Canada)': 'Icewine: world-famous, naturally frozen Riesling and Vidal — intensely sweet, concentrated, beautifully balanced. Table wines: Riesling, Chardonnay, Pinot Noir in cool continental conditions. Unique lake-moderated microclimate.',
+  'Okanagan Valley (Canada)': 'BC\'s showcase region. Diverse: Riesling and Pinot Gris in north (cooler), Merlot and Cabernet in south (warmer). Icewine production. High quality relative to volume. Growing international reputation.',
+  // Chile
+  'Elqui & Limarí Valleys (Coquimbo)': 'Cool-climate coastal influence — Pacific fog brings acidity. Chardonnay and Syrah with fresh, mineral character. Limarí limestone soils give Chardonnay elegance. Chile\'s premium cool-climate appellations.',
+  'Aconcagua Valley': 'Divided: Aconcagua Alto (mountain): cool-climate Cabernet and Carménère. Casablanca and San Antonio valleys: Pacific influence, elegant Sauvignon Blanc, Pinot Noir, Chardonnay.',
+  'Maipo & Cachapoal (Central Valley)': 'Maipo: Chile\'s most historic appellation — Cabernet Sauvignon, full body, blackcurrant, herbal minty notes. Home of Concha y Toro. Cachapoal: Carménère and Merlot, slightly warmer.',
+  'Colchagua Valley (Central Valley)': 'Merlot, Carménère, Cabernet Sauvignon: riper and more powerful than Maipo. Full body, dark fruit, spice. Chile\'s premier red wine valley. Lapostolle benchmark producer.',
+  'Curicó & Maule Valleys': 'Large-volume production. Maule dry-farmed: old-vine País and Cinsault from granite soils — heritage varieties now sought-after. Carménère, Cabernet, increasingly artisan wine movement.',
+  'Southern Chile (Itata, Bío-Bío, Malleco)': 'Cool-climate frontier. Old-vine País and Muscat on granite: fresh, light, low-alcohol. Emerging Riesling and Pinot Noir. Pioneer craft wine movement. Chile\'s most exciting new wave region.',
+  // Argentina
+  'Cafayate / Salta': 'World\'s highest commercial vineyards (1,700–3,100m). Torrontés Riojano: floral, aromatic, peachy — Argentina\'s signature white. High-altitude Malbec: intensely concentrated yet elegant. Extraordinary diurnal range.',
+  'Mendoza (Luján de Cuyo, Maipú, Uco Valley)': 'Argentina\'s wine heartland. Malbec: deep purple, velvety tannin, plum, dark cherry, violets — benchmark New World Malbec. Uco Valley: high-altitude elegance. Cabernet Sauvignon and Cabernet Franc also excellent.',
+  'Patagonia (Río Negro & Neuquén)': 'Cool-climate frontier. Long growing season, intense diurnal range. Malbec: leaner, more elegant than Mendoza. Pinot Noir and Chardonnay gaining reputation. Sparkling wine potential.',
+  // South Africa
+  'Stellenbosch': 'SA\'s most prestigious red appellation. Cabernet Sauvignon, Merlot, Pinotage: full-bodied, ripe, with cooling ocean influence. Cape Blends include Pinotage. Mountain slopes give elegance and structure.',
+  'Paarl': 'Diverse region. Shiraz: full-bodied, dark fruit, spicy. Chenin Blanc: from dry and light to rich and oaked. Less fashionable than Stellenbosch but excellent value. Fairview and KWV prominent.',
+  'Constantia': 'SA\'s oldest wine estate. Vin de Constance: world-famous sweet Muscat, one of history\'s great wines. Modern Sauvignon Blanc: cool, elegant, herbal. Maritime cooling from Table Bay for premium dry whites.',
+  'Swartland': 'New-wave artisan, minimal-intervention wine movement. Old-vine Grenache, Cinsault, Carignan on schist and granite: Rhône-style reds. Chenin Blanc: textured, complex. SA\'s natural wine pioneer region.',
+  'Walker Bay & Elgin': 'SA\'s coolest appellations — Pacific Ocean influence. Hemel-en-Aarde Valley (Walker Bay): benchmark Pinot Noir and Chardonnay, Burgundian character. Elgin: Sauvignon Blanc, Riesling, elegant Pinot Noir.',
+  // Australia
+  'Barossa Valley': 'Australia\'s most famous red region. Shiraz: full body, deep color, dark berry, chocolate, leather — powerful and concentrated. Old-vine Shiraz (100+ year old vines): world-class. Also Grenache, Mourvèdre, and fortified wines.',
+  'Eden Valley': 'High-altitude (400–500m above Barossa). Elegant Riesling: lime, citrus, floral, then petrol and toast with age. Cooler, more restrained Shiraz than valley floor. Excellent value for quality Riesling.',
+  'Clare Valley': 'Australia\'s benchmark dry Riesling. Lime cordial, citrus, mineral — develops petrol and toast with age. Medium body, crisp, long-lived under screwcap. Shaw + Smith and Grosset benchmark producers.',
+  'Adelaide Hills': 'Cool climate (400–700m altitude). Sauvignon Blanc: crisp, grassy, elderflower. Chardonnay: elegant, fresh. Pinot Noir: light, earthy. Sparkling wine production. Artisan producers with fine-wine focus.',
+  'McLaren Vale': 'Shiraz: richer and more chocolatey than Barossa, with olive and herb savory notes from maritime influence. Old-vine Grenache: plush and complex. Close to the sea — cooler, more textured wines.',
+  'Coonawarra': 'Terra Rossa (red soil over limestone): famous for structured Cabernet Sauvignon — blackcurrant, mint, eucalyptus, long-lived (15–20+ years). Cool maritime influence from Southern Ocean. Some Shiraz and Merlot.',
+  'Yarra Valley': 'Victoria\'s premier cool-climate region. Pinot Noir: earthy, red fruit, medium body. Chardonnay: complex, mineral. Some elegant Shiraz and Pinot Gris. Increasingly Burgundian in aspiration and quality.',
+  'Mornington Peninsula': 'Cool maritime. Pinot Noir: silky, red fruit, elegant — Burgundian character. Chardonnay: crisp, fine. Small-producer premium region with limited production. Similar style to Yarra Valley.',
+  'Hunter Valley': 'Hot, humid NSW. Semillon: world-unique style — low alcohol (10–11%), bone dry, high acid, develops remarkable honeyed toasty complexity after 5–20 years in bottle. Shiraz: earthy, leathery, medium body.',
+  'Margaret River': 'Australia\'s most \'Bordelais\' region. Cabernet Sauvignon: blackcurrant, herbal, firm tannin — blended with Merlot for elegance and balance. Chardonnay: full but elegant, stone fruit and oak.',
+  // New Zealand
+  'Auckland & Northland': 'NZ\'s wine origin. Waiheke Island specialty: Bordeaux-style reds (Merlot, Cab Franc) in warm, drier conditions. Pinot Gris and Chardonnay. Less fashionable than South Island but quality Bordeaux-style reds.',
+  'Hawke\'s Bay': 'NZ\'s premier red wine region. Syrah: elegant, cool-climate black pepper. Bordeaux red blends (Cab/Merlot/Cab Franc) — structured. Gimblett Gravels sub-zone: warmest, fullest reds. Chardonnay excellent.',
+  'Gisborne': 'Nicknamed \'Chardonnay Capital\' of NZ. Tropical, ripe, full-bodied Chardonnay. Pinot Gris growing. Organic viticulture prevalent. Easternmost major region — accessible, approachable fruit-forward style.',
+  'Wairarapa (Martinborough)': 'Benchmark NZ Pinot Noir: earthy, spicy, complex, medium body. Cool, windy conditions. Small artisan producers with premium quality. Less productive than Marlborough but highly regarded.',
+  'Marlborough': 'World\'s benchmark Sauvignon Blanc: tropical passion fruit, gooseberry, cut grass, vibrant acidity. Dominates NZ wine exports. Pinot Noir: lighter, fresh. Méthode traditionnelle sparkling also excellent.',
+  'Nelson': 'Organic and biodynamic wine hub of NZ. Chardonnay, Riesling, Pinot Noir: fresh and aromatic, similar to Marlborough but slightly warmer. Smaller, artisanal, often excellent quality.',
+  'Canterbury & Waipara': 'Cool continental. Waipara Valley: benchmark NZ Riesling — off-dry, citrus, mineral. Pinot Noir: earthy, structured. Pegasus Bay the flagship producer. Riesling is the unexpected regional star.',
+  'Central Otago': 'World\'s southernmost premium wine region. Pinot Noir: powerful, concentrated, dark fruit, spice — unlike any other Pinot Noir. Continental extremes create intensity and complexity. Very fashionable, premium priced.',
+};
+
 function createPopup(r) {
   const c = COUNTRIES[r.country];
   return `<div class="popup-inner">
@@ -2758,10 +3004,11 @@ function createPopup(r) {
       <div class="popup-label">Key Grape Varieties</div>
       <div>${formatGrapes(r.grapes)}</div>
     </div>
-    <div class="popup-section">
-      <div class="popup-label">Winemaking & Style Notes</div>
-      <div class="popup-text">${r.notes}</div>
-    </div>
+    ${REGION_STYLE_NOTES[r.name] ? `<div class="popup-section">
+      <div class="popup-label">Winemaking & Style</div>
+      <div class="popup-text" style="font-style:italic;opacity:0.85">${REGION_STYLE_NOTES[r.name]}</div>
+      <div style="font-size:0.6rem;opacity:0.55;margin-top:3px">→ Click region for full style notes</div>
+    </div>` : ''}
     <div class="popup-footer">WSET L3 Study Notes · Jack Yeu &amp; Wang Haitian</div>
   </div>`;
 }
@@ -3447,6 +3694,26 @@ var WINE_DATA = {
   ],
   'Vinho Verde': [
     { name:'Vinho Verde DOC', classification:'DOC', grapes:['Alvarinho (Albariño), Loureiro, Trajadura, Arinto'], method:'Stainless steel, protective winemaking', aging:'No minimum', abv:'8.5-13%', style:'Light body, high acid, citrus, green apple, slight spritz, lean, refreshing', notes:'Best examples from Monção e Melgaço sub-region (Alvarinho). Basic Vinho Verde is simple; top crus are serious.' },
+    { name:'Vinho Verde — Alvarinho (Monção e Melgaço)', classification:'DOC', grapes:['Alvarinho (100%)'], method:'Stainless steel, no CO2 addition, no spritz', aging:'No minimum', abv:'12.5-14%', style:'Full body (for Vinho Verde), ripe peach, grapefruit, tropical fruit, floral, textured, long finish', notes:'Premium tier of Vinho Verde. Granite soils on Spanish border. Much richer and more serious than standard VV blends. Palácio da Brejoeira, Soalheiro benchmark producers.' },
+  ],
+  'Dão': [
+    { name:'Dão Tinto DOC', classification:'DOC', grapes:['Touriga Nacional, Tinta Roriz, Alfrocheiro, Jaen (Mencía)'], method:'Traditional Portuguese lagares or modern temperature-controlled; French oak aging', aging:'No legal minimum; quality wines aged 12–24 months', style:'Medium-full body, firm fine tannin, red and dark cherry, plum, violet, earthy, silky on palate, elegant', notes:'Portugal\'s most Burgundian-style reds. Cool mountain temperatures preserve freshness and acidity. Quinta dos Carvalhais (Sogrape), Quinta da Pellada (Álvaro Castro) key quality pioneers.' },
+    { name:'Dão Branco — Encruzado DOC', classification:'DOC', grapes:['Encruzado (dominant), Bical, Malvasia Fina'], method:'Stainless steel or barrel fermented; may have skin contact or less stirring', aging:'No minimum; premium aged 6–12 months in French oak', abv:'12.5-14%', style:'Medium-full body, peach, almond, hazelnut, floral, textured, saline mineral finish, excellent aging potential', notes:'Encruzado is considered one of Portugal\'s greatest white varieties. Ages beautifully for 5–10 years. Rare outside Portugal. Quinta dos Roques a leading producer.' },
+  ],
+  'Bairrada': [
+    { name:'Bairrada Tinto DOC (Baga)', classification:'DOC', grapes:['Baga (dominant, min 50%)'], method:'Traditional: long maceration, old oak. Modern (Luís Pato): shorter extraction, French barriques', aging:'Min 6 months; quality reds benefit from 10–20+ years', style:'Deep ruby-black, very high tannin, very high acid, blackberry, dark plum, tar, earthy, leather, extraordinary longevity', notes:'Baga is one of Europe\'s most tannic varieties. Needs time. Traditional style: austere and challenging young; modern approach adds fruit. Luís Pato is the region\'s most celebrated producer and Baga ambassador.' },
+    { name:'Bairrada Espumante DOC', classification:'DOC', grapes:['Bical, Maria Gomes (Fernão Pires), Chardonnay, Pinot Noir'], method:'Traditional method (méthode classique), min 9 months on lees', aging:'Non-vintage: min 9 months; vintage: min 24 months', abv:'11.5-12.5%', style:'Fine, persistent bubbles; dry to brut; green apple, citrus, brioche, yeasty, crisp acidity, medium-long finish', notes:'Portugal\'s finest and most traditional sparkling wine appellation. Bairrada Espumante long preceded Cava and Prosecco. Also produced: Rosé Espumante from Baga. Luis Pato, Luís Gomes top names.' },
+    { name:'Bairrada Branco DOC', classification:'DOC', grapes:['Maria Gomes (Fernão Pires), Bical, Cerceal'], method:'Stainless steel, protective winemaking', aging:'No minimum', style:'Light-medium body, aromatic, floral (geranium, orange blossom), citrus, soft, easy-drinking', notes:'Simple fresh whites for early consumption. Maria Gomes gives the distinctive floral character.' },
+  ],
+  'Alentejo': [
+    { name:'Alentejo Tinto DOC', classification:'DOC', grapes:['Aragonez (Tempranillo), Trincadeira, Alicante Bouschet, Touriga Nacional'], method:'Temperature-controlled fermentation essential (extreme heat); French and American oak', aging:'No minimum; Reserva min 12 months oak + 12 months bottle', style:'Full body, deep ruby, ripe blackberry, plum, spice, chocolate, leather, warm alcohol, soft tannin, generous', notes:'Portugal\'s best-selling and most recognized wine style internationally. Warm generous character. Best sub-regions: Évora (balanced), Portalegre (most elegant, highest altitude). Esporão, Reguengos, Herdade do Esporão key estates.' },
+    { name:'Alentejo Branco DOC', classification:'DOC', grapes:['Antão Vaz (dominant), Arinto, Roupeiro (Síria)'], method:'Stainless steel; premium versions barrel-fermented with lees contact', aging:'No minimum', abv:'13-14.5%', style:'Full body, tropical fruit, ripe stone fruit (peach, mango), floral, honeyed, rich texture, medium acidity', notes:'Antão Vaz is the flagship Alentejo white — one of Portugal\'s best hot-climate whites. Rich and tropical but with freshness. Roupeiro adds freshness and minerality. Best drunk within 3–5 years.' },
+    { name:'Vinho de Talha DOC', classification:'DOC', grapes:['Traditional Alentejo field blends (red and white)'], method:'Fermented and stored in large clay amphoras (talhas), often whole bunch, skin contact for whites', aging:'Wine sold from feast of St Martin (11 Nov) of harvest year; consumed young', abv:'13-15%', style:'Rustic, textured, earthy, slightly cloudy, skin-contact orange character for whites; savory, herbal, lively acid for reds', notes:'Ancient Roman winemaking method preserved uniquely in Alentejo. UNESCO recognition sought. José de Sousa in Reguengos is the most famous producer. Talha wines have seen a worldwide "natural wine" revival.' },
+  ],
+  'Lisboa': [
+    { name:'Bucelas DOC', classification:'DOC', grapes:['Arinto (Pedernã, min 75%), Esgana Cão'], method:'Stainless steel, minimal intervention to preserve natural acidity', aging:'No minimum; ages well for 5–10 years', abv:'11.5-13%', style:'Light-medium body, very high natural acidity, citrus (lime, lemon), green apple, mineral, saline, lean and precise', notes:'One of Portugal\'s most historic DOCs. Known to Wellington\'s troops and Victorian London. Tiny appellation, limestone-clay soils. Caves Velhas is the dominant producer. Often called Portugal\'s answer to Chablis.' },
+    { name:'Colares DOC', classification:'DOC', grapes:['Ramisco (red), Malvasia de Colares (white)'], method:'Long traditional maceration; old oak aging', aging:'Min 1 year for Tinto; quality wines aged 5–10 years before release', abv:'11-13%', style:'Deep ruby, very high tannin, very high acidity, dark berry, earthy, mineral, leather, remarkable aging potential (20–40 years)', notes:'Extraordinarily rare. Vines planted in coastal sand dunes — phylloxera cannot penetrate sand, so vines are own-rooted (pre-phylloxera genetics). Only ~20ha remain. Adega Regional de Colares the main cooperative. A wine of historical significance and extreme rarity.' },
+    { name:'Lisboa DOC (Alenquer / Torres Vedras)', classification:'DOC', grapes:['Fernão Pires, Arinto, Castelão, Touriga Nacional'], method:'Modern winemaking; stainless steel whites, oak-aged reds', aging:'No minimum', style:'Whites: aromatic, floral, citrus, easy-drinking. Reds: medium body, red fruit, earthy, approachable', notes:'Commercial Lisboa wines. Atlantic cooling gives freshness. Fernão Pires (aromatic whites) and Castelão (medium reds) are workhorses. Quinta de Pancas, Quinta do Gradil noted producers in Alenquer.' },
   ],
   // ===== GERMANY =====
   'Mosel': [
@@ -3494,6 +3761,25 @@ var ADDED_WINE_NAMES = new Set([
   // Jura — entire region added by Claude
   'Vin Jaune AOC', 'Crémant du Jura AOC', 'Côtes du Jura AOC (Rouge)', 'Vin de Paille (Straw Wine)',
 ]);
+
+// Helper: format r.notes into readable paragraphs with bold ALL-CAPS headings
+function formatRegionNotes(notes) {
+  // Split into paragraphs at ". ALLCAPS" sentence boundaries
+  // Negative lookbehind: skip abbreviations like "DR.", "ST.", "MR." (uppercase char before period)
+  const parts = notes.split(/(?<![A-Z])\.\s+(?=[A-Z]{2})/);
+  return parts.map((part, i) => {
+    const text = i < parts.length - 1 ? part + '.' : part;
+    // Bold the heading (text before first colon) if the first word is all-caps (2+ chars)
+    const formatted = text.replace(/^([^:]{1,120}:)/, (m, head) => {
+      const firstWord = head.split(/[\s("']/)[0].replace(/[^A-Z]/g, '');
+      return firstWord.length >= 2
+        ? `<strong style="color:#c8a84a">${head}</strong>`
+        : m;
+    });
+    const isLast = i === parts.length - 1;
+    return `<p style="margin:0 0 ${isLast ? '0' : '0.6em'} 0">${formatted}</p>`;
+  }).join('');
+}
 
 // Helper: get all wines for a region (includes subregion wines)
 function getWinesForRegion(regionName) {
@@ -3827,10 +4113,13 @@ function openInfoPanel(regionName) {
   });
   html += '</div></div></div>';
 
-  // Section 3: Wines & Appellations
+  // Section 3: Wines & Appellations (+ Key Varietals card if detailed notes exist)
   const wines = getWinesForRegion(regionName);
-  if (wines.length > 0) {
-    html += `<div class="info-section"><div class="info-section-label"><span>Wines & Appellations (${wines.length})</span><span class="info-section-chevron">▼</span></div><div class="info-section-content">`;
+  const hasDetailedNotes = r.notes && r.notes.length > 250;
+  if (wines.length > 0 || hasDetailedNotes) {
+    const wineCount = wines.length;
+    const sectionLabel = wineCount > 0 ? `Wines & Appellations (${wineCount})` : 'Key Varietals & Producers';
+    html += `<div class="info-section"><div class="info-section-label"><span>${sectionLabel}</span><span class="info-section-chevron">▼</span></div><div class="info-section-content">`;
     wines.forEach(w => {
       const bc = w.classification.toLowerCase().replace(/[^a-z]/g,'');
       const wineType = getWineColorType(w);
@@ -3859,9 +4148,9 @@ function openInfoPanel(regionName) {
     html += `<div class="info-section"><div class="info-section-label"><span>Climate & Terroir ${buildClimateBadge(r.name)}</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${r.climate}</div></div></div>`;
   }
 
-  // Section 5: Winemaking & Style
+  // Section 5: Winemaking & Style (full formatted notes)
   if (r.notes) {
-    html += `<div class="info-section"><div class="info-section-label"><span>Winemaking & Style</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${r.notes}</div></div></div>`;
+    html += `<div class="info-section"><div class="info-section-label"><span>Winemaking &amp; Style</span><span class="info-section-chevron">▼</span></div><div class="info-section-content"><div class="info-text">${formatRegionNotes(r.notes)}</div></div></div>`;
   }
 
   // Section 6: All grapes across the group
