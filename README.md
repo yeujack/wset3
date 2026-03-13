@@ -2,7 +2,7 @@
 
 An interactive study tool for the WSET Level 3 Award in Wines. Explore 96 wine regions and 150 sub-appellations across 14 countries on a single-page map dashboard.
 
-**[Live Demo](https://yeujack.github.io/wset3_interactive_map/wine_map_dashboard.html)**
+**[Live Demo](https://yeujack.github.io/wset3/wine_map_dashboard.html)**
 
 ![Screenshot](https://img.shields.io/badge/regions-96-7b2d8b) ![Screenshot](https://img.shields.io/badge/sub--appellations-150-0f3460) ![Screenshot](https://img.shields.io/badge/countries-14-e8c97a)
 
@@ -58,7 +58,7 @@ No build tools, frameworks, or server required. Just open the HTML file in a bro
 
 ## Usage
 
-Open `wine_map_dashboard.html` in any modern browser, or visit the [live demo](https://yeujack.github.io/wset3_interactive_map/wine_map_dashboard.html).
+Open `wine_map_dashboard.html` in any modern browser, or visit the [live demo](https://yeujack.github.io/wset3/wine_map_dashboard.html).
 
 - Click a marker or sidebar entry to view region details
 - Use the dropdown in the info panel to switch between region groups
