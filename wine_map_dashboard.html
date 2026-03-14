@@ -473,15 +473,63 @@
     /* Toggle button: flush right edge when sidebar is open full-width */
     #sidebar-toggle.unshifted { left: calc(100% - 24px); }
 
-    /* Info panel full-screen on mobile — only when open */
+    /* Info panel → centered modal on mobile */
+    #info-panel-backdrop.visible { display: block; }
+
     #info-panel.open {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100% !important;
-      height: 100%;
-      z-index: 1100;
-      border-radius: 0;
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: min(92vw, 480px) !important;
+      max-height: 84vh !important;
+      height: auto !important;
+      z-index: 1100 !important;
+      border-radius: 14px !important;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.8) !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      animation: mobileModalIn 0.2s ease;
     }
+
+    #info-panel.open #info-panel-body {
+      max-height: calc(84vh - 54px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Drag handle hint at top of modal */
+    #info-panel.open #info-panel-header::before {
+      content: '';
+      display: block;
+      width: 36px; height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      margin: 0 auto 8px;
+      position: absolute;
+      top: 6px; left: 50%; transform: translateX(-50%);
+    }
+  }
+
+  /* Backdrop — hidden by default, shown on mobile when panel opens */
+  #info-panel-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1095;
+    animation: backdropIn 0.2s ease;
+  }
+
+  @keyframes backdropIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes mobileModalIn {
+    from { opacity: 0; transform: translate(-50%, -47%) scale(0.96); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
 </style>
 </head>
@@ -535,6 +583,8 @@
   <button id="sidebar-toggle" class="shifted" onclick="toggleSidebar()">▶</button>
 
   <div id="map"></div>
+
+  <div id="info-panel-backdrop" onclick="closeInfoPanel()"></div>
 
   <div id="info-panel">
     <div id="info-panel-header">
@@ -765,7 +815,9 @@ const REGION_GROUPS = {
   'Napa Valley': 'California', 'Sonoma County': 'California',
   'Central Coast (Paso Robles, Santa Barbara)': 'California', 'Central Valley': 'California',
   'New York State': 'New York',
-  'Willamette Valley (Oregon)': 'Pacific Northwest', 'Columbia Valley & Walla Walla (Washington)': 'Pacific Northwest',
+  'Willamette Valley (Oregon)': 'Pacific Northwest', 'Southern Oregon AVA': 'Pacific Northwest',
+  'Umpqua Valley (Oregon)': 'Pacific Northwest', 'Rogue Valley (Oregon)': 'Pacific Northwest',
+  'Columbia Valley & Walla Walla (Washington)': 'Pacific Northwest',
   // Canada
   'Niagara Peninsula (Canada)': 'Canada', 'Okanagan Valley (Canada)': 'Canada',
   // Chile
@@ -1475,9 +1527,30 @@ const regions = [
   {
     name: 'Willamette Valley (Oregon)', country: 'USA', lat: 45.3, lng: -123.0,
     subregions: 'Dundee Hills, Chehalem Mountains, Ribbon Ridge, Eola-Amity Hills, McMinnville',
-    climate: 'Cool Maritime. Marine influence from Pacific. Volcanoes (Dundee Hills: Jory soil = red volcanic), Coast Range protection. Vintage variation.',
+    climate: 'Moderate Maritime. Marine influence from Pacific via Coast Range gaps (especially Van Duzer Corridor). Mild wet winters, warm dry summers. Vintage variation significant. Coast Range moderates rainfall and temperatures.',
     grapes: ['Pinot Noir', 'Chardonnay', 'Pinot Gris', 'Riesling'],
     notes: 'PINOT NOIR (Willamette Valley flagship): Oregon embraces Burgundy as its reference point — earthy, savoury, red cherry, raspberry, dried rose, forest floor, often without the sweetness or body of California Pinot; lower alcohol (12.5–13.5%), higher acid, more structural tension. VINTAGE VARIATION: unlike California\'s consistent sunshine, Oregon accepts vintage variation as integral — cold, wet vintages exist and are prized by sommeliers. EYRIE VINEYARDS (David Lett, 1965): the pioneer who proved Oregon could make world-class Pinot; his 1975 Reserve came 2nd in a 1979 Paris tasting against top Burgundies — the "Oregon Miracle." DUNDEE HILLS: volcanic JORY SOIL (ancient marine basalt, high iron, red-colored) — structured, concentrated, complex Pinot Noir; Domaine Drouhin Oregon (Burgundy family investment since 1988), Adelsheim, Sokol Blosser benchmark. RIBBON RIDGE: ancient marine sedimentary soils, very different character — softer, more aromatic Pinot. EOLA-AMITY HILLS: VAN DUZER CORRIDOR (Pacific wind gap through Coast Range) dramatically cools afternoon temperatures — produces some of Oregon\'s most mineral, savoury, lower-alcohol Pinots. CHARDONNAY: Burgundian style, lean, citrus-led, white peach, restrained — improving rapidly. PINOT GRIS: Oregon specialty — broader, more textured, richer and spicier than Italian Pinot Grigio; stone fruit, moderate acidity; popular as a food wine. RIESLING: dry to off-dry, excellent precision, underrated. GAMAY NOIR: growing trend; light, fresh, carbonic styles. 100% Pinot Noir required for "Willamette Valley Pinot Noir" — pure varietal focus.'
+  },
+  {
+    name: 'Southern Oregon AVA', country: 'USA', lat: 42.88, lng: -123.10,
+    subregions: 'Umpqua Valley, Rogue Valley, Applegate Valley, Red Hill Douglas County, Elkton Oregon, Bear Creek Valley',
+    climate: 'Diverse — ranges from Cool Maritime (Elkton, northwest) to Warm Mediterranean (Rogue Valley). Warmer and drier than Willamette Valley overall. Continental influence increases inland. Strong diurnal temperature range across all sub-zones. Very low summer rainfall in Rogue Valley.',
+    grapes: ['Pinot Noir', 'Tempranillo', 'Cabernet Sauvignon', 'Syrah', 'Merlot', 'Pinot Gris', 'Riesling', 'Viognier'],
+    notes: 'SOUTHERN OREGON AVA (established 2004): the largest Oregon appellation by area — an umbrella AVA covering the entire region south of the Willamette Valley. Encompasses two major AVAs: Umpqua Valley (north) and Rogue Valley (south), plus all their nested sub-AVAs. Created to allow wines from both regions to share a common appellation identity on labels. CLIMATE RANGE: Southern Oregon has greater climatic diversity than any other Oregon wine region — from the cool maritime Elkton AVA (most western, direct Pacific influence) to the warm, almost desert-like Bear Creek Valley (Medford area). This diversity supports the widest variety of grape varieties in Oregon. GRAPE DIVERSITY: the only Oregon region where Bordeaux (Cabernet Sauvignon, Merlot), Rhône (Syrah, Viognier, Grenache), Burgundy (Pinot Noir, Chardonnay), Spanish (Tempranillo, Albariño, Graciano), AND cool-climate (Riesling, Pinot Gris) varieties all succeed. WSET SIGNIFICANCE: contrasts strongly with Willamette Valley — warmer, drier, more diverse; demonstrates how Oregon is not a single-variety (Pinot Noir) wine state. Historical note: the Umpqua Valley (within Southern Oregon) was Oregon\'s FIRST wine region, predating Willamette Valley by several years.'
+  },
+  {
+    name: 'Umpqua Valley (Oregon)', country: 'USA', lat: 43.22, lng: -123.35,
+    subregions: 'Red Hill Douglas County, Elkton Oregon, Umpqua Highlands',
+    climate: 'Warmer and drier than Willamette. Semi-continental to maritime. Valley floor reaches 28°C+ summer days with cool nights. Lower rainfall than the Coast. Diversity of microclimates from west (maritime) to east (more continental).',
+    grapes: ['Pinot Noir', 'Tempranillo', 'Syrah', 'Cabernet Sauvignon', 'Pinot Gris', 'Riesling'],
+    notes: 'UMPQUA VALLEY: Oregon\'s first planted wine region — Richard Sommer established HillCrest Vineyard in 1961, predating Willamette Valley by several years. More diverse grape varieties than Willamette due to warmer, more continental climate. Red Hill Douglas County sub-AVA: dramatic red volcanic soil (Jory-like basalt), elevation 290–490m — outstanding Pinot Noir and Tempranillo. Elkton Oregon sub-AVA: westernmost, most maritime — cooler and wetter; best for Pinot Noir and Riesling. Umpqua Highlands sub-AVA: higher elevation eastern zone; diverse volcanic and sedimentary soils. TEMPRANILLO: Umpqua is becoming Oregon\'s finest Tempranillo region (Willamette is too cool). ABACELA WINERY: pioneered Tempranillo and Spanish varieties in Oregon (1992) — world-class, internationally recognised. HillCrest Winery: historic pioneer, still operating. Spangler Vineyards, Melrose Vineyards, Reustle Prayer Rock: key producers. CLIMATE DIVERSITY: the 3 sub-AVAs span cool maritime (Elkton) to warm continental (Umpqua Highlands) — essentially Oregon\'s most climatically diverse wine region.'
+  },
+  {
+    name: 'Rogue Valley (Oregon)', country: 'USA', lat: 42.43, lng: -122.88,
+    subregions: 'Applegate Valley, Bear Creek Valley (Medford–Ashland), Illinois Valley',
+    climate: 'Warm Mediterranean — Oregon\'s warmest wine region. Hot dry summers (35°C+). Cool nights from elevation (450–900m). Very low summer rainfall. Siskiyou and Klamath Mountains shelter from Pacific and northern cold. Strong diurnal range.',
+    grapes: ['Cabernet Sauvignon', 'Merlot', 'Syrah', 'Tempranillo', 'Pinot Noir', 'Chardonnay', 'Viognier'],
+    notes: 'ROGUE VALLEY: Oregon\'s southernmost and warmest wine region — latitude 42°N and mountain shelter enable Bordeaux and Rhône varieties that cannot ripen further north. Higher elevation (450–900m) compensates for the warm latitude, maintaining acidity and freshness. Bear Creek Valley (Medford/Ashland AVA): warmest, most productive; Cabernet Sauvignon, Merlot, Syrah succeed. Applegate Valley sub-AVA (Josephine County): southwest tributary of the Rogue, higher elevation, rocky clay and volcanic soils — complex, structured reds; Troon Vineyard benchmark. Illinois Valley (Josephine County): maritime-influenced via Siskiyou Pass; cooler microclimate; Pinot Noir viable on mountain slopes. PRODUCERS: Troon Vineyard (biodynamic, Applegate), Ledger David, Weisinger Family, Quady North (Syrah specialist), Del Rio Vineyards. CLIMATE DIVERSITY: Bordeaux, Rhône, Burgundy, and Spanish varieties all ripen at different elevations — Oregon\'s most varied red wine region. Proximity to California (border 65km south): closest Oregon terroir to Napa/Sonoma in character.'
   },
   {
     name: 'Columbia Valley & Walla Walla (Washington)', country: 'USA', lat: 46.5, lng: -119.5,
@@ -2025,11 +2098,22 @@ const subregionData = [
   // === USA — Oregon ===
   { name:'Dundee Hills AVA', country:'USA', parentRegion:'Willamette Valley (Oregon)', lat:45.268, lng:-123.023, grapes:['Pinot Noir','Chardonnay'], notes:'Red Jory volcanic soil: most structured Willamette Pinot Noir. Domaine Drouhin, Brick House, Cristom. Best aging potential.' },
   { name:'Eola-Amity Hills AVA', country:'USA', parentRegion:'Willamette Valley (Oregon)', lat:44.970, lng:-123.170, grapes:['Pinot Noir','Pinot Gris'], notes:'Van Duzer Corridor ocean wind. Cool, stony basalt. Elegant, high acid, mineral Pinot Noir. Bethel Heights, Evesham Wood.' },
+  { name:'Chehalem Mountains AVA', country:'USA', parentRegion:'Willamette Valley (Oregon)', lat:45.375, lng:-122.930, grapes:['Pinot Noir','Chardonnay','Pinot Gris'], notes:'Large, diverse sub-AVA north of Dundee Hills. Three soil types: Jory (volcanic, south slopes), Laurelwood (wind-deposited loess), Wapato (silt loam, valley floors). Complex, varied Pinot Noir. Adelsheim Vineyard, A to Z Wineworks: key producers. Contains Ribbon Ridge sub-AVA.' },
+  { name:'Ribbon Ridge AVA', country:'USA', parentRegion:'Willamette Valley (Oregon)', lat:45.383, lng:-123.055, grapes:['Pinot Noir','Chardonnay'], notes:'Smallest designated AVA within Chehalem Mountains. Ancient marine sedimentary (Willakenzie) soils — very different character from volcanic Jory. Lighter, more aromatic, more delicate Pinot Noir. Beaux Frères (Robert Parker connection): cult wine. Brick House Vineyards, Evening Land: biodynamic pioneers.' },
+  { name:'McMinnville AVA', country:'USA', parentRegion:'Willamette Valley (Oregon)', lat:45.218, lng:-123.195, grapes:['Pinot Noir','Chardonnay'], notes:'Coastal range foothills west of Willamette River. Marine sedimentary (basalt and ancient ocean) soils. Direct Pacific wind exposure from Van Duzer Corridor — very cool, late ripening. Pinot Noir: high acid, mineral, savory. Anthony Dell Cellars, R. Stuart & Co., Youngberg Hill: local producers.' },
+
+  // === USA — Oregon (Southern) ===
+  { name:'Red Hill Douglas County AVA', country:'USA', parentRegion:'Umpqua Valley (Oregon)', lat:43.30, lng:-123.17, grapes:['Pinot Noir','Tempranillo','Chardonnay'], notes:'Volcanic red Jory basalt soil on hillsides at 290–490m. Oregon\'s finest Tempranillo terroir. Structured, complex reds. Abacela Winery benchmark.' },
+  { name:'Elkton Oregon AVA', country:'USA', parentRegion:'Umpqua Valley (Oregon)', lat:43.65, lng:-123.55, grapes:['Pinot Noir','Riesling','Pinot Gris'], notes:'Westernmost Umpqua sub-AVA. Most maritime influence. Cooler and wetter than main valley. Best for cool-climate Pinot Noir and Riesling. Rivers Edge, Brandborg.' },
+  { name:'Applegate Valley AVA', country:'USA', parentRegion:'Rogue Valley (Oregon)', lat:42.25, lng:-123.22, grapes:['Cabernet Sauvignon','Merlot','Syrah','Tempranillo'], notes:'Higher-elevation rocky soils (clay, volcanic). Complex, structured reds. Troon Vineyard: biodynamic benchmark. Warmer than Illinois Valley but more elevation than Bear Creek.' },
+  { name:'Bear Creek Valley AVA', country:'USA', parentRegion:'Rogue Valley (Oregon)', lat:42.38, lng:-122.83, grapes:['Cabernet Sauvignon','Merlot','Syrah','Chardonnay'], notes:'Main Rogue wine corridor around Medford and Ashland. Warmest Rogue sub-zone. High production. Del Rio Vineyards: large, quality producer. Weisinger Family Winery, Ledger David.' },
 
   // === USA — Washington ===
   { name:'Walla Walla Valley AVA', country:'USA', parentRegion:'Columbia Valley & Walla Walla (Washington)', lat:46.066, lng:-118.343, grapes:['Cabernet Sauvignon','Merlot','Syrah'], notes:'Premium WA AVA. Loess-over-basalt soils. Leonetti Cellar, L\'Ecole 41. Full-bodied reds with complexity and aging.' },
   { name:'Red Mountain AVA', country:'USA', parentRegion:'Columbia Valley & Walla Walla (Washington)', lat:46.250, lng:-119.470, grapes:['Cabernet Sauvignon','Merlot'], notes:'Smallest WA AVA. Warmest, driest. Calcium-rich sandy loam. Most concentrated, tannic Cab and Merlot in Washington.' },
   { name:'Yakima Valley AVA', country:'USA', parentRegion:'Columbia Valley & Walla Walla (Washington)', lat:46.600, lng:-120.380, grapes:['Merlot','Riesling','Chardonnay'], notes:'Oldest WA AVA. Horse Heaven Hills sub-zone. Large diurnal range. Quality Merlot and Riesling. Ste. Michelle: largest producer.' },
+  { name:'Horse Heaven Hills AVA', country:'USA', parentRegion:'Columbia Valley & Walla Walla (Washington)', lat:46.030, lng:-119.800, grapes:['Cabernet Sauvignon','Syrah','Merlot','Riesling'], notes:'Washington AVA in southern Columbia Valley. Wind-swept slopes above the Columbia River. Exceptional Cabernet Sauvignon and Syrah. Chateau Ste. Michelle\'s Canoe Ridge Estate. Full body, dark fruit, persistent structure.' },
+  { name:'Columbia Gorge AVA', country:'USA', parentRegion:'Columbia Valley & Walla Walla (Washington)', lat:45.700, lng:-121.600, grapes:['Pinot Gris','Riesling','Syrah','Pinot Noir'], notes:'Bi-state AVA (WA and OR) straddling the Columbia River Gorge. Western end: cool and wet (Pinot Noir, Riesling). Eastern end: warm and dry (Syrah, Grenache). Dramatic scenery; rising quality boutique producers.' },
 
   // === AUSTRALIA ===
   { name:'Seppeltsfield', country:'Australia', parentRegion:'Barossa Valley', lat:-34.490, lng:138.870, grapes:['Shiraz','Grenache','Mourvèdre'], notes:'Historic estate zone in NW Barossa. Famous for Para tawny (100yr solera). Old vine Grenache. Iconic heritage.' },
@@ -2149,6 +2233,9 @@ const regionBounds = {
   'Central Valley': [[35.55,-120.95],[35.60,-119.85],[36.50,-119.48],[38.00,-119.50],[39.40,-119.65],[39.45,-120.80],[38.40,-120.95],[36.80,-121.00]],
   'New York State': [[40.95,-74.25],[40.98,-73.55],[41.30,-72.35],[42.08,-72.00],[42.72,-73.25],[43.60,-76.80],[43.92,-77.20],[42.80,-79.75],[42.05,-79.80],[42.00,-77.10],[41.90,-74.70],[41.25,-74.00]],
   'Willamette Valley (Oregon)': [[44.82,-123.50],[44.85,-122.90],[45.15,-122.78],[45.55,-122.85],[45.78,-123.15],[45.72,-123.52],[45.30,-123.58]],
+  'Southern Oregon AVA': [[43.85,-124.15],[43.88,-122.35],[43.50,-122.20],[42.90,-122.05],[42.35,-121.80],[42.00,-122.05],[42.00,-124.05],[42.45,-124.30],[43.30,-124.20]],
+  'Umpqua Valley (Oregon)': [[43.75,-123.85],[43.75,-122.55],[43.40,-122.45],[43.00,-122.70],[42.95,-123.35],[43.15,-123.90]],
+  'Rogue Valley (Oregon)': [[42.72,-123.50],[42.75,-122.25],[42.40,-121.95],[42.02,-122.15],[42.00,-123.55],[42.30,-123.75]],
   'Columbia Valley & Walla Walla (Washington)': [[45.55,-120.90],[45.60,-118.80],[46.10,-117.55],[47.00,-117.50],[47.45,-118.50],[47.40,-120.40],[46.70,-120.85]],
   // ── CANADA ──────────────────────────────────────────────────
   'Niagara Peninsula (Canada)': [[43.00,-79.68],[43.02,-79.15],[43.12,-78.78],[43.28,-78.82],[43.32,-79.25],[43.25,-79.65],[43.12,-79.72]],
@@ -2457,11 +2544,20 @@ const subregionBounds = {
   // ── USA — OREGON ──────────────────────────────────────────
   'Dundee Hills AVA': [[45.26,-123.12],[45.27,-123.06],[45.30,-123.03],[45.32,-123.06],[45.31,-123.12],[45.28,-123.14]],
   'Eola-Amity Hills AVA': [[44.98,-123.16],[44.99,-123.10],[45.03,-123.07],[45.06,-123.10],[45.04,-123.16],[45.01,-123.18]],
+  'Chehalem Mountains AVA': [[45.28,-123.10],[45.30,-122.82],[45.45,-122.78],[45.52,-122.90],[45.48,-123.10],[45.38,-123.18],[45.30,-123.15]],
+  'Ribbon Ridge AVA': [[45.36,-123.09],[45.37,-123.00],[45.41,-122.98],[45.42,-123.06],[45.39,-123.11]],
+  'McMinnville AVA': [[45.18,-123.26],[45.19,-123.15],[45.25,-123.13],[45.28,-123.20],[45.25,-123.28],[45.20,-123.30]],
+  'Red Hill Douglas County AVA': [[43.25,-123.25],[43.27,-123.12],[43.35,-123.08],[43.38,-123.18],[43.33,-123.28]],
+  'Elkton Oregon AVA': [[43.62,-123.62],[43.65,-123.50],[43.70,-123.45],[43.73,-123.55],[43.68,-123.68]],
+  'Applegate Valley AVA': [[42.12,-123.40],[42.15,-122.98],[42.32,-122.88],[42.40,-123.10],[42.35,-123.45],[42.20,-123.55]],
+  'Bear Creek Valley AVA': [[42.28,-123.00],[42.28,-122.55],[42.48,-122.52],[42.52,-122.78],[42.45,-123.02],[42.35,-123.05]],
 
   // ── USA — WASHINGTON ──────────────────────────────────────
   'Walla Walla Valley AVA': [[45.95,-118.55],[45.98,-118.38],[46.05,-118.28],[46.10,-118.38],[46.08,-118.55],[46.02,-118.62]],
   'Red Mountain AVA': [[46.28,-119.52],[46.29,-119.46],[46.32,-119.43],[46.34,-119.46],[46.33,-119.52],[46.30,-119.54]],
   'Yakima Valley AVA': [[46.30,-120.58],[46.35,-120.28],[46.45,-120.10],[46.55,-120.22],[46.50,-120.52],[46.40,-120.65]],
+  'Horse Heaven Hills AVA': [[46.08,-120.10],[46.12,-119.68],[46.05,-119.45],[45.95,-119.50],[45.92,-119.80],[45.96,-120.08],[46.03,-120.12]],
+  'Columbia Gorge AVA': [[45.70,-122.05],[45.75,-121.80],[45.75,-121.50],[45.72,-121.25],[45.65,-121.22],[45.58,-121.45],[45.58,-121.80],[45.62,-122.05]],
 
   // ── AUSTRALIA — BAROSSA ───────────────────────────────────
   'Seppeltsfield': [[-34.48,138.88],[-34.47,138.92],[-34.44,138.94],[-34.42,138.91],[-34.44,138.87],[-34.46,138.86]],
@@ -2603,6 +2699,7 @@ const GEO_FEATURES = {
     { name: 'R. Layon', path: [[47.18,-0.52],[47.25,-0.60],[47.32,-0.68]], tooltip: 'Layon — morning mist enables botrytis for sweet Chenin Blanc (Coteaux du Layon)' },
     { name: 'Saar River', path: [[49.48,6.55],[49.60,6.70],[49.72,6.82]], tooltip: 'Saar — cooler tributary of Mosel; lighter, more delicate Riesling' },
     { name: 'Nahe River', path: [[49.68,7.50],[49.78,7.70],[49.88,7.90]], tooltip: 'Nahe — between Mosel & Rheingau; intermediate style Riesling' },
+    { name: 'Columbia River', path: [[46.15,-119.05],[46.07,-119.40],[45.95,-119.90],[45.82,-120.35],[45.73,-120.80],[45.70,-121.20],[45.65,-121.65],[45.58,-122.00],[45.55,-122.40],[45.55,-122.80],[45.58,-123.10],[45.78,-123.55],[46.10,-123.90],[46.25,-124.05]], tooltip: 'Columbia River — Pacific Northwest\'s most important river for viticulture; primary irrigation source for Washington\'s desert wine country east of the Cascades; the Columbia Gorge (120–122°W) is a critical climate corridor where cool Pacific air penetrates into eastern Washington, moderating Columbia Valley and Walla Walla temperatures; the Missoula Floods (glacial outburst 13,000–15,000 years ago) deposited deep loess silt (50–100m thick) over basalt across eastern Washington — creating the distinctive soils of all major Washington AVAs; river drains Columbia Basin including Yakima, Walla Walla and Snake River tributaries feeding vineyard irrigation' },
   ],
   mountains: [
     // Vosges now rendered as range polyline (see ranges array)
@@ -2645,6 +2742,7 @@ const GEO_FEATURES = {
     { name: 'Mayacamas Mountains', path: [[38.55,-122.65],[38.48,-122.58],[38.42,-122.52],[38.35,-122.45],[38.28,-122.40],[38.22,-122.35],[38.15,-122.30]], tooltip: 'Mayacamas Mountains — N-S ridge forming the border between Napa Valley (east) and Sonoma County (west); volcanic and rocky soils on western slopes give mountain Napa and Sonoma Mountain AVAs their distinctive minerality and firm tannin structure; elevations up to 800m create cooler micro-climates for Cabernet Sauvignon' },
     { name: 'Vaca Mountains', path: [[38.55,-122.18],[38.48,-122.20],[38.38,-122.22],[38.28,-122.25],[38.18,-122.28],[38.10,-122.30]], tooltip: 'Vaca Mountains — eastern boundary of Napa Valley; volcanic basalt and rhyolite soils; eastern-facing slopes create Stags Leap District and Atlas Peak sub-AVAs; morning sun and afternoon shade from the range moderates heat; contributes to Napa unique hot days and cool nights temperature variation' },
     { name: 'Petaluma Gap', path: [[38.38,-122.95],[38.28,-122.80],[38.18,-122.68],[38.10,-122.58]], tooltip: 'Petaluma Gap — low opening in the Coast Ranges running NW–SE between Point Reyes and Sonoma Mountain; funnels cold Pacific air and fog from San Pablo Bay into the Petaluma River corridor; creates a distinctive cool-climate corridor that defines the Petaluma Gap AVA (approved 2017); key for high-acid, structured Pinot Noir and Chardonnay; also cools Carneros and Sonoma Valley; temperature differential of 5–8°C vs inland Sonoma sites' },
+    { name: 'Cascade Mountains', path: [[41.40,-121.80],[41.80,-121.80],[42.20,-122.00],[42.80,-122.10],[43.40,-121.90],[44.00,-121.70],[44.50,-121.70],[45.00,-121.65],[45.40,-121.70],[45.80,-121.60],[46.30,-121.50],[46.90,-121.75],[47.40,-121.60],[47.90,-121.50],[48.50,-121.30],[48.90,-121.20]], tooltip: 'Cascade Mountains — major N–S volcanic range dividing the Pacific Northwest; creates a critical climate boundary: western slopes (Willamette Valley, Puget Sound) receive heavy Pacific rainfall and mild maritime air; eastern rain shadow (Columbia Valley, Walla Walla, Yakima Valley) is warm, dry and continental; Mt Hood (3,426m), Mt Rainier (4,392m), Mt St Helens and other stratovolcanoes; volcanic soils on lower slopes; snow-melt from the Cascades feeds Columbia and Willamette river systems providing summer irrigation for eastern Washington vineyards' },
   ],
   features: [
     { name: 'Landes Pine Forest', lat: 44.30, lng: -1.00, tooltip: 'Landes — protects Bordeaux from Atlantic storms; combined with Gulf Stream warmth' },
@@ -2933,7 +3031,8 @@ const grapeGeneralInfo = {
   'Moscatel': { origin: 'Mediterranean', synonyms: 'Muscat of Alexandria, Moscatel de Alejandría, Zibibbo (Sicily)', type: 'white', climate: 'Hot', vigor: 'High', ripening: 'Late', notes: 'Larger-berried, less fine than Muscat Blanc à Petits Grains. Used for sweet fortified wines in Málaga, Setúbal, and Pantelleria (as Zibibbo). Also used for table grapes and raisins.' },
   'Cariñena': { origin: 'Aragon, Spain', synonyms: 'Carignan (France), Carignano (Italy), Mazuelo (Rioja)', type: 'red', climate: 'Hot', vigor: 'High', ripening: 'Very late', notes: 'Named after the town of Cariñena in Aragon. Same variety as French Carignan. Old bush vines on slate soils (Priorat) produce exceptional quality. Key component in GSM+ blends.' },
   'Muscat de Frontignan': { origin: 'Languedoc, France', synonyms: 'Same grape as Muscat Blanc à Petits Grains', type: 'white', climate: 'Hot Mediterranean', vigor: 'Moderate', ripening: 'Early-mid', notes: 'Frontignan is the appellation, not a separate grape. Vin Doux Naturel (VDN): fortified during fermentation. Also made in Beaumes-de-Venise, Rivesaltes. Intensely aromatic sweet wine.' },
-  'Petit Verdot': { origin: 'Bordeaux, France', synonyms: 'None widely used', type: 'red', climate: 'Warm', vigor: 'Moderate', ripening: 'Very late', notes: 'Latest ripening Bordeaux variety — often fails to fully ripen. Used in small proportions (2-5%) for colour, tannin and violet perfume. New World (Australia, California): can ripen fully, sometimes varietal.' }
+  'Petit Verdot': { origin: 'Bordeaux, France', synonyms: 'None widely used', type: 'red', climate: 'Warm', vigor: 'Moderate', ripening: 'Very late', notes: 'Latest ripening Bordeaux variety — often fails to fully ripen. Used in small proportions (2-5%) for colour, tannin and violet perfume. New World (Australia, California): can ripen fully, sometimes varietal.' },
+  'Ugni Blanc': { origin: 'Italy / Southern France', synonyms: 'Trebbiano Toscano (Italy) — same grape', type: 'white', climate: 'Warm', vigor: 'High', ripening: 'Late', notes: 'France\'s most planted white variety, but grown almost entirely for distillation — it is the base grape for Cognac and Armagnac. High acidity and low alcohol make it ideal for distilling but unremarkable as a table wine. In Italy as Trebbiano Toscano: widely planted, neutral, high-acid white blending grape used in Chianti (historically), Orvieto, and Frascati. Note: Trebbiano d\'Abruzzo and Trebbiano di Soave are distinct, unrelated varieties despite sharing the name.' }
 };
 
 function showGrapeNote(btn) {
@@ -3024,6 +3123,9 @@ const REGION_STYLE_NOTES = {
   'Central Valley': 'Isolated from California Current by Coast Ranges — hot, irrigated, high-volume production. Ripe, full-bodied Zinfandel, Cabernet, Chardonnay. White Zinfandel rosé largely from here. Bulk wine for blending. Lodi (near delta) slightly cooler.',
   'New York State': 'Finger Lakes: America\'s finest Riesling — bone-dry to botrytis, high acid, cool-climate precision. Deep glacial lakes moderate frost risk. Long Island: maritime Bordeaux-style blends (Merlot, Cab Franc). Hudson Valley: America\'s oldest wine region. Dr. Konstantin Frank pioneered vinifera varieties.',
   'Willamette Valley (Oregon)': 'Oregon\'s benchmark cool-climate Pinot Noir: earthy, red fruit, high acid, elegant — Burgundian character. Pinot Gris: structured, textured. Dijon clones planted since 1980s. Internationally acclaimed.',
+  'Southern Oregon AVA': 'Oregon\'s largest appellation — umbrella AVA (est. 2004) encompassing Umpqua Valley and Rogue Valley. Greatest grape diversity in Oregon: Pinot Noir, Tempranillo, Cabernet Sauvignon, Syrah, Merlot and Riesling all succeed across different elevations and microclimates. Warmer and drier than Willamette Valley.',
+  'Umpqua Valley (Oregon)': 'Oregon\'s oldest wine region (HillCrest, 1961). Warmer and drier than Willamette — Tempranillo and Syrah thrive alongside Pinot Noir. Red Hill: volcanic Jory soil, structured reds. Abacela pioneered Spanish varieties. Climatically diverse from cool maritime Elkton to warm continental Umpqua Highlands.',
+  'Rogue Valley (Oregon)': 'Oregon\'s warmest wine region — Bordeaux and Rhône varieties thrive at elevation. Cabernet Sauvignon, Merlot, Syrah, Tempranillo from mountain-sheltered valleys. Applegate Valley: premium complex reds from rocky volcanic soils. Oregon\'s most diverse red wine region.',
   'Columbia Valley & Walla Walla (Washington)': 'Washington\'s flagship appellation. Cabernet Sauvignon and Merlot: ripe fruit, firm tannin, high natural acidity due to cool nights. Walla Walla: premium sub-appellation. Riesling and Syrah also notable.',
   // Canada
   'Niagara Peninsula (Canada)': 'Icewine: world-famous, naturally frozen Riesling and Vidal — intensely sweet, concentrated, beautifully balanced. Table wines: Riesling, Chardonnay, Pinot Noir in cool continental conditions. Unique lake-moderated microclimate.',
@@ -3119,15 +3221,24 @@ function formatGrapesClickable(grapes, contextRegion) {
   return grapes.map(g => {
     const wc = getGrapeWineClass(g);
     const hasNote = !!grapeTastingNotes[g];
-    if (!hasNote) return `<span class="grape-tag ${wc}">${g}</span>`;
-    const wineHints = contextRegion ? getGrapeWineHints(g, contextRegion) : '';
-    const infoHtml = buildGrapeInfoHtml(g);
-    return `<span class="grape-tag-btn ${wc}" onclick="showGrapeNote(this)">▸ ${g}</span>` +
-           `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>` +
-           infoHtml +
-           `<div class="grape-tasting-header">Tasting Profile</div>${grapeTastingNotes[g]}` +
-           (wineHints ? `<div class="grape-note-region">♦ Wines: ${wineHints}</div>` : '') +
-           `</div>`;
+    const hasGenInfo = !!grapeGeneralInfo[g];
+    if (hasNote) {
+      const wineHints = contextRegion ? getGrapeWineHints(g, contextRegion) : '';
+      const infoHtml = buildGrapeInfoHtml(g);
+      return `<span class="grape-tag-btn ${wc}" onclick="showGrapeNote(this)">▸ ${g}</span>` +
+             `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>` +
+             infoHtml +
+             `<div class="grape-tasting-header">Tasting Profile</div>${grapeTastingNotes[g]}` +
+             (wineHints ? `<div class="grape-note-region">♦ Wines: ${wineHints}</div>` : '') +
+             `</div>`;
+    } else if (hasGenInfo) {
+      // Has general info (origin/synonyms) but no tasting notes — still clickable
+      return `<span class="grape-tag-btn ${wc}" onclick="showGrapeNote(this)">▸ ${g}</span>` +
+             `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>` +
+             buildGrapeInfoHtml(g) +
+             `</div>`;
+    }
+    return `<span class="grape-tag ${wc}">${g}</span>`;
   }).join('');
 }
 
@@ -3186,7 +3297,19 @@ const markers = regions.map(r => {
   });
   marker.bindPopup(createPopup(r), { maxWidth: 340, className: 'wine-popup' });
   marker.bindTooltip(r.name, { permanent: true, direction: 'top', offset: [0, -28], className: 'region-name-label' });
-  marker.on('click', () => { highlightListItem(r.name); activateRegion(r.name); showRegionSubappellations(r.name); });
+  marker.on('click', () => {
+    highlightListItem(r.name);
+    activateRegion(r.name);
+    showRegionSubappellations(r.name);
+    if (window.innerWidth <= 600) {
+      // Mobile: open info panel as centered modal, suppress Leaflet popup
+      openInfoPanel(r.name);
+      map.closePopup();
+    } else {
+      // Desktop: also open info panel so marker clicks show full detail
+      openInfoPanel(r.name);
+    }
+  });
   markerMap[r.name] = marker;
   return marker;
 });
@@ -3288,7 +3411,9 @@ regions.forEach(r => {
     activateRegion(r.name);
     highlightListItem(r.name);
     showRegionSubappellations(r.name);
-    clusterGroup.zoomToShowLayer(markerMap[r.name], () => markerMap[r.name]?.openPopup());
+    // Zoom to the marker but don't open the floating popup — info panel has all the info
+    // and the popup was the source of the "top half cut off" issue on all screen sizes
+    if (markerMap[r.name]) clusterGroup.zoomToShowLayer(markerMap[r.name], () => {});
     openInfoPanel(r.name);
   });
   polygonMap[r.name] = poly;
@@ -3481,9 +3606,11 @@ function showRegionSubappellations(regionName) {
       }
       poly.on('click', () => {
         map.setView([sr.lat, sr.lng], 11, { animate: true });
-        regionSubLayer.eachLayer(m => {
-          if (m.getLatLng && m.getLatLng().lat === sr.lat && m.getLatLng().lng === sr.lng) m.openPopup();
-        });
+        if (window.innerWidth > 600) {
+          regionSubLayer.eachLayer(m => {
+            if (m.getLatLng && m.getLatLng().lat === sr.lat && m.getLatLng().lng === sr.lng) m.openPopup();
+          });
+        }
       });
       regionSubLayer.addLayer(poly);
       bounds.forEach(pt => allPts.push(pt));
@@ -4095,6 +4222,23 @@ var WINE_DATA = {
     { name:'Willamette Valley Pinot Gris', classification:'AVA', grapes:["Pinot Gris (100%)"], method:'Stainless steel; dry; clean', aging:'No minimum', style:'Medium body, dry, white peach, pear, citrus, mineral, fresh — Oregon\'s signature white', notes:'Oregon\'s most-planted white variety. Different from Alsace (less rich, less aromatic) and Italy (more substance). Clean, food-friendly. Elk Cove, King Estate (large, sustainable), Adelsheim: reliable producers. King Estate: largest certified biodynamic winery in US.' },
     { name:'Willamette Valley Chardonnay', classification:'AVA', grapes:["Chardonnay (100%)"], method:'Barrel fermented; restrained use of new oak; whole-cluster pressing', aging:'8–12 months in oak', style:'Medium body, citrus, apple, mineral, restrained oak, crisp — Oregon is developing distinctive lean Chardonnay style', notes:'Growing in quality. Less oak-dominant than Napa/Sonoma. Domaine Drouhin Oregon "Arthur": benchmark Oregon Chardonnay with Burgundian inspiration. Lingua Franca (Burgundy consultant Larry Stone): top quality.' },
   ],
+  // ===== USA — SOUTHERN OREGON AVA (umbrella) =====
+  'Southern Oregon AVA': [
+    { name:'Southern Oregon AVA — Overview', classification:'AVA', grapes:["Pinot Noir","Tempranillo","Cabernet Sauvignon","Syrah","Merlot","Riesling","Pinot Gris","Viognier"], method:'Varies by sub-region and variety', aging:'Varies', style:'Diverse — from cool-climate Pinot Noir (Elkton) to full-bodied Bordeaux/Rhône reds (Rogue Valley). Greatest varietal diversity in Oregon.', notes:'SOUTHERN OREGON AVA (est. 2004): Oregon\'s largest appellation by area, encompassing the entire region south of the Willamette Valley. Umbrella AVA covering Umpqua Valley (north) and Rogue Valley (south), plus smaller appellations. Warmer and drier than Willamette. Key sub-regions: Red Hill Douglas County (volcanic Jory soils, structured reds), Elkton Oregon (cool maritime, elegant Pinot and Riesling), Applegate Valley (premium complex reds), Bear Creek Valley (Bordeaux varieties, warmest zone).' },
+    { name:'Southern Oregon — Tempranillo & Spanish Varieties', classification:'AVA', grapes:["Tempranillo (dominant), Graciano, Garnacha, Albariño"], method:'French or American oak; Spanish-inspired winemaking', aging:'12–18 months', style:'Medium-full body, red cherry, plum, spice, leather, firm tannin — Oregon\'s Iberian niche', notes:'Abacela Winery (Umpqua, 1992) pioneered Tempranillo in Oregon, recognizing the climate parallels to Spain\'s Ribera del Duero. Red Hill Douglas County sub-AVA: volcanic Jory-like soil at elevation — considered Oregon\'s best Tempranillo terroir. Unique to Pacific Northwest; no other major American region grows Spanish varieties at this quality level.' },
+  ],
+  // ===== USA — UMPQUA VALLEY =====
+  'Umpqua Valley (Oregon)': [
+    { name:'Umpqua Valley — Tempranillo (Red Hill)', classification:'AVA', grapes:["Tempranillo (100%)"], method:'French oak; sometimes American oak for Spanish character', aging:'12–18 months in oak', style:'Medium-full body, red cherry, plum, spice, leather, earth, firm tannin — Oregon\'s finest Tempranillo', notes:'Abacela Winery (1992) pioneered Tempranillo in Oregon after owner Milton Eng studied Spanish varieties suited to Oregon\'s climate. Red Hill Douglas County: volcanic Jory-like soil, elevation 290–490m. Considered Oregon\'s best Tempranillo terroir. World-class quality. Also producing Graciano, Garnacha, Albariño in Spanish-influenced style.' },
+    { name:'Umpqua Valley — Pinot Noir', classification:'AVA', grapes:["Pinot Noir (100%)"], method:'Cold soak; French oak', aging:'10–14 months', style:'Medium body, red cherry, earth, spice — more robust than Willamette; warmer fruit profile', notes:'Oregon\'s first Pinot Noir was planted here by Richard Sommer (HillCrest, 1961). Red Hill sub-AVA: structured, concentrated from volcanic soils. Elkton Oregon sub-AVA: more maritime, elegant style. Spangler Vineyards: reliable producer. Umpqua Pinot Noir is warmer and more generous than Willamette.' },
+    { name:'Umpqua Valley — Riesling (Elkton)', classification:'AVA', grapes:["Riesling (100%)"], method:'Stainless steel; cool fermentation; dry to off-dry', aging:'No minimum', style:'Light-medium body, high acid, citrus, peach, mineral, off-dry — maritime freshness', notes:'Elkton Oregon AVA: coolest and most maritime Umpqua sub-zone near the coast. Excellent Riesling from cooler slopes. Brandborg Winery: specialist in cool-climate varieties. Bridges Wine Farm. Shows Northern Willamette character in a warmer region.' },
+  ],
+  // ===== USA — ROGUE VALLEY =====
+  'Rogue Valley (Oregon)': [
+    { name:'Rogue Valley — Cabernet Sauvignon / Merlot (Bear Creek)', classification:'AVA', grapes:["Cabernet Sauvignon (dominant), Merlot, Cabernet Franc"], method:'French oak; Bordeaux-style winemaking', aging:'14–20 months in French oak', style:'Full body, dark fruit, cassis, plum, tobacco, structured tannins — Oregon\'s most Bordeaux-like reds', notes:'Bear Creek Valley: warmest Rogue sub-zone. Cabernet Sauvignon: Oregon\'s most southerly and warmest climate allows full ripening. Del Rio Vineyards: largest and most consistent producer (360 acres). Weisinger Family Winery: pioneer family estate. Significant elevation (600–750m) maintains acidity and freshness despite warm summers.' },
+    { name:'Rogue Valley — Syrah & Rhône Blends', classification:'AVA', grapes:["Syrah (dominant), Grenache, Viognier"], method:'French oak; whole-cluster common for Syrah', aging:'12–16 months', style:'Medium-full body, dark plum, pepper, violet, olive, savory — elegant cool-climate Syrah', notes:'Quady North (Herb Quady): Oregon\'s Syrah specialist in Applegate Valley — internationally acclaimed. Rocky volcanic soils in Applegate give mineral complexity. Syrah thrives in mountain valleys. More Crozes-Hermitage in character (savory, structured) than Australian Shiraz. Growing reputation internationally.' },
+    { name:'Applegate Valley — Complex Reds (Applegate AVA)', classification:'AVA', grapes:["Cabernet Sauvignon, Merlot, Syrah, Tempranillo"], method:'Biodynamic or organic farming common; French oak', aging:'12–18 months', style:'Medium-full body, complex, earthy, mineral, structured — mountain-influenced reds with good aging potential', notes:'Troon Vineyard: biodynamic benchmark — clay and volcanic soils, elevation 450–600m, complex mountain reds. Rocky slopes and diverse soils give complexity not found on valley floors. Applegate becoming recognized as premium Oregon red wine sub-AVA separate from warmer Bear Creek. Multiple varieties succeed at different elevations.' },
+  ],
   // ===== USA — WASHINGTON STATE =====
   'Columbia Valley & Walla Walla (Washington)': [
     { name:'Columbia Valley Cabernet Sauvignon / Merlot', classification:'AVA', grapes:["Cabernet Sauvignon (dominant), Merlot, Cab Franc, Syrah"], method:'French oak, 18 months', aging:'18 months', style:'Full body, dark cassis, plum, olive, tobacco, structured tannins — powerful but not overripe (high acid from desert climate)', notes:'Columbia Valley: desert climate east of Cascades — extreme temperature variation (hot days/cold nights) maintains high natural acidity. Large AVA. Walla Walla: prestigious sub-AVA (also in Oregon). Chateau Ste. Michelle: largest producer, excellent value. Leonetti Cellar: cult wine. L\'Ecole 41, Quilceda Creek: top estates.' },
@@ -4354,9 +4498,11 @@ function buildSubCards(regionName) {
     card.querySelector('.sub-card-name').addEventListener('click', e => {
       e.stopPropagation();
       map.setView([sr.lat, sr.lng], 10, { animate: true });
-      regionSubLayer.eachLayer(m => {
-        if (m.getLatLng().lat === sr.lat && m.getLatLng().lng === sr.lng) m.openPopup();
-      });
+      if (window.innerWidth > 600) {
+        regionSubLayer.eachLayer(m => {
+          if (m.getLatLng().lat === sr.lat && m.getLatLng().lng === sr.lng) m.openPopup();
+        });
+      }
     });
     wrap.appendChild(card);
   });
@@ -4414,9 +4560,9 @@ function buildRegionList(filtered) {
         const cards = buildSubCards(r.name);
         if (cards) wrapper.appendChild(cards);
       }
-      // Also open the main popup and info panel
+      // Zoom to region and open info panel (no floating popup — panel has all the info)
       const marker = markerMap[r.name];
-      if (marker) clusterGroup.zoomToShowLayer(marker, () => marker.openPopup());
+      if (marker) clusterGroup.zoomToShowLayer(marker, () => {});
       openInfoPanel(r.name);
     });
     return wrapper;
@@ -4601,6 +4747,7 @@ function openInfoPanel(regionName) {
   r.grapes.forEach(g => {
     const wc = getGrapeWineClass(g);
     const hasNote = !!grapeTastingNotes[g];
+    const hasGenInfo = !!grapeGeneralInfo[g];
     if (hasNote) {
       const regionHint = getRegionalContext(g, r.name, groupLabel);
       const wineHints = getGrapeWineHints(g, regionName);
@@ -4610,6 +4757,12 @@ function openInfoPanel(regionName) {
       html += `<div class="grape-tasting-header">Tasting Profile</div>${grapeTastingNotes[g]}`;
       if (regionHint) html += `<div class="grape-note-region">⬦ In ${r.name}: ${regionHint}</div>`;
       if (wineHints) html += `<div class="grape-note-region">⬦ Wines: ${wineHints}</div>`;
+      html += `</div>`;
+    } else if (hasGenInfo) {
+      // No tasting notes but has general info (origin, synonyms etc.) — still make clickable
+      html += `<span class="grape-tag-btn info-grape-tag ${wc}" onclick="toggleInfoGrapeNote(this)">▸ ${g}</span>`;
+      html += `<div class="grape-note-panel wine-${wc}"><div class="grape-note-name">${g}</div>`;
+      html += buildGrapeInfoHtml(g);
       html += `</div>`;
     } else {
       html += `<span class="info-grape-tag ${wc}">${g}</span>`;
@@ -4691,11 +4844,20 @@ function openInfoPanel(regionName) {
   });
 
   panel.classList.add('open');
+
+  // On mobile: show backdrop and close any floating Leaflet popups
+  const isMobile = window.innerWidth <= 600;
+  if (isMobile) {
+    document.getElementById('info-panel-backdrop').classList.add('visible');
+    map.closePopup();
+  }
+
   setTimeout(() => map.invalidateSize(), 300);
 }
 
 function closeInfoPanel() {
   document.getElementById('info-panel').classList.remove('open');
+  document.getElementById('info-panel-backdrop').classList.remove('visible');
   setTimeout(() => map.invalidateSize(), 300);
 }
 
@@ -4704,7 +4866,8 @@ function navigateToRegion(name) {
   showRegionSubappellations(name);
   highlightListItem(name);
   const marker = markerMap[name];
-  if (marker) clusterGroup.zoomToShowLayer(marker, () => marker.openPopup());
+  // Zoom to marker but don't open the floating popup — info panel is the source of truth
+  if (marker) clusterGroup.zoomToShowLayer(marker, () => {});
   openInfoPanel(name);
 }
 
